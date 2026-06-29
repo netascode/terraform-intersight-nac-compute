@@ -1171,6 +1171,13 @@ defaults:
             priority: Best Effort
             rate_limit: 0
             trust_host_cos: false
+          imc_access:
+            configure_inband: true
+            configure_out_of_band: false
+            description: ''
+            enable_ipv4: true
+            enable_ipv6: false
+            managed: true
           lan_connectivity:
             description: ''
             iqn_allocation_type: None

@@ -71,7 +71,7 @@ resource "intersight_ippool_pool" "ip_pool" {
 
   lifecycle {
     ignore_changes = [
-      ip_v6_blocks    // needed to make the code idempotent as the Intersight API calculates the "to" address
+      ip_v6_blocks // needed to make the code idempotent as the Intersight API calculates the "to" address
     ]
   }
 }

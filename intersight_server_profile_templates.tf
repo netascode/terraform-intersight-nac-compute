@@ -10,6 +10,7 @@ locals {
         target_platform             = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.server.target_platform)
         bios_policy_key             = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null
         boot_order_policy_key       = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
+        imc_access_policy_key       = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
         lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
         uuid_pool_key               = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
       }] : []
@@ -39,6 +40,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "boot.PrecisionPolicy"
       moid        = intersight_boot_precision_policy.boot_precision_policy[each.value.boot_order_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.imc_access_policy_key != null ? [1] : []
+    content {
+      object_type = "access.Policy"
+      moid        = intersight_access_policy.imc_access_policy[each.value.imc_access_policy_key].moid
     }
   }
 

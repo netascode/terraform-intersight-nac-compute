@@ -1,0 +1,40 @@
+version: ">= 0.14.0"
+
+formatter: markdown table
+
+content: |-
+  # Terraform Compute Network-as-Code Module
+
+  A Terraform module to configure Compute (Intersight and UCS).
+
+  This module is part of the Cisco [*Network-as-Code*](https://netascode.cisco.com) project. Its goal is to allow users to instantiate network fabrics in minutes using an easy to use, opinionated data model. It takes away the complexity of having to deal with references, dependencies or loops. By completely separating data (defining variables) from logic (infrastructure declaration), it allows the user to focus on describing the intended configuration while using a set of maintained and tested Terraform Modules without the need to understand the low-level object model. More information can be found here: https://netascode.cisco.com.
+
+  ## Usage
+
+  This module supports an inventory driven approach, where a complete compute configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
+
+  The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/ 
+
+  ## Examplest
+
+  To be added
+
+  {{ .Requirements }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+
+  {{ .Providers }}
+
+  {{ .Resources }}
+
+  {{ .Modules }}
+
+output:
+  file: README.md
+  mode: replace
+
+sort:
+  enabled: true
+  by: required

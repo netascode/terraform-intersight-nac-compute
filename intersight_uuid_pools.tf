@@ -1,0 +1,39 @@
+locals {
+  uuid_pools = flatten([
+    for org in try(local.intersight.organizations, []) : [
+      for pool in try(org.pools.uuid, []) :
+      try(pool.managed, true) ? [merge(
+        local.defaults.compute.intersight.organizations.pools.uuid,
+        pool,
+        {
+          key      = format("%s/%s", org.name, pool.name)
+          org_name = org.name
+          name     = pool.name
+        }
+      )] : []
+    ]
+  ])
+}
+
+resource "intersight_uuidpool_pool" "uuid_pool" {
+  for_each = { for p in local.uuid_pools : p.key => p }
+
+  name        = each.value.name
+  description = try(each.value.description, "")
+  prefix      = try(each.value.prefix, null)
+
+  dynamic "uuid_suffix_blocks" {
+    for_each = try(each.value.uuid_suffix_blocks, [])
+    content {
+      object_type = "uuidpool.UuidBlock"
+      from        = uuid_suffix_blocks.value.from
+      size        = try(uuid_suffix_blocks.value.size, null)
+      to          = try(uuid_suffix_blocks.value.to, null)
+    }
+  }
+
+  organization {
+    object_type = "organization.Organization"
+    moid        = local.org_moids[each.value.org_name]
+  }
+}

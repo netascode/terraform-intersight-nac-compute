@@ -1,0 +1,65 @@
+locals {
+  server_templates = flatten([
+    for org in try(local.intersight.organizations, []) : [
+      for tmpl in try(org.templates.server, []) :
+      try(tmpl.managed, true) ? [{
+        key                         = format("%s/%s", org.name, tmpl.name)
+        org_name                    = org.name
+        name                        = tmpl.name
+        description                 = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.server.description, "")
+        target_platform             = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.server.target_platform)
+        bios_policy_key             = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null
+        boot_order_policy_key       = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
+        lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
+        uuid_pool_key               = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
+      }] : []
+    ]
+  ])
+}
+
+resource "intersight_server_profile_template" "server_profile_template" {
+  for_each = { for t in local.server_templates : t.key => t }
+
+  description     = each.value.description
+  name            = each.value.name
+  target_platform = each.value.target_platform
+
+  uuid_address_type = each.value.uuid_pool_key != null ? "POOL" : "NONE"
+
+  dynamic "policy_bucket" {
+    for_each = each.value.bios_policy_key != null ? [1] : []
+    content {
+      object_type = "bios.Policy"
+      moid        = intersight_bios_policy.bios_policy[each.value.bios_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.boot_order_policy_key != null ? [1] : []
+    content {
+      object_type = "boot.PrecisionPolicy"
+      moid        = intersight_boot_precision_policy.boot_precision_policy[each.value.boot_order_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.lan_connectivity_policy_key != null ? [1] : []
+    content {
+      object_type = "vnic.LanConnectivityPolicy"
+      moid        = intersight_vnic_lan_connectivity_policy.lan_connectivity_policy[each.value.lan_connectivity_policy_key].moid
+    }
+  }
+
+  dynamic "uuid_pool" {
+    for_each = each.value.uuid_pool_key != null ? [1] : []
+    content {
+      object_type = "uuidpool.Pool"
+      moid        = intersight_uuidpool_pool.uuid_pool[each.value.uuid_pool_key].moid
+    }
+  }
+
+  organization {
+    object_type = "organization.Organization"
+    moid        = local.org_moids[each.value.org_name]
+  }
+}

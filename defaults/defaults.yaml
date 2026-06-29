@@ -5,6 +5,7 @@ defaults:
       organizations:
         policies:
           bios:
+            managed: true
             acpi_srat_sp_flag_en: platform-default
             acs_control_gpu1state: platform-default
             acs_control_gpu2state: platform-default
@@ -1147,23 +1148,28 @@ defaults:
               tpm_control: disabled
               tpm_support: disabled
           boot_order:
+            managed: true
             boot_devices:
               enabled: true
             boot_mode: Uefi
             description: ''
             enable_secure_boot: true
           ethernet_adapter:
+            managed: true
             description: ''
           ethernet_network:
+            managed: true
             default_vlan: 0
             description: ''
             qinq_enabled: false
             vlan_mode: ACCESS
           ethernet_network_group:
+            managed: true
             description: ''
             native_vlan: 0
             qinq_enabled: false
           ethernet_qos:
+            managed: true
             burst: 10240
             cos: 0
             description: ''
@@ -1172,6 +1178,7 @@ defaults:
             rate_limit: 0
             trust_host_cos: false
           lan_connectivity:
+            managed: true
             description: ''
             iqn_allocation_type: None
             target_platform: FIAttached
@@ -1180,13 +1187,26 @@ defaults:
               enable_failover: false
               fabric: A
               order: 0
+          ntp:
+            managed: true
+            description: ''
+            enabled: true
+            timezone: UTC
         pools:
           ip:
+            managed: true
             description: ''
           mac:
+            managed: true
             assignment_order: sequential
           uuid:
+            managed: true
             assignment_order: sequential
         templates:
           server:
+            managed: true
+            target_platform: FIAttached
             description: ''
+    servers:
+      provisioning:
+        managed: true

@@ -11,6 +11,7 @@ locals {
         bios_policy_key             = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null
         boot_order_policy_key       = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
         lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
+        ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
         uuid_pool_key               = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
       }] : []
     ]
@@ -47,6 +48,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "vnic.LanConnectivityPolicy"
       moid        = intersight_vnic_lan_connectivity_policy.lan_connectivity_policy[each.value.lan_connectivity_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.ntp_policy_key != null ? [1] : []
+    content {
+      object_type = "ntp.Policy"
+      moid        = intersight_ntp_policy.ntp_policy[each.value.ntp_policy_key].moid
     }
   }
 

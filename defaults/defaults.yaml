@@ -1178,12 +1178,12 @@ defaults:
             rate_limit: 0
             trust_host_cos: false
           imc_access:
+            managed: true
+            description: ''
             configure_inband: true
             configure_out_of_band: false
-            description: ''
             ipv4: true
             ipv6: false
-            managed: true
           lan_connectivity:
             managed: true
             description: ''
@@ -1199,11 +1199,29 @@ defaults:
             description: ''
             enabled: true
             timezone: UTC
+          snmp:
+            managed: true
+            description: ''
+            enabled: true
+            port: 161
+            community_access: Disabled
+            v2: false
+            v3: true
+            users:
+              security_level: AuthPriv
+              auth_type: SHA
+              privacy_type: AES
+            traps:
+              port: 162
+              version: V3
+              type: Trap
+              enabled: true
           syslog:
             managed: true
             description: ''
             local_min_severity: warning
           virtual_kvm:
+            managed: true
             description: ''
             enabled: true
             maximum_sessions: 4

@@ -13,6 +13,7 @@ locals {
         imc_access_policy_key       = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
         lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
         ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
+        san_connectivity_policy_key = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         syslog_policy_key           = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
         virtual_kvm_policy_key      = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
@@ -68,6 +69,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "ntp.Policy"
       moid        = intersight_ntp_policy.ntp_policy[each.value.ntp_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.san_connectivity_policy_key != null ? [1] : []
+    content {
+      object_type = "vnic.SanConnectivityPolicy"
+      moid        = intersight_vnic_san_connectivity_policy.san_connectivity_policy[each.value.san_connectivity_policy_key].moid
     }
   }
 

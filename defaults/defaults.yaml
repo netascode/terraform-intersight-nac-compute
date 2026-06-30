@@ -1199,6 +1199,14 @@ defaults:
             description: ''
             enabled: true
             timezone: UTC
+          virtual_kvm:
+            description: ''
+            enabled: true
+            maximum_sessions: 4
+            remote_port: 2069
+            video_encryption: true
+            local_server_video: true
+            tunneled_kvm_enabled: false
         pools:
           ip:
             managed: true

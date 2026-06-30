@@ -1199,6 +1199,10 @@ defaults:
             description: ''
             enabled: true
             timezone: UTC
+          syslog:
+            managed: true
+            description: ''
+            local_min_severity: warning
           virtual_kvm:
             description: ''
             enabled: true

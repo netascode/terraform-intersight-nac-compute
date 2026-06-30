@@ -1235,13 +1235,10 @@ defaults:
             description: ''
           mac:
             managed: true
-            assignment_order: sequential
           uuid:
             managed: true
-            assignment_order: sequential
           wwpn:
             managed: true
-            assignment_order: sequential
         templates:
           server:
             managed: true

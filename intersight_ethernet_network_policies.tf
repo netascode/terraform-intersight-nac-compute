@@ -25,7 +25,7 @@ resource "intersight_vnic_eth_network_policy" "ethernet_network_policy" {
     default_vlan  = try(each.value.default_vlan, null)
     mode          = try(each.value.vlan_mode, null)
     allowed_vlans = try(each.value.allowed_vlans, null)
-    qinq_enabled  = try(each.value.qinq_enabled, null)
+    qinq_enabled  = try(each.value.qinq, null)
     qinq_vlan     = try(each.value.qinq_vlan, null)
     object_type   = "vnic.VlanSettings"
   }

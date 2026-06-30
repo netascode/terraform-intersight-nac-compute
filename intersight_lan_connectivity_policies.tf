@@ -18,7 +18,7 @@ locals {
             name                              = vnic.name
             order                             = try(vnic.order, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.order)
             fabric                            = try(vnic.fabric, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.fabric)
-            enable_failover                   = try(vnic.enable_failover, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.enable_failover)
+            failover                          = try(vnic.failover, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.failover)
             slot                              = try(vnic.slot, null)
             pci_link                          = try(vnic.pci_link, null)
             mac_pool_key                      = try(vnic.mac_pool, null) != null ? format("%s/%s", org.name, vnic.mac_pool) : null
@@ -55,7 +55,7 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
 resource "intersight_vnic_eth_if" "vnic_eth_if" {
   for_each = { for v in local.lan_connectivity_vnics : v.key => v }
 
-  failover_enabled = each.value.enable_failover
+  failover_enabled = each.value.failover
   mac_address_type = each.value.mac_pool_key != null ? "POOL" : "STATIC"
   name             = each.value.name
   order            = each.value.order

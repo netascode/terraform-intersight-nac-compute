@@ -10,8 +10,8 @@ locals {
         configure_inband        = try(policy.configure_inband, local.defaults.compute.intersight.organizations.policies.imc_access.configure_inband, true)
         configure_out_of_band   = try(policy.configure_out_of_band, local.defaults.compute.intersight.organizations.policies.imc_access.configure_out_of_band, false)
         inband_vlan             = try(policy.inband_vlan, null)
-        enable_ipv4             = try(policy.enable_ipv4, local.defaults.compute.intersight.organizations.policies.imc_access.enable_ipv4, true)
-        enable_ipv6             = try(policy.enable_ipv6, local.defaults.compute.intersight.organizations.policies.imc_access.enable_ipv6, false)
+        ipv4                    = try(policy.ipv4, local.defaults.compute.intersight.organizations.policies.imc_access.ipv4, true)
+        ipv6                    = try(policy.ipv6, local.defaults.compute.intersight.organizations.policies.imc_access.ipv6, false)
         inband_ip_pool_key      = try(policy.inband_ip_pool, null) != null ? format("%s/%s", org.name, policy.inband_ip_pool) : null
         out_of_band_ip_pool_key = try(policy.out_of_band_ip_pool, null) != null ? format("%s/%s", org.name, policy.out_of_band_ip_pool) : null
       }] : []
@@ -28,8 +28,8 @@ resource "intersight_access_policy" "imc_access_policy" {
 
   address_type {
     object_type  = "access.AddressType"
-    enable_ip_v4 = each.value.enable_ipv4
-    enable_ip_v6 = each.value.enable_ipv6
+    enable_ip_v4 = each.value.ipv4
+    enable_ip_v6 = each.value.ipv6
   }
 
   configuration_type {

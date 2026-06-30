@@ -38,12 +38,12 @@ locals {
     for org in try(local.intersight.organizations, []) : [
       for policy in try(org.policies.boot_order, []) :
       try(policy.managed, true) ? [{
-        key                = format("%s/%s", org.name, policy.name)
-        org_name           = org.name
-        name               = policy.name
-        description        = try(policy.description, local.defaults.compute.intersight.organizations.policies.boot_order.description, "")
-        boot_mode          = try(policy.boot_mode, local.defaults.compute.intersight.organizations.policies.boot_order.boot_mode)
-        enable_secure_boot = try(policy.enable_secure_boot, local.defaults.compute.intersight.organizations.policies.boot_order.enable_secure_boot)
+        key         = format("%s/%s", org.name, policy.name)
+        org_name    = org.name
+        name        = policy.name
+        description = try(policy.description, local.defaults.compute.intersight.organizations.policies.boot_order.description, "")
+        boot_mode   = try(policy.boot_mode, local.defaults.compute.intersight.organizations.policies.boot_order.boot_mode)
+        secure_boot = try(policy.secure_boot, local.defaults.compute.intersight.organizations.policies.boot_order.secure_boot)
         boot_devices = [
           for device in try(policy.boot_devices, []) : {
             enabled     = try(device.enabled, local.defaults.compute.intersight.organizations.policies.boot_order.boot_devices.enabled)
@@ -105,7 +105,7 @@ resource "intersight_boot_precision_policy" "boot_precision_policy" {
 
   configured_boot_mode     = each.value.boot_mode
   description              = each.value.description
-  enforce_uefi_secure_boot = each.value.enable_secure_boot
+  enforce_uefi_secure_boot = each.value.secure_boot
   name                     = each.value.name
 
   dynamic "boot_devices" {

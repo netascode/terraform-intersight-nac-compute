@@ -3,16 +3,16 @@ locals {
     for org in try(local.intersight.organizations, []) : [
       for policy in try(org.policies.virtual_kvm, []) :
       try(policy.managed, true) ? [{
-        key                  = format("%s/%s", org.name, policy.name)
-        org_name             = org.name
-        name                 = policy.name
-        description          = try(policy.description, local.defaults.compute.intersight.organizations.policies.virtual_kvm.description, "")
-        enabled              = try(policy.enabled, local.defaults.compute.intersight.organizations.policies.virtual_kvm.enabled)
-        maximum_sessions     = try(policy.maximum_sessions, local.defaults.compute.intersight.organizations.policies.virtual_kvm.maximum_sessions)
-        remote_port          = try(policy.remote_port, local.defaults.compute.intersight.organizations.policies.virtual_kvm.remote_port)
-        video_encryption     = try(policy.video_encryption, local.defaults.compute.intersight.organizations.policies.virtual_kvm.video_encryption)
-        local_server_video   = try(policy.local_server_video, local.defaults.compute.intersight.organizations.policies.virtual_kvm.local_server_video)
-        tunneled_kvm_enabled = try(policy.tunneled_kvm_enabled, local.defaults.compute.intersight.organizations.policies.virtual_kvm.tunneled_kvm_enabled)
+        key                = format("%s/%s", org.name, policy.name)
+        org_name           = org.name
+        name               = policy.name
+        description        = try(policy.description, local.defaults.compute.intersight.organizations.policies.virtual_kvm.description, "")
+        enabled            = try(policy.enabled, local.defaults.compute.intersight.organizations.policies.virtual_kvm.enabled)
+        maximum_sessions   = try(policy.maximum_sessions, local.defaults.compute.intersight.organizations.policies.virtual_kvm.maximum_sessions)
+        remote_port        = try(policy.remote_port, local.defaults.compute.intersight.organizations.policies.virtual_kvm.remote_port)
+        video_encryption   = try(policy.video_encryption, local.defaults.compute.intersight.organizations.policies.virtual_kvm.video_encryption)
+        local_server_video = try(policy.local_server_video, local.defaults.compute.intersight.organizations.policies.virtual_kvm.local_server_video)
+        tunneled_kvm       = try(policy.tunneled_kvm, local.defaults.compute.intersight.organizations.policies.virtual_kvm.tunneled_kvm)
       }] : []
     ]
   ])
@@ -28,7 +28,7 @@ resource "intersight_kvm_policy" "virtual_kvm_policy" {
   maximum_sessions          = each.value.maximum_sessions
   name                      = each.value.name
   remote_port               = each.value.remote_port
-  tunneled_kvm_enabled      = each.value.tunneled_kvm_enabled
+  tunneled_kvm_enabled      = each.value.tunneled_kvm
 
   organization {
     object_type = "organization.Organization"

@@ -22,16 +22,16 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
   description = try(each.value.description, "")
 
   advanced_filter               = try(each.value.advanced_filter, null)
-  ether_channel_pinning_enabled = try(each.value.ether_channel_pinning_enabled, null)
-  geneve_enabled                = try(each.value.geneve_enabled, null)
+  ether_channel_pinning_enabled = try(each.value.ether_channel_pinning, null)
+  geneve_enabled                = try(each.value.geneve, null)
   interrupt_scaling             = try(each.value.interrupt_scaling, null)
-  rss_settings                  = try(each.value.rss_enabled, null)
+  rss_settings                  = try(each.value.rss, null)
   uplink_failback_timeout       = try(each.value.uplink_failback_timeout, null)
 
   dynamic "arfs_settings" {
-    for_each = try(each.value.arfs_enabled, null) != null ? [1] : []
+    for_each = try(each.value.arfs, null) != null ? [1] : []
     content {
-      enabled     = each.value.arfs_enabled
+      enabled     = each.value.arfs
       object_type = "vnic.ArfsSettings"
     }
   }
@@ -57,17 +57,17 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
   }
 
   dynamic "nvgre_settings" {
-    for_each = try(each.value.nvgre_enabled, null) != null ? [1] : []
+    for_each = try(each.value.nvgre, null) != null ? [1] : []
     content {
-      enabled     = each.value.nvgre_enabled
+      enabled     = each.value.nvgre
       object_type = "vnic.NvgreSettings"
     }
   }
 
   dynamic "ptp_settings" {
-    for_each = try(each.value.ptp_enabled, null) != null ? [1] : []
+    for_each = try(each.value.ptp, null) != null ? [1] : []
     content {
-      enabled     = each.value.ptp_enabled
+      enabled     = each.value.ptp
       object_type = "vnic.PtpSettings"
     }
   }
@@ -130,9 +130,9 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
   }
 
   dynamic "vxlan_settings" {
-    for_each = try(each.value.vxlan_enabled, null) != null ? [1] : []
+    for_each = try(each.value.vxlan, null) != null ? [1] : []
     content {
-      enabled     = each.value.vxlan_enabled
+      enabled     = each.value.vxlan
       object_type = "vnic.VxlanSettings"
     }
   }

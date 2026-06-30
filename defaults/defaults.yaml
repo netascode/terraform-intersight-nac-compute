@@ -1153,7 +1153,7 @@ defaults:
               enabled: true
             boot_mode: Uefi
             description: ''
-            enable_secure_boot: true
+            secure_boot: true
           ethernet_adapter:
             managed: true
             description: ''
@@ -1161,13 +1161,13 @@ defaults:
             managed: true
             default_vlan: 0
             description: ''
-            qinq_enabled: false
+            qinq: false
             vlan_mode: ACCESS
           ethernet_network_group:
             managed: true
             description: ''
             native_vlan: 0
-            qinq_enabled: false
+            qinq: false
           ethernet_qos:
             managed: true
             burst: 10240
@@ -1181,8 +1181,8 @@ defaults:
             configure_inband: true
             configure_out_of_band: false
             description: ''
-            enable_ipv4: true
-            enable_ipv6: false
+            ipv4: true
+            ipv6: false
             managed: true
           lan_connectivity:
             managed: true
@@ -1191,7 +1191,7 @@ defaults:
             target_platform: FIAttached
             vnic_placement_mode: custom
             vnics:
-              enable_failover: false
+              failover: false
               fabric: A
               order: 0
           ntp:
@@ -1206,7 +1206,7 @@ defaults:
             remote_port: 2069
             video_encryption: true
             local_server_video: true
-            tunneled_kvm_enabled: false
+            tunneled_kvm: false
         pools:
           ip:
             managed: true

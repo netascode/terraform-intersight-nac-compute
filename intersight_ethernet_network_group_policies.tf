@@ -24,7 +24,7 @@ resource "intersight_fabric_eth_network_group_policy" "ethernet_network_group_po
   vlan_settings {
     allowed_vlans = try(each.value.allowed_vlans, null)
     native_vlan   = try(each.value.native_vlan, null)
-    qinq_enabled  = try(each.value.qinq_enabled, null)
+    qinq_enabled  = try(each.value.qinq, null)
     qinq_vlan     = try(each.value.qinq_vlan, null)
     object_type   = "fabric.VlanSettings"
   }

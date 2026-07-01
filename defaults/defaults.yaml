@@ -1223,6 +1223,21 @@ defaults:
               fabric: A
               order: 0
               vhba_type: fc-initiator
+          storage:
+            managed: true
+            description: ''
+            unused_disks_state: NoChange
+            use_jbod_for_vd_creation: false
+            drive_groups:
+              raid_level: Raid1
+              virtual_drives:
+                boot_drive: false
+                expand_to_available: false
+                access_policy: Default
+                drive_cache: Default
+                read_policy: Default
+                write_policy: Default
+                strip_size: 64
           ntp:
             managed: true
             description: ''

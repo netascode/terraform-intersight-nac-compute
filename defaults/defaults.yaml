@@ -1289,6 +1289,16 @@ defaults:
             video_encryption: true
             local_server_video: true
             tunneled_kvm: false
+          virtual_media:
+            managed: true
+            description: ''
+            enabled: true
+            encryption: true
+            low_power_usb: true
+            mappings:
+              device_type: cdd
+              mount_protocol: nfs
+              authentication_protocol: none
         pools:
           ip:
             managed: true

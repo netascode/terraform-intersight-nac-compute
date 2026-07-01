@@ -1177,6 +1177,26 @@ defaults:
             priority: Best Effort
             rate_limit: 0
             trust_host_cos: false
+          fibre_channel_adapter:
+            managed: true
+            description: ''
+            error_detection_timeout: 2000
+            io_throttle_count: 512
+            lun_count: 1024
+            lun_queue_depth: 20
+            resource_allocation_timeout: 10000
+          fibre_channel_network:
+            managed: true
+            description: ''
+            vsan_id: 1
+            default_vlan_id: 0
+          fibre_channel_qos:
+            managed: true
+            description: ''
+            burst: 10240
+            cos: 3
+            max_data_field_size: 2112
+            rate_limit: 0
           imc_access:
             managed: true
             description: ''
@@ -1194,6 +1214,15 @@ defaults:
               failover: false
               fabric: A
               order: 0
+          san_connectivity:
+            managed: true
+            description: ''
+            target_platform: FIAttached
+            vhba_placement_mode: custom
+            vhbas:
+              fabric: A
+              order: 0
+              vhba_type: fc-initiator
           ntp:
             managed: true
             description: ''
@@ -1236,6 +1265,8 @@ defaults:
           mac:
             managed: true
           uuid:
+            managed: true
+          wwnn:
             managed: true
           wwpn:
             managed: true

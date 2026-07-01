@@ -1276,6 +1276,10 @@ defaults:
             managed: true
             description: ''
             local_min_severity: warning
+          thermal:
+            managed: true
+            description: ''
+            fan_control_mode: Balanced
           virtual_kvm:
             managed: true
             description: ''

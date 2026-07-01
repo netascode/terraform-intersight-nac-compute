@@ -25,6 +25,14 @@ resource "intersight_ntp_policy" "ntp_policy" {
   ntp_servers = each.value.ntp_servers
   timezone    = each.value.timezone
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

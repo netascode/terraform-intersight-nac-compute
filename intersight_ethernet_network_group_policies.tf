@@ -29,6 +29,14 @@ resource "intersight_fabric_eth_network_group_policy" "ethernet_network_group_po
     object_type   = "fabric.VlanSettings"
   }
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

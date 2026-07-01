@@ -30,6 +30,14 @@ resource "intersight_kvm_policy" "virtual_kvm_policy" {
   remote_port               = each.value.remote_port
   tunneled_kvm_enabled      = each.value.tunneled_kvm
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

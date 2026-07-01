@@ -118,6 +118,14 @@ resource "intersight_boot_precision_policy" "boot_precision_policy" {
     }
   }
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

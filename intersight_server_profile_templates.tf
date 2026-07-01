@@ -18,6 +18,7 @@ locals {
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
         syslog_policy_key           = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
+        firmware_policy_key         = try(tmpl.firmware_policy, null) != null ? format("%s/%s", org.name, tmpl.firmware_policy) : null
         thermal_policy_key          = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
         virtual_kvm_policy_key      = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
         virtual_media_policy_key    = try(tmpl.virtual_media_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_media_policy) : null
@@ -113,6 +114,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "syslog.Policy"
       moid        = intersight_syslog_policy.syslog_policy[each.value.syslog_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.firmware_policy_key != null ? [1] : []
+    content {
+      object_type = "firmware.Policy"
+      moid        = intersight_firmware_policy.firmware_policy[each.value.firmware_policy_key].moid
     }
   }
 

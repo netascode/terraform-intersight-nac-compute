@@ -1299,6 +1299,9 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          firmware:
+            description: ''
+            target_platform: Standalone
         pools:
           ip:
             managed: true

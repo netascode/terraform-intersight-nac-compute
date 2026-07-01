@@ -13,6 +13,7 @@ locals {
         imc_access_policy_key       = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
         lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
         ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
+        power_policy_key            = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
         san_connectivity_policy_key = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
@@ -70,6 +71,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "ntp.Policy"
       moid        = intersight_ntp_policy.ntp_policy[each.value.ntp_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.power_policy_key != null ? [1] : []
+    content {
+      object_type = "power.Policy"
+      moid        = intersight_power_policy.power_policy[each.value.power_policy_key].moid
     }
   }
 

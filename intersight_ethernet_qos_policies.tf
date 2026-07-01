@@ -28,6 +28,14 @@ resource "intersight_vnic_eth_qos_policy" "ethernet_qos_policy" {
   rate_limit     = try(each.value.rate_limit, null)
   trust_host_cos = try(each.value.trust_host_cos, null)
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

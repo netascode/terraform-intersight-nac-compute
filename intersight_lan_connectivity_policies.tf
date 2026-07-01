@@ -46,6 +46,14 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
   placement_mode      = each.value.vnic_placement_mode
   target_platform     = each.value.target_platform
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

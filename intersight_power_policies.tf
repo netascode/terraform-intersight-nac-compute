@@ -30,6 +30,14 @@ resource "intersight_power_policy" "power_policy" {
   processor_package_power_limit = each.value.processor_package_power_limit
   redundancy_mode               = each.value.redundancy_mode
 
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]

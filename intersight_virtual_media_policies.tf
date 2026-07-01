@@ -31,9 +31,7 @@ resource "intersight_vmedia_policy" "virtual_media_policy" {
       volume_name             = mappings.value.volume_name
       device_type             = try(mappings.value.device_type, local.defaults.compute.intersight.organizations.policies.virtual_media.mappings.device_type)
       mount_protocol          = try(mappings.value.mount_protocol, local.defaults.compute.intersight.organizations.policies.virtual_media.mappings.mount_protocol)
-      host_name               = try(mappings.value.host_name, null)
-      remote_path             = try(mappings.value.remote_path, null)
-      remote_file             = try(mappings.value.remote_file, null)
+      file_location           = try(mappings.value.file_location, null)
       mount_options           = try(mappings.value.mount_options, null)
       username                = try(mappings.value.username, null)
       password                = try(mappings.value.password, null)

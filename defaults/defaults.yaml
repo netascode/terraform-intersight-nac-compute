@@ -1243,6 +1243,18 @@ defaults:
             description: ''
             enabled: true
             timezone: UTC
+          power:
+            managed: true
+            description: ''
+            allocated_budget: 0
+            dynamic_rebalancing: Enabled
+            extended_power_capacity: Enabled
+            power_priority: Low
+            power_profiling: Enabled
+            power_restore_state: AlwaysOff
+            power_save_mode: Enabled
+            processor_package_power_limit: Default
+            redundancy_mode: Grid
           snmp:
             managed: true
             description: ''

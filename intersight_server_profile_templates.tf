@@ -18,6 +18,7 @@ locals {
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
         syslog_policy_key           = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
+        thermal_policy_key          = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
         virtual_kvm_policy_key      = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
         uuid_pool_key               = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
       }] : []
@@ -111,6 +112,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "syslog.Policy"
       moid        = intersight_syslog_policy.syslog_policy[each.value.syslog_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.thermal_policy_key != null ? [1] : []
+    content {
+      object_type = "thermal.Policy"
+      moid        = intersight_thermal_policy.thermal_policy[each.value.thermal_policy_key].moid
     }
   }
 

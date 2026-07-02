@@ -17,6 +17,7 @@ locals {
         power_policy_key            = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
         san_connectivity_policy_key = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
+        ssh_policy_key              = try(tmpl.ssh_policy, null) != null ? format("%s/%s", org.name, tmpl.ssh_policy) : null
         storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
         syslog_policy_key           = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
         thermal_policy_key          = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
@@ -110,6 +111,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "snmp.Policy"
       moid        = intersight_snmp_policy.snmp_policy[each.value.snmp_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.ssh_policy_key != null ? [1] : []
+    content {
+      object_type = "ssh.Policy"
+      moid        = intersight_ssh_policy.ssh_policy[each.value.ssh_policy_key].moid
     }
   }
 

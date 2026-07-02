@@ -16,6 +16,7 @@ locals {
         ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
         power_policy_key            = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
         san_connectivity_policy_key = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
+        serial_over_lan_policy_key  = try(tmpl.serial_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.serial_over_lan_policy) : null
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         ssh_policy_key              = try(tmpl.ssh_policy, null) != null ? format("%s/%s", org.name, tmpl.ssh_policy) : null
         storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
@@ -103,6 +104,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "vnic.SanConnectivityPolicy"
       moid        = intersight_vnic_san_connectivity_policy.san_connectivity_policy[each.value.san_connectivity_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.serial_over_lan_policy_key != null ? [1] : []
+    content {
+      object_type = "sol.Policy"
+      moid        = intersight_sol_policy.serial_over_lan_policy[each.value.serial_over_lan_policy_key].moid
     }
   }
 

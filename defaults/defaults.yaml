@@ -1294,6 +1294,13 @@ defaults:
             enabled: true
             port: 22
             timeout: 1800
+          serial_over_lan:
+            managed: true
+            description: ''
+            enabled: true
+            baud_rate: 9600
+            com_port: com0
+            ssh_port: 2400
           thermal:
             managed: true
             description: ''

@@ -1255,7 +1255,6 @@ defaults:
             always_send_user_password: false
             users:
               enabled: true
-              change_password: true
           power:
             managed: true
             description: ''

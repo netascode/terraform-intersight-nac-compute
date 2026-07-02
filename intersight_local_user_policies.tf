@@ -24,14 +24,13 @@ locals {
       for policy in try(org.policies.local_user, []) :
       try(policy.managed, true) ? [
         for user in try(policy.users, []) : {
-          key             = format("%s/%s/%s", org.name, policy.name, user.username)
-          policy_key      = format("%s/%s", org.name, policy.name)
-          org_name        = org.name
-          username        = user.username
-          role            = user.role
-          password        = try(user.password, null)
-          enabled         = try(user.enabled, local.defaults.compute.intersight.organizations.policies.local_user.users.enabled)
-          change_password = try(user.change_password, local.defaults.compute.intersight.organizations.policies.local_user.users.change_password)
+          key        = format("%s/%s/%s", org.name, policy.name, user.username)
+          policy_key = format("%s/%s", org.name, policy.name)
+          org_name   = org.name
+          username   = user.username
+          role       = user.role
+          password   = try(user.password, null)
+          enabled    = try(user.enabled, local.defaults.compute.intersight.organizations.policies.local_user.users.enabled)
         }
       ] : []
     ]
@@ -83,9 +82,8 @@ resource "intersight_iam_end_point_user" "local_user" {
 resource "intersight_iam_end_point_user_role" "local_user_role" {
   for_each = { for u in local.local_user_users : u.key => u }
 
-  enabled         = each.value.enabled
-  change_password = each.value.change_password
-  password        = each.value.password
+  enabled  = each.value.enabled
+  password = each.value.password
 
   end_point_role {
     object_type = "iam.EndPointRole"
@@ -106,4 +104,8 @@ resource "intersight_iam_end_point_user_role" "local_user_role" {
     intersight_iam_end_point_user_policy.local_user_policy,
     intersight_iam_end_point_user.local_user,
   ]
+
+  lifecycle {
+    ignore_changes = [end_point_role]
+  }
 }

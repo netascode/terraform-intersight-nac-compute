@@ -1204,6 +1204,11 @@ defaults:
             configure_out_of_band: false
             ipv4: true
             ipv6: false
+          ipmi_over_lan:
+            managed: true
+            description: ''
+            enabled: true
+            privilege: admin
           lan_connectivity:
             managed: true
             description: ''

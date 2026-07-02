@@ -11,6 +11,7 @@ locals {
         bios_policy_key             = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null
         boot_order_policy_key       = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
         imc_access_policy_key       = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
+        ipmi_over_lan_policy_key    = try(tmpl.ipmi_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.ipmi_over_lan_policy) : null
         lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
         local_user_policy_key       = try(tmpl.local_user_policy, null) != null ? format("%s/%s", org.name, tmpl.local_user_policy) : null
         ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
@@ -64,6 +65,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "access.Policy"
       moid        = intersight_access_policy.imc_access_policy[each.value.imc_access_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.ipmi_over_lan_policy_key != null ? [1] : []
+    content {
+      object_type = "ipmioverlan.Policy"
+      moid        = intersight_ipmioverlan_policy.ipmi_over_lan_policy[each.value.ipmi_over_lan_policy_key].moid
     }
   }
 

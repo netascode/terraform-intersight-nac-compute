@@ -12,20 +12,21 @@ locals {
         iqn_allocation_type = try(policy.iqn_allocation_type, local.defaults.compute.intersight.organizations.policies.lan_connectivity.iqn_allocation_type)
         vnics = [
           for vnic in try(policy.vnics, []) : {
-            key                               = format("%s/%s/%s", org.name, policy.name, vnic.name)
-            policy_key                        = format("%s/%s", org.name, policy.name)
-            org_name                          = org.name
-            name                              = vnic.name
-            order                             = try(vnic.order, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.order)
-            fabric                            = try(vnic.fabric, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.fabric)
-            failover                          = try(vnic.failover, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.failover)
-            slot                              = try(vnic.slot, null)
-            pci_link                          = try(vnic.pci_link, null)
-            mac_pool_key                      = try(vnic.mac_pool, null) != null ? format("%s/%s", org.name, vnic.mac_pool) : null
-            ethernet_adapter_policy_key       = try(vnic.ethernet_adapter_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_adapter_policy) : null
-            ethernet_network_policy_key       = try(vnic.ethernet_network_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_policy) : null
-            ethernet_network_group_policy_key = try(vnic.ethernet_network_group_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_group_policy) : null
-            ethernet_qos_policy_key           = try(vnic.ethernet_qos_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_qos_policy) : null
+            key                                 = format("%s/%s/%s", org.name, policy.name, vnic.name)
+            policy_key                          = format("%s/%s", org.name, policy.name)
+            org_name                            = org.name
+            name                                = vnic.name
+            order                               = try(vnic.order, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.order)
+            fabric                              = try(vnic.fabric, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.fabric)
+            failover                            = try(vnic.failover, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnics.failover)
+            slot                                = try(vnic.slot, null)
+            pci_link                            = try(vnic.pci_link, null)
+            mac_pool_key                        = try(vnic.mac_pool, null) != null ? format("%s/%s", org.name, vnic.mac_pool) : null
+            ethernet_adapter_policy_key         = try(vnic.ethernet_adapter_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_adapter_policy) : null
+            ethernet_network_control_policy_key = try(vnic.ethernet_network_control_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_control_policy) : null
+            ethernet_network_policy_key         = try(vnic.ethernet_network_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_policy) : null
+            ethernet_network_group_policy_key   = try(vnic.ethernet_network_group_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_group_policy) : null
+            ethernet_qos_policy_key             = try(vnic.ethernet_qos_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_qos_policy) : null
           }
         ]
       }] : []
@@ -90,6 +91,14 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     content {
       object_type = "vnic.EthAdapterPolicy"
       moid        = intersight_vnic_eth_adapter_policy.ethernet_adapter_policy[each.value.ethernet_adapter_policy_key].moid
+    }
+  }
+
+  dynamic "fabric_eth_network_control_policy" {
+    for_each = each.value.ethernet_network_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.EthNetworkControlPolicy"
+      moid        = intersight_fabric_eth_network_control_policy.ethernet_network_control_policy[each.value.ethernet_network_control_policy_key].moid
     }
   }
 

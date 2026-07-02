@@ -1,0 +1,47 @@
+locals {
+  ethernet_network_control_policies = flatten([
+    for org in try(local.intersight.organizations, []) : [
+      for policy in try(org.policies.ethernet_network_control, []) :
+      try(policy.managed, true) ? [merge(
+        local.defaults.compute.intersight.organizations.policies.ethernet_network_control,
+        policy,
+        {
+          key      = format("%s/%s", org.name, policy.name)
+          org_name = org.name
+          name     = policy.name
+        }
+      )] : []
+    ]
+  ])
+}
+
+resource "intersight_fabric_eth_network_control_policy" "ethernet_network_control_policy" {
+  for_each = { for p in local.ethernet_network_control_policies : p.key => p }
+
+  name        = each.value.name
+  description = try(each.value.description, "")
+  cdp_enabled = each.value.cdp
+  forge_mac   = each.value.forge_mac
+
+  mac_registration_mode = each.value.mac_registration_mode
+  uplink_fail_action    = each.value.uplink_fail_action
+
+  lldp_settings {
+    object_type      = "fabric.LldpSettings"
+    receive_enabled  = each.value.lldp_receive
+    transmit_enabled = each.value.lldp_transmit
+  }
+
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
+  organization {
+    object_type = "organization.Organization"
+    moid        = local.org_moids[each.value.org_name]
+  }
+}

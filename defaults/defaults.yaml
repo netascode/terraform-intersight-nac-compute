@@ -1163,6 +1163,15 @@ defaults:
             description: ''
             qinq: false
             vlan_mode: ACCESS
+          ethernet_network_control:
+            managed: true
+            description: ''
+            cdp: false
+            forge_mac: allow
+            mac_registration_mode: nativeVlanOnly
+            uplink_fail_action: linkDown
+            lldp_receive: false
+            lldp_transmit: false
           ethernet_network_group:
             managed: true
             description: ''

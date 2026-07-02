@@ -1243,6 +1243,19 @@ defaults:
             description: ''
             enabled: true
             timezone: UTC
+          local_user:
+            managed: true
+            description: ''
+            strong_password: true
+            password_expiry: false
+            password_expiry_duration: 90
+            password_history: 5
+            notification_period: 15
+            grace_period: 0
+            always_send_user_password: false
+            users:
+              enabled: true
+              change_password: true
           power:
             managed: true
             description: ''
@@ -1300,6 +1313,7 @@ defaults:
               mount_protocol: nfs
               authentication_protocol: none
           firmware:
+            managed: true
             description: ''
             target_platform: Standalone
         pools:

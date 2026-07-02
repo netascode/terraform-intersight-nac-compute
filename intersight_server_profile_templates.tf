@@ -3,26 +3,27 @@ locals {
     for org in try(local.intersight.organizations, []) : [
       for tmpl in try(org.templates.server, []) :
       try(tmpl.managed, true) ? [{
-        key                         = format("%s/%s", org.name, tmpl.name)
-        org_name                    = org.name
-        name                        = tmpl.name
-        description                 = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.server.description, "")
-        target_platform             = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.server.target_platform)
-        bios_policy_key             = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null
-        boot_order_policy_key       = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
-        imc_access_policy_key       = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
-        ipmi_over_lan_policy_key    = try(tmpl.ipmi_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.ipmi_over_lan_policy) : null
-        lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
-        local_user_policy_key       = try(tmpl.local_user_policy, null) != null ? format("%s/%s", org.name, tmpl.local_user_policy) : null
-        ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
-        power_policy_key            = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
-        san_connectivity_policy_key = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
-        serial_over_lan_policy_key  = try(tmpl.serial_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.serial_over_lan_policy) : null
-        snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
-        ssh_policy_key              = try(tmpl.ssh_policy, null) != null ? format("%s/%s", org.name, tmpl.ssh_policy) : null
-        storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
-        syslog_policy_key           = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
-        thermal_policy_key          = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
+        key                             = format("%s/%s", org.name, tmpl.name)
+        org_name                        = org.name
+        name                            = tmpl.name
+        description                     = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.server.description, "")
+        target_platform                 = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.server.target_platform)
+        bios_policy_key                 = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null
+        boot_order_policy_key           = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
+        imc_access_policy_key           = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
+        ipmi_over_lan_policy_key        = try(tmpl.ipmi_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.ipmi_over_lan_policy) : null
+        lan_connectivity_policy_key     = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
+        local_user_policy_key           = try(tmpl.local_user_policy, null) != null ? format("%s/%s", org.name, tmpl.local_user_policy) : null
+        network_connectivity_policy_key = try(tmpl.network_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.network_connectivity_policy) : null
+        ntp_policy_key                  = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
+        power_policy_key                = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
+        san_connectivity_policy_key     = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
+        serial_over_lan_policy_key      = try(tmpl.serial_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.serial_over_lan_policy) : null
+        snmp_policy_key                 = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
+        ssh_policy_key                  = try(tmpl.ssh_policy, null) != null ? format("%s/%s", org.name, tmpl.ssh_policy) : null
+        storage_policy_key              = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
+        syslog_policy_key               = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
+        thermal_policy_key              = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
         # Known provider bug: firmware.Policy in policy_bucket is applied correctly but the provider
         # cannot detect it on subsequent reads, causing a perpetual diff. Tracked for fix in a future
         # provider version. The implementation is correct per the Intersight OpenAPI spec.
@@ -89,6 +90,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "iam.EndPointUserPolicy"
       moid        = intersight_iam_end_point_user_policy.local_user_policy[each.value.local_user_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.network_connectivity_policy_key != null ? [1] : []
+    content {
+      object_type = "networkconfig.Policy"
+      moid        = intersight_networkconfig_policy.network_connectivity_policy[each.value.network_connectivity_policy_key].moid
     }
   }
 

@@ -1257,6 +1257,14 @@ defaults:
             description: ''
             enabled: true
             timezone: UTC
+          network_connectivity:
+            managed: true
+            description: ''
+            ipv4_dns_from_dhcp: false
+            ipv6: false
+            ipv6_dns_from_dhcp: false
+            dynamic_dns: false
+            dynamic_dns_domain: ''
           local_user:
             managed: true
             description: ''

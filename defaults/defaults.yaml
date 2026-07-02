@@ -1323,6 +1323,14 @@ defaults:
             baud_rate: 9600
             com_port: com0
             ssh_port: 2400
+          smtp:
+            managed: true
+            description: ''
+            enabled: true
+            smtp_port: 25
+            min_severity: critical
+            auth: false
+            tls: false
           thermal:
             managed: true
             description: ''

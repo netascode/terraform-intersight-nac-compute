@@ -12,17 +12,21 @@ locals {
         boot_order_policy_key       = try(tmpl.boot_order_policy, null) != null ? format("%s/%s", org.name, tmpl.boot_order_policy) : null
         imc_access_policy_key       = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
         lan_connectivity_policy_key = try(tmpl.lan_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.lan_connectivity_policy) : null
+        local_user_policy_key       = try(tmpl.local_user_policy, null) != null ? format("%s/%s", org.name, tmpl.local_user_policy) : null
         ntp_policy_key              = try(tmpl.ntp_policy, null) != null ? format("%s/%s", org.name, tmpl.ntp_policy) : null
         power_policy_key            = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
         san_connectivity_policy_key = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
         snmp_policy_key             = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         storage_policy_key          = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
         syslog_policy_key           = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
-        firmware_policy_key         = try(tmpl.firmware_policy, null) != null ? format("%s/%s", org.name, tmpl.firmware_policy) : null
         thermal_policy_key          = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
-        virtual_kvm_policy_key      = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
-        virtual_media_policy_key    = try(tmpl.virtual_media_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_media_policy) : null
-        uuid_pool_key               = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
+        # Known provider bug: firmware.Policy in policy_bucket is applied correctly but the provider
+        # cannot detect it on subsequent reads, causing a perpetual diff. Tracked for fix in a future
+        # provider version. The implementation is correct per the Intersight OpenAPI spec.
+        firmware_policy_key      = try(tmpl.firmware_policy, null) != null ? format("%s/%s", org.name, tmpl.firmware_policy) : null
+        virtual_kvm_policy_key   = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
+        virtual_media_policy_key = try(tmpl.virtual_media_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_media_policy) : null
+        uuid_pool_key            = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
       }] : []
     ]
   ])
@@ -66,6 +70,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "vnic.LanConnectivityPolicy"
       moid        = intersight_vnic_lan_connectivity_policy.lan_connectivity_policy[each.value.lan_connectivity_policy_key].moid
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.local_user_policy_key != null ? [1] : []
+    content {
+      object_type = "iam.EndPointUserPolicy"
+      moid        = intersight_iam_end_point_user_policy.local_user_policy[each.value.local_user_policy_key].moid
     }
   }
 
@@ -118,18 +130,20 @@ resource "intersight_server_profile_template" "server_profile_template" {
   }
 
   dynamic "policy_bucket" {
-    for_each = each.value.firmware_policy_key != null ? [1] : []
-    content {
-      object_type = "firmware.Policy"
-      moid        = intersight_firmware_policy.firmware_policy[each.value.firmware_policy_key].moid
-    }
-  }
-
-  dynamic "policy_bucket" {
     for_each = each.value.thermal_policy_key != null ? [1] : []
     content {
       object_type = "thermal.Policy"
       moid        = intersight_thermal_policy.thermal_policy[each.value.thermal_policy_key].moid
+    }
+  }
+
+  # Known provider bug: applied correctly on first run but causes a perpetual diff on subsequent
+  # plans. See comment in locals block. Remove this block once the provider bug is resolved.
+  dynamic "policy_bucket" {
+    for_each = each.value.firmware_policy_key != null ? [1] : []
+    content {
+      object_type = "firmware.Policy"
+      moid        = intersight_firmware_policy.firmware_policy[each.value.firmware_policy_key].moid
     }
   }
 

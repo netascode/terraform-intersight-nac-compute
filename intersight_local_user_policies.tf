@@ -36,16 +36,78 @@ locals {
       ] : []
     ]
   ])
-
-  used_endpoint_roles = toset([for u in local.local_user_users : u.role])
 }
 
-data "intersight_iam_end_point_role" "end_point_roles" {
-  for_each = local.used_endpoint_roles
+resource "intersight_iam_end_point_user_policy" "local_user_policy" {
+  for_each = { for p in local.local_user_policies : p.key => p }
 
-  name = each.key
-  type = "IMC"
+  name        = each.value.name
+  description = each.value.description
+
+  password_properties {
+    object_type              = "iam.EndPointPasswordProperties"
+    enforce_strong_password  = each.value.strong_password
+    enable_password_expiry   = each.value.password_expiry
+    password_expiry_duration = each.value.password_expiry_duration
+    password_history         = each.value.password_history
+    notification_period      = each.value.notification_period
+    grace_period             = each.value.grace_period
+    force_send_password      = each.value.always_send_user_password
+  }
+
+  dynamic "tags" {
+    for_each = try(each.value.tags, [])
+    content {
+      key   = tags.value.key
+      value = tags.value.value
+    }
+  }
+
+  organization {
+    object_type = "organization.Organization"
+    moid        = local.org_moids[each.value.org_name]
+  }
 }
+
+resource "intersight_iam_end_point_user" "local_user" {
+  for_each = { for u in local.local_user_users : u.key => u }
+
+  name = each.value.username
+
+  organization {
+    object_type = "organization.Organization"
+    moid        = local.org_moids[each.value.org_name]
+  }
+}
+
+resource "intersight_iam_end_point_user_role" "local_user_role" {
+  for_each = { for u in local.local_user_users : u.key => u }
+
+  enabled         = each.value.enabled
+  change_password = each.value.change_password
+  password        = each.value.password
+
+  end_point_role {
+    object_type = "iam.EndPointRole"
+    selector    = "Name eq '${each.value.role}' and Type eq 'IMC'"
+  }
+
+  end_point_user {
+    object_type = "iam.EndPointUser"
+    moid        = intersight_iam_end_point_user.local_user[each.key].moid
+  }
+
+  end_point_user_policy {
+    object_type = "iam.EndPointUserPolicy"
+    moid        = intersight_iam_end_point_user_policy.local_user_policy[each.value.policy_key].moid
+  }
+
+  depends_on = [
+    intersight_iam_end_point_user_policy.local_user_policy,
+    intersight_iam_end_point_user.local_user,
+  ]
+}
+
 
 resource "intersight_iam_end_point_user_policy" "local_user_policy" {
   for_each = { for p in local.local_user_policies : p.key => p }

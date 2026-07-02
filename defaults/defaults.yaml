@@ -1329,7 +1329,6 @@ defaults:
             enabled: true
             smtp_port: 25
             min_severity: critical
-            auth: false
             tls: false
           thermal:
             managed: true

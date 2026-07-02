@@ -26,9 +26,6 @@ resource "intersight_smtp_policy" "smtp_policy" {
   sender_email    = try(each.value.sender_email, null)
   smtp_recipients = try(each.value.recipients, [])
   min_severity    = each.value.min_severity
-  enable_auth     = each.value.auth
-  user_name       = try(each.value.username, null)
-  auth_password   = try(each.value.password, null)
   enable_tls      = each.value.tls
 
   dynamic "tags" {

@@ -1288,6 +1288,12 @@ defaults:
             managed: true
             description: ''
             local_min_severity: warning
+          ssh:
+            managed: true
+            description: ''
+            enabled: true
+            port: 22
+            timeout: 1800
           thermal:
             managed: true
             description: ''

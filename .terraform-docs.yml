@@ -15,9 +15,29 @@ content: |-
 
   The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/ 
 
-  ## Examplest
+  ## Examples
 
-  To be added
+  Configuring an NTP Policy using native HCL:
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./examples/ntp_policy_hcl/main.tf" }}
+  ````
+
+  Configuring an IP Pool using YAML:
+
+  #### `ip_pool.yaml`
+
+  ```hcl
+  {{ include "./examples/ip_pool_yaml/ip_pool.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./examples/ip_pool_yaml/main.tf" }}
+  ````
 
   {{ .Requirements }}
 

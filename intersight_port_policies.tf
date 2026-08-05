@@ -28,56 +28,72 @@ locals {
   port_modes = flatten([
     for policy in local.port_policies : [
       for mode in policy.port_modes : {
-        key           = format("%s/%d/%d-%d", policy.key, mode.slot_id, mode.port_id_start, mode.port_id_end)
-        policy_key    = policy.key
-        custom_mode   = mode.custom_mode
-        port_id_start = mode.port_id_start
-        port_id_end   = mode.port_id_end
-        slot_id       = mode.slot_id
+        key         = format("%s/%d/%d-%d", policy.key, try(mode.slot_id, 1), mode.from, mode.to)
+        policy_key  = policy.key
+        custom_mode = mode.custom_mode
+        from        = mode.from
+        to          = mode.to
+        slot_id     = try(mode.slot_id, 1)
       }
     ]
   ])
 
   port_role_servers = flatten([
     for policy in local.port_policies : flatten([
-      for role in policy.port_role_servers : [
-        for port_id in role.port_list : [
-          for sub_port_id in try(role.sub_port_list, [0]) : {
-            key                       = format("%s/%d/%d/%d", policy.key, try(role.slot_id, 1), sub_port_id, port_id)
-            policy_key                = policy.key
-            slot_id                   = try(role.slot_id, 1)
-            port_id                   = port_id
-            aggregate_port_id         = sub_port_id
-            fec                       = try(role.fec, "Auto")
-            preferred_device_type     = try(role.preferred_device_type, "Auto")
-            auto_negotiation_disabled = try(role.auto_negotiation_disabled, false)
-            user_label                = try(role.user_label, "")
-          }
+      for role in policy.port_role_servers : flatten([
+        for block in role.ports : [
+          for phys_port in range(block.from, block.to + 1) : [
+            for leg in(try(block.from_sub_port, null) != null
+              ? range(block.from_sub_port, block.to_sub_port + 1)
+              : [0]) : {
+              key                       = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              policy_key                = policy.key
+              slot_id                   = try(block.slot_id, 1)
+              port_id                   = leg == 0 ? phys_port : leg
+              aggregate_port_id         = leg == 0 ? 0 : phys_port
+              fec                       = try(role.fec, "Auto")
+              preferred_device_type     = try(role.preferred_device_type, "Auto")
+              auto_negotiation_disabled = try(role.auto_negotiation_disabled, false)
+              user_label                = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
+            }
+          ]
         ]
-      ]
+      ])
     ])
   ])
 
   port_role_ethernet_uplinks = flatten([
     for policy in local.port_policies : flatten([
-      for role in policy.port_role_ethernet_uplinks : [
-        for port_id in role.port_list : [
-          for sub_port_id in try(role.sub_port_list, [0]) : {
-            key                          = format("%s/%d/%d/%d", policy.key, try(role.slot_id, 1), sub_port_id, port_id)
-            policy_key                   = policy.key
-            org_name                     = policy.org_name
-            slot_id                      = try(role.slot_id, 1)
-            port_id                      = port_id
-            aggregate_port_id            = sub_port_id
-            admin_speed                  = try(role.admin_speed, "Auto")
-            fec                          = try(role.fec, "Auto")
-            eth_network_group_policy_key = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
-            flow_control_policy_key      = null
-            link_control_policy_key      = null
-            user_label                   = try(role.user_label, "")
-          }
+      for role in policy.port_role_ethernet_uplinks : flatten([
+        for block in role.ports : [
+          for phys_port in range(block.from, block.to + 1) : [
+            for leg in(try(block.from_sub_port, null) != null
+              ? range(block.from_sub_port, block.to_sub_port + 1)
+              : [0]) : {
+              key                          = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              policy_key                   = policy.key
+              org_name                     = policy.org_name
+              slot_id                      = try(block.slot_id, 1)
+              port_id                      = leg == 0 ? phys_port : leg
+              aggregate_port_id            = leg == 0 ? 0 : phys_port
+              admin_speed                  = try(role.admin_speed, "Auto")
+              fec                          = try(role.fec, "Auto")
+              eth_network_group_policy_key = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
+              flow_control_policy_key      = null
+              link_control_policy_key      = null
+              user_label                   = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
+            }
+          ]
         ]
-      ]
+      ])
     ])
   ])
 
@@ -95,14 +111,26 @@ locals {
         link_aggregation_policy_key  = null
         link_control_policy_key      = null
         interfaces = flatten([
-          for port_id in channel.port_list : [
-            for sub_port_id in try(channel.sub_port_list, [0]) : {
-              slot_id           = try(channel.slot_id, 1)
-              port_id           = port_id
-              aggregate_port_id = sub_port_id
-            }
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for leg in(try(block.from_sub_port, null) != null
+                ? range(block.from_sub_port, block.to_sub_port + 1)
+                : [0]) : {
+                slot_id           = try(block.slot_id, 1)
+                port_id           = leg == 0 ? phys_port : leg
+                aggregate_port_id = leg == 0 ? 0 : phys_port
+              }
+            ]
           ]
         ])
+        port_mode_keys = distinct(flatten([
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for pm in local.port_modes : pm.key
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+            ]
+          ]
+        ]))
         user_label = try(channel.user_label, "")
       }
     ]
@@ -110,21 +138,29 @@ locals {
 
   port_role_fc_uplinks = flatten([
     for policy in local.port_policies : flatten([
-      for role in policy.port_role_fc_uplinks : [
-        for port_id in role.port_list : [
-          for sub_port_id in try(role.sub_port_list, [0]) : {
-            key               = format("%s/%d/%d/%d", policy.key, try(role.slot_id, 1), sub_port_id, port_id)
-            policy_key        = policy.key
-            slot_id           = try(role.slot_id, 1)
-            port_id           = port_id
-            aggregate_port_id = sub_port_id
-            admin_speed       = try(role.admin_speed, "32Gbps")
-            fill_pattern      = try(role.fill_pattern, "Idle")
-            vsan_id           = role.vsan_id
-            user_label        = try(role.user_label, "")
-          }
+      for role in policy.port_role_fc_uplinks : flatten([
+        for block in role.ports : [
+          for phys_port in range(block.from, block.to + 1) : [
+            for leg in(try(block.from_sub_port, null) != null
+              ? range(block.from_sub_port, block.to_sub_port + 1)
+              : [0]) : {
+              key               = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              policy_key        = policy.key
+              slot_id           = try(block.slot_id, 1)
+              port_id           = leg == 0 ? phys_port : leg
+              aggregate_port_id = leg == 0 ? 0 : phys_port
+              admin_speed       = try(role.admin_speed, "32Gbps")
+              fill_pattern      = try(role.fill_pattern, "Idle")
+              vsan_id           = role.vsan_id
+              user_label        = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
+            }
+          ]
         ]
-      ]
+      ])
     ])
   ])
 
@@ -138,14 +174,26 @@ locals {
         fill_pattern = try(channel.fill_pattern, "Idle")
         vsan_id      = channel.vsan_id
         interfaces = flatten([
-          for port_id in channel.port_list : [
-            for sub_port_id in try(channel.sub_port_list, [0]) : {
-              slot_id           = try(channel.slot_id, 1)
-              port_id           = port_id
-              aggregate_port_id = sub_port_id
-            }
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for leg in(try(block.from_sub_port, null) != null
+                ? range(block.from_sub_port, block.to_sub_port + 1)
+                : [0]) : {
+                slot_id           = try(block.slot_id, 1)
+                port_id           = leg == 0 ? phys_port : leg
+                aggregate_port_id = leg == 0 ? 0 : phys_port
+              }
+            ]
           ]
         ])
+        port_mode_keys = distinct(flatten([
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for pm in local.port_modes : pm.key
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+            ]
+          ]
+        ]))
         user_label = try(channel.user_label, "")
       }
     ]
@@ -153,21 +201,29 @@ locals {
 
   port_role_fcoe_uplinks = flatten([
     for policy in local.port_policies : flatten([
-      for role in policy.port_role_fcoe_uplinks : [
-        for port_id in role.port_list : [
-          for sub_port_id in try(role.sub_port_list, [0]) : {
-            key                     = format("%s/%d/%d/%d", policy.key, try(role.slot_id, 1), sub_port_id, port_id)
-            policy_key              = policy.key
-            slot_id                 = try(role.slot_id, 1)
-            port_id                 = port_id
-            aggregate_port_id       = sub_port_id
-            admin_speed             = try(role.admin_speed, "Auto")
-            fec                     = try(role.fec, "Auto")
-            link_control_policy_key = null
-            user_label              = try(role.user_label, "")
-          }
+      for role in policy.port_role_fcoe_uplinks : flatten([
+        for block in role.ports : [
+          for phys_port in range(block.from, block.to + 1) : [
+            for leg in(try(block.from_sub_port, null) != null
+              ? range(block.from_sub_port, block.to_sub_port + 1)
+              : [0]) : {
+              key                     = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              policy_key              = policy.key
+              slot_id                 = try(block.slot_id, 1)
+              port_id                 = leg == 0 ? phys_port : leg
+              aggregate_port_id       = leg == 0 ? 0 : phys_port
+              admin_speed             = try(role.admin_speed, "Auto")
+              fec                     = try(role.fec, "Auto")
+              link_control_policy_key = null
+              user_label              = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
+            }
+          ]
         ]
-      ]
+      ])
     ])
   ])
 
@@ -182,14 +238,26 @@ locals {
         link_aggregation_policy_key = null
         link_control_policy_key     = null
         interfaces = flatten([
-          for port_id in channel.port_list : [
-            for sub_port_id in try(channel.sub_port_list, [0]) : {
-              slot_id           = try(channel.slot_id, 1)
-              port_id           = port_id
-              aggregate_port_id = sub_port_id
-            }
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for leg in(try(block.from_sub_port, null) != null
+                ? range(block.from_sub_port, block.to_sub_port + 1)
+                : [0]) : {
+                slot_id           = try(block.slot_id, 1)
+                port_id           = leg == 0 ? phys_port : leg
+                aggregate_port_id = leg == 0 ? 0 : phys_port
+              }
+            ]
           ]
         ])
+        port_mode_keys = distinct(flatten([
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for pm in local.port_modes : pm.key
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+            ]
+          ]
+        ]))
         user_label = try(channel.user_label, "")
       }
     ]
@@ -197,27 +265,35 @@ locals {
 
   port_role_appliances = flatten([
     for policy in local.port_policies : flatten([
-      for role in policy.port_role_appliances : [
-        for port_id in role.port_list : [
-          for sub_port_id in try(role.sub_port_list, [0]) : {
-            key                            = format("%s/%d/%d/%d", policy.key, try(role.slot_id, 1), sub_port_id, port_id)
-            policy_key                     = policy.key
-            org_name                       = policy.org_name
-            slot_id                        = try(role.slot_id, 1)
-            port_id                        = port_id
-            aggregate_port_id              = sub_port_id
-            admin_speed                    = try(role.admin_speed, "Auto")
-            fec                            = try(role.fec, "Auto")
-            mode                           = try(role.mode, "trunk")
-            priority                       = try(role.priority, "Best Effort")
-            eth_network_control_policy_key = try(role.ethernet_network_control_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_control_policy) : null
-            eth_network_group_policy_key   = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
-            flow_control_policy_key        = null
-            link_control_policy_key        = null
-            user_label                     = try(role.user_label, "")
-          }
+      for role in policy.port_role_appliances : flatten([
+        for block in role.ports : [
+          for phys_port in range(block.from, block.to + 1) : [
+            for leg in(try(block.from_sub_port, null) != null
+              ? range(block.from_sub_port, block.to_sub_port + 1)
+              : [0]) : {
+              key                            = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              policy_key                     = policy.key
+              org_name                       = policy.org_name
+              slot_id                        = try(block.slot_id, 1)
+              port_id                        = leg == 0 ? phys_port : leg
+              aggregate_port_id              = leg == 0 ? 0 : phys_port
+              admin_speed                    = try(role.admin_speed, "Auto")
+              fec                            = try(role.fec, "Auto")
+              mode                           = try(role.mode, "trunk")
+              priority                       = try(role.priority, "Best Effort")
+              eth_network_control_policy_key = try(role.ethernet_network_control_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_control_policy) : null
+              eth_network_group_policy_key   = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
+              flow_control_policy_key        = null
+              link_control_policy_key        = null
+              user_label                     = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
+            }
+          ]
         ]
-      ]
+      ])
     ])
   ])
 
@@ -236,14 +312,26 @@ locals {
         eth_network_group_policy_key   = try(channel.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_group_policy) : null
         link_aggregation_policy_key    = null
         interfaces = flatten([
-          for port_id in channel.port_list : [
-            for sub_port_id in try(channel.sub_port_list, [0]) : {
-              slot_id           = try(channel.slot_id, 1)
-              port_id           = port_id
-              aggregate_port_id = sub_port_id
-            }
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for leg in(try(block.from_sub_port, null) != null
+                ? range(block.from_sub_port, block.to_sub_port + 1)
+                : [0]) : {
+                slot_id           = try(block.slot_id, 1)
+                port_id           = leg == 0 ? phys_port : leg
+                aggregate_port_id = leg == 0 ? 0 : phys_port
+              }
+            ]
           ]
         ])
+        port_mode_keys = distinct(flatten([
+          for block in channel.ports : [
+            for phys_port in range(block.from, block.to + 1) : [
+              for pm in local.port_modes : pm.key
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+            ]
+          ]
+        ]))
         user_label = try(channel.user_label, "")
       }
     ]
@@ -251,20 +339,28 @@ locals {
 
   port_role_fc_storage = flatten([
     for policy in local.port_policies : flatten([
-      for role in policy.port_role_fc_storage : [
-        for port_id in role.port_list : [
-          for sub_port_id in try(role.sub_port_list, [0]) : {
-            key               = format("%s/%d/%d/%d", policy.key, try(role.slot_id, 1), sub_port_id, port_id)
-            policy_key        = policy.key
-            slot_id           = try(role.slot_id, 1)
-            port_id           = port_id
-            aggregate_port_id = sub_port_id
-            admin_speed       = try(role.admin_speed, "Auto")
-            vsan_id           = role.vsan_id
-            user_label        = try(role.user_label, "")
-          }
+      for role in policy.port_role_fc_storage : flatten([
+        for block in role.ports : [
+          for phys_port in range(block.from, block.to + 1) : [
+            for leg in(try(block.from_sub_port, null) != null
+              ? range(block.from_sub_port, block.to_sub_port + 1)
+              : [0]) : {
+              key               = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              policy_key        = policy.key
+              slot_id           = try(block.slot_id, 1)
+              port_id           = leg == 0 ? phys_port : leg
+              aggregate_port_id = leg == 0 ? 0 : phys_port
+              admin_speed       = try(role.admin_speed, "Auto")
+              vsan_id           = role.vsan_id
+              user_label        = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
+            }
+          ]
         ]
-      ]
+      ])
     ])
   ])
 }
@@ -294,8 +390,8 @@ resource "intersight_fabric_port_mode" "port_mode" {
   for_each = { for m in local.port_modes : m.key => m }
 
   custom_mode   = each.value.custom_mode
-  port_id_end   = each.value.port_id_end
-  port_id_start = each.value.port_id_start
+  port_id_end   = each.value.to
+  port_id_start = each.value.from
   slot_id       = each.value.slot_id
 
   port_policy {
@@ -322,7 +418,12 @@ resource "intersight_fabric_server_role" "server_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = each.value.port_mode_key == null || can(intersight_fabric_port_mode.port_mode[each.value.port_mode_key].moid)
+      error_message = "Required port mode was not created for this port."
+    }
+  }
 }
 
 resource "intersight_fabric_uplink_role" "uplink_role" {
@@ -348,7 +449,12 @@ resource "intersight_fabric_uplink_role" "uplink_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = each.value.port_mode_key == null || can(intersight_fabric_port_mode.port_mode[each.value.port_mode_key].moid)
+      error_message = "Required port mode was not created for this port."
+    }
+  }
 }
 
 resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
@@ -382,7 +488,12 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = alltrue([for k in each.value.port_mode_keys : can(intersight_fabric_port_mode.port_mode[k].moid)])
+      error_message = "Required port mode(s) were not created for this port channel."
+    }
+  }
 }
 
 resource "intersight_fabric_fc_uplink_role" "fc_uplink_role" {
@@ -401,7 +512,12 @@ resource "intersight_fabric_fc_uplink_role" "fc_uplink_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = each.value.port_mode_key == null || can(intersight_fabric_port_mode.port_mode[each.value.port_mode_key].moid)
+      error_message = "Required port mode was not created for this port."
+    }
+  }
 }
 
 resource "intersight_fabric_fc_uplink_pc_role" "fc_uplink_pc_role" {
@@ -428,7 +544,12 @@ resource "intersight_fabric_fc_uplink_pc_role" "fc_uplink_pc_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = alltrue([for k in each.value.port_mode_keys : can(intersight_fabric_port_mode.port_mode[k].moid)])
+      error_message = "Required port mode(s) were not created for this port channel."
+    }
+  }
 }
 
 resource "intersight_fabric_fcoe_uplink_role" "fcoe_uplink_role" {
@@ -446,7 +567,12 @@ resource "intersight_fabric_fcoe_uplink_role" "fcoe_uplink_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = each.value.port_mode_key == null || can(intersight_fabric_port_mode.port_mode[each.value.port_mode_key].moid)
+      error_message = "Required port mode was not created for this port."
+    }
+  }
 }
 
 resource "intersight_fabric_fcoe_uplink_pc_role" "fcoe_uplink_pc_role" {
@@ -472,7 +598,12 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "fcoe_uplink_pc_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = alltrue([for k in each.value.port_mode_keys : can(intersight_fabric_port_mode.port_mode[k].moid)])
+      error_message = "Required port mode(s) were not created for this port channel."
+    }
+  }
 }
 
 resource "intersight_fabric_appliance_role" "appliance_role" {
@@ -508,7 +639,12 @@ resource "intersight_fabric_appliance_role" "appliance_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = each.value.port_mode_key == null || can(intersight_fabric_port_mode.port_mode[each.value.port_mode_key].moid)
+      error_message = "Required port mode was not created for this port."
+    }
+  }
 }
 
 resource "intersight_fabric_appliance_pc_role" "appliance_pc_role" {
@@ -552,7 +688,12 @@ resource "intersight_fabric_appliance_pc_role" "appliance_pc_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = alltrue([for k in each.value.port_mode_keys : can(intersight_fabric_port_mode.port_mode[k].moid)])
+      error_message = "Required port mode(s) were not created for this port channel."
+    }
+  }
 }
 
 resource "intersight_fabric_fc_storage_role" "fc_storage_role" {
@@ -570,5 +711,10 @@ resource "intersight_fabric_fc_storage_role" "fc_storage_role" {
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
   }
 
-  depends_on = [intersight_fabric_port_mode.port_mode]
+  lifecycle {
+    precondition {
+      condition     = each.value.port_mode_key == null || can(intersight_fabric_port_mode.port_mode[each.value.port_mode_key].moid)
+      error_message = "Required port mode was not created for this port."
+    }
+  }
 }

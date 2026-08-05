@@ -9,7 +9,13 @@ This module is part of the Cisco [*Network-as-Code*](https://netascode.cisco.com
 
 This module supports an inventory driven approach, where a complete compute configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
 
-The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/ 
+Configuration is modeled as a list of Intersight `organizations`, each of which must already exist in Intersight. Every organization contains three types of building blocks that are referenced by name:
+
+- `pools`: Identifier pools assigned to server profile templates (e.g., IP, MAC, UUID, WWNN, WWPN)
+- `policies`: Configuration policies applied to servers (e.g., BIOS, boot order, network/adapter/QoS, firmware, NTP, local user, storage)
+- `templates.server`: Server profile templates, which reference pools and policies by name to define a complete, reusable server configuration
+
+The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
 
 ## Examples
 

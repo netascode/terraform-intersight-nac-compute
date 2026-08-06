@@ -45,6 +45,9 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate -no-color
+        env:
+          INTERSIGHT_API_KEY: ${{ secrets.INTERSIGHT_API_KEY }}
+          INTERSIGHT_SECRET_KEY: ${{ secrets.INTERSIGHT_SECRET_KEY }}
 
       - name: Webex Notification
         if: always() && github.event_name != 'pull_request'

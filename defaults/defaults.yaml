@@ -1277,6 +1277,10 @@ defaults:
             always_send_user_password: false
             users:
               enabled: true
+          port:
+            managed: true
+            description: ''
+            device_model: UCS-FI-6454
           power:
             managed: true
             description: ''

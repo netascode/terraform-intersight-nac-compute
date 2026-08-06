@@ -1357,6 +1357,15 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          vlan:
+            managed: true
+            description: ''
+            vlans:
+              native_vlan: false
+              auto_allow_on_uplinks: true
+              sharing_type: None
+              primary_vlan_id: 0
+              multicast_policy: default
           firmware:
             managed: true
             description: ''

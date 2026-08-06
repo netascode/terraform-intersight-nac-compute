@@ -1,0 +1,14 @@
+compute:
+  intersight:
+    organizations:
+      - name: default
+        pools:
+          ip:
+            - name: IP_POOL_1
+              ipv4_config:
+                gateway: 192.168.1.1
+                netmask: 255.255.255.0
+                primary_dns: 8.8.8.8
+              ipv4_blocks:
+                - from: 192.168.1.10
+                  size: 100

@@ -13,11 +13,37 @@ content: |-
 
   This module supports an inventory driven approach, where a complete compute configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
 
-  The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/ 
+  Configuration is modeled as a list of Intersight `organizations`, each of which must already exist in Intersight. Every organization contains three types of building blocks that are referenced by name:
 
-  ## Examplest
+  - `pools`: Identifier pools assigned to server profile templates (e.g., IP, MAC, UUID, WWNN, WWPN)
+  - `policies`: Configuration policies applied to servers (e.g., BIOS, boot order, network/adapter/QoS, firmware, NTP, local user, storage)
+  - `templates.server`: Server profile templates, which reference pools and policies by name to define a complete, reusable server configuration
 
-  To be added
+  The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
+
+  ## Examples
+
+  Configuring an NTP Policy using native HCL:
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./examples/ntp_policy_hcl/main.tf" }}
+  ````
+
+  Configuring an IP Pool using YAML:
+
+  #### `ip_pool.yaml`
+
+  ```hcl
+  {{ include "./examples/ip_pool_yaml/ip_pool.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./examples/ip_pool_yaml/main.tf" }}
+  ````
 
   {{ .Requirements }}
 

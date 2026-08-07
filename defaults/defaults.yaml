@@ -1357,6 +1357,12 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          flow_control:
+            managed: true
+            description: ''
+            priority: auto
+            receive: Disabled
+            send: Disabled
           system_qos:
             managed: true
             description: ''

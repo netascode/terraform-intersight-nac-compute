@@ -1366,6 +1366,12 @@ defaults:
               sharing_type: None
               primary_vlan_id: 0
               multicast_policy: default
+          vsan:
+            managed: true
+            description: ''
+            uplink_trunking: false
+            vsans:
+              vsan_scope: Uplink
           firmware:
             managed: true
             description: ''

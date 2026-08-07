@@ -111,8 +111,8 @@ module "ip_pool" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | 1.0.79 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
+| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | >= 1.0.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Resources

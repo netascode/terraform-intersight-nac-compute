@@ -83,13 +83,8 @@ locals {
               admin_speed                  = try(role.admin_speed, "Auto")
               fec                          = try(role.fec, "Auto")
               eth_network_group_policy_key = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
-              flow_control_policy_key      = null
+              flow_control_policy_key      = try(role.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, role.flow_control_policy) : null
               link_control_policy_key      = null
-              user_label                   = try(role.user_label, "")
-              port_mode_key = try([
-                for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
-              ][0], null)
             }
           ]
         ]
@@ -107,7 +102,7 @@ locals {
         admin_speed                  = try(channel.admin_speed, "Auto")
         fec                          = try(channel.fec, "Auto")
         eth_network_group_policy_key = try(channel.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_group_policy) : null
-        flow_control_policy_key      = null
+        flow_control_policy_key      = try(channel.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.flow_control_policy) : null
         link_aggregation_policy_key  = null
         link_control_policy_key      = null
         interfaces = flatten([
@@ -283,7 +278,7 @@ locals {
               priority                       = try(role.priority, "Best Effort")
               eth_network_control_policy_key = try(role.ethernet_network_control_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_control_policy) : null
               eth_network_group_policy_key   = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
-              flow_control_policy_key        = null
+              flow_control_policy_key        = try(role.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, role.flow_control_policy) : null
               link_control_policy_key        = null
               user_label                     = try(role.user_label, "")
               port_mode_key = try([
@@ -444,6 +439,14 @@ resource "intersight_fabric_uplink_role" "uplink_role" {
     }
   }
 
+  dynamic "flow_control_policy" {
+    for_each = each.value.flow_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.FlowControlPolicy"
+      moid        = intersight_fabric_flow_control_policy.flow_control_policy[each.value.flow_control_policy_key].moid
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -480,6 +483,14 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
     content {
       object_type = "fabric.EthNetworkGroupPolicy"
       moid        = intersight_fabric_eth_network_group_policy.ethernet_network_group_policy[each.value.eth_network_group_policy_key].moid
+    }
+  }
+
+  dynamic "flow_control_policy" {
+    for_each = each.value.flow_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.FlowControlPolicy"
+      moid        = intersight_fabric_flow_control_policy.flow_control_policy[each.value.flow_control_policy_key].moid
     }
   }
 
@@ -631,6 +642,14 @@ resource "intersight_fabric_appliance_role" "appliance_role" {
     content {
       object_type = "fabric.EthNetworkGroupPolicy"
       moid        = intersight_fabric_eth_network_group_policy.ethernet_network_group_policy[each.value.eth_network_group_policy_key].moid
+    }
+  }
+
+  dynamic "flow_control_policy" {
+    for_each = each.value.flow_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.FlowControlPolicy"
+      moid        = intersight_fabric_flow_control_policy.flow_control_policy[each.value.flow_control_policy_key].moid
     }
   }
 

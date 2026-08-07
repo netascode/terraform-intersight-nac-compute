@@ -68,10 +68,6 @@ data "intersight_fabric_multicast_policy" "multicast_policy" {
   for_each = { for k, v in local.multicast_policy_lookups : k => v[0] }
 
   name = each.value.name
-  organization {
-    object_type = "organization.Organization"
-    moid        = local.org_moids[each.value.org_name]
-  }
 }
 
 resource "intersight_fabric_eth_network_policy" "vlan_policy" {

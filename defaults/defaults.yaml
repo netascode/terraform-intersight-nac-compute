@@ -1357,6 +1357,17 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          system_qos:
+            managed: true
+            description: ''
+            classes:
+              state: Enabled
+              packet_drop: true
+              weight: 5
+            pfc_watchdog:
+              enabled: false
+              watchdog_interval: 500
+              shutdown_multiplier: 1
           switch_control:
             managed: true
             description: ''

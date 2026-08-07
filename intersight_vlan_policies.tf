@@ -54,20 +54,21 @@ locals {
     ]
   ])
 
-  # Only look up multicast policies that are explicitly referenced
-  multicast_policy_lookups = {
-    for v in local.vlans : format("%s/%s", v.org_name, v.multicast_policy) => {
-      org_name = v.org_name
-      name     = v.multicast_policy
-    }...
-    if v.multicast_policy != null
-  }
+  # Keys of multicast policies managed by nac-compute (org/name composite key)
+  managed_multicast_policy_keys = toset([for p in local.multicast_policies : p.key])
+
+  # Names of multicast policies referenced by VLANs but NOT managed by nac-compute
+  # (e.g. "default" — the Intersight built-in policy). Looked up by name only, no org filter.
+  external_multicast_policy_names = toset([
+    for v in local.vlans :
+    v.multicast_policy
+    if v.multicast_policy != null && !contains(local.managed_multicast_policy_keys, format("%s/%s", v.org_name, v.multicast_policy))
+  ])
 }
 
-data "intersight_fabric_multicast_policy" "multicast_policy" {
-  for_each = { for k, v in local.multicast_policy_lookups : k => v[0] }
-
-  name = each.value.name
+data "intersight_fabric_multicast_policy" "external_multicast_policy" {
+  for_each = local.external_multicast_policy_names
+  name     = each.value
 }
 
 resource "intersight_fabric_eth_network_policy" "vlan_policy" {
@@ -109,7 +110,7 @@ resource "intersight_fabric_vlan" "vlan" {
     for_each = each.value.multicast_policy != null ? [1] : []
     content {
       object_type = "fabric.MulticastPolicy"
-      moid        = data.intersight_fabric_multicast_policy.multicast_policy[format("%s/%s", each.value.org_name, each.value.multicast_policy)].results[0].moid
+      moid        = contains(local.managed_multicast_policy_keys, format("%s/%s", each.value.org_name, each.value.multicast_policy)) ? intersight_fabric_multicast_policy.multicast_policy[format("%s/%s", each.value.org_name, each.value.multicast_policy)].moid : data.intersight_fabric_multicast_policy.external_multicast_policy[each.value.multicast_policy].results[0].moid
     }
   }
 }

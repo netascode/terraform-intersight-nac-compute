@@ -1361,6 +1361,10 @@ defaults:
             description: ''
             lacp_rate: normal
             suspend_individual: false
+          link_control:
+            description: ''
+            admin_state: Enabled
+            mode: normal
           flow_control:
             managed: true
             description: ''

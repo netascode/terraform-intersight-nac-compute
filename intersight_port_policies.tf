@@ -108,7 +108,7 @@ locals {
         fec                          = try(channel.fec, "Auto")
         eth_network_group_policy_key = try(channel.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_group_policy) : null
         flow_control_policy_key      = try(channel.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.flow_control_policy) : null
-        link_aggregation_policy_key  = null
+        link_aggregation_policy_key  = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
         link_control_policy_key      = null
         interfaces = flatten([
           for block in channel.ports : [
@@ -235,7 +235,7 @@ locals {
         pc_id                       = channel.pc_id
         admin_speed                 = try(channel.admin_speed, "Auto")
         fec                         = try(channel.fec, "Auto")
-        link_aggregation_policy_key = null
+        link_aggregation_policy_key = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
         link_control_policy_key     = null
         interfaces = flatten([
           for block in channel.ports : [
@@ -310,7 +310,7 @@ locals {
         priority                       = try(channel.priority, "Best Effort")
         eth_network_control_policy_key = try(channel.ethernet_network_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_control_policy) : null
         eth_network_group_policy_key   = try(channel.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_group_policy) : null
-        link_aggregation_policy_key    = null
+        link_aggregation_policy_key    = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
         interfaces = flatten([
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
@@ -499,6 +499,14 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
     }
   }
 
+  dynamic "link_aggregation_policy" {
+    for_each = each.value.link_aggregation_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkAggregationPolicy"
+      moid        = intersight_fabric_link_aggregation_policy.link_aggregation_policy[each.value.link_aggregation_policy_key].moid
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -609,6 +617,14 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "fcoe_uplink_pc_role" {
     }
   }
 
+  dynamic "link_aggregation_policy" {
+    for_each = each.value.link_aggregation_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkAggregationPolicy"
+      moid        = intersight_fabric_link_aggregation_policy.link_aggregation_policy[each.value.link_aggregation_policy_key].moid
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -704,6 +720,14 @@ resource "intersight_fabric_appliance_pc_role" "appliance_pc_role" {
     content {
       object_type = "fabric.EthNetworkGroupPolicy"
       moid        = intersight_fabric_eth_network_group_policy.ethernet_network_group_policy[each.value.eth_network_group_policy_key].moid
+    }
+  }
+
+  dynamic "link_aggregation_policy" {
+    for_each = each.value.link_aggregation_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkAggregationPolicy"
+      moid        = intersight_fabric_link_aggregation_policy.link_aggregation_policy[each.value.link_aggregation_policy_key].moid
     }
   }
 

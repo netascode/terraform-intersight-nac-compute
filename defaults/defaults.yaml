@@ -1357,6 +1357,10 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          link_aggregation:
+            description: ''
+            lacp_rate: normal
+            suspend_individual: false
           flow_control:
             managed: true
             description: ''

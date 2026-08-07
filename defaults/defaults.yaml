@@ -1404,7 +1404,6 @@ defaults:
               auto_allow_on_uplinks: true
               sharing_type: None
               primary_vlan_id: 0
-              multicast_policy: default
           vsan:
             managed: true
             description: ''

@@ -18,8 +18,9 @@ locals {
   policy_vlan_entries = flatten([
     for p in local.vlan_policies : [
       for v in p.vlans : {
-        key       = format("%s/%s", p.key, v.name)
-        vlan_list = v.vlan_list
+        key              = format("%s/%s", p.key, v.name)
+        vlan_list        = v.vlan_list
+        multicast_policy = try(v.multicast_policy, null)
       }
     ]
   ])
@@ -47,17 +48,19 @@ locals {
           auto_allow_on_uplinks = try(entry.auto_allow_on_uplinks, local.defaults.compute.intersight.organizations.policies.vlan.vlans.auto_allow_on_uplinks)
           sharing_type          = try(entry.sharing_type, local.defaults.compute.intersight.organizations.policies.vlan.vlans.sharing_type)
           primary_vlan_id       = try(entry.primary_vlan_id, local.defaults.compute.intersight.organizations.policies.vlan.vlans.primary_vlan_id)
-          multicast_policy      = try(entry.multicast_policy, local.defaults.compute.intersight.organizations.policies.vlan.vlans.multicast_policy)
+          multicast_policy      = try(entry.multicast_policy, null)
         }
       ]
     ]
   ])
 
+  # Only look up multicast policies that are explicitly referenced
   multicast_policy_lookups = {
     for v in local.vlans : format("%s/%s", v.org_name, v.multicast_policy) => {
       org_name = v.org_name
       name     = v.multicast_policy
     }...
+    if v.multicast_policy != null
   }
 }
 
@@ -106,8 +109,11 @@ resource "intersight_fabric_vlan" "vlan" {
     moid        = intersight_fabric_eth_network_policy.vlan_policy[each.value.policy_key].moid
   }
 
-  multicast_policy {
-    object_type = "fabric.MulticastPolicy"
-    moid        = data.intersight_fabric_multicast_policy.multicast_policy[format("%s/%s", each.value.org_name, each.value.multicast_policy)].results[0].moid
+  dynamic "multicast_policy" {
+    for_each = each.value.multicast_policy != null ? [1] : []
+    content {
+      object_type = "fabric.MulticastPolicy"
+      moid        = data.intersight_fabric_multicast_policy.multicast_policy[format("%s/%s", each.value.org_name, each.value.multicast_policy)].results[0].moid
+    }
   }
 }

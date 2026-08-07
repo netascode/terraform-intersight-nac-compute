@@ -85,6 +85,11 @@ locals {
               eth_network_group_policy_key = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
               flow_control_policy_key      = try(role.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, role.flow_control_policy) : null
               link_control_policy_key      = null
+              user_label                   = try(role.user_label, "")
+              port_mode_key = try([
+                for pm in local.port_modes : pm.key
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              ][0], null)
             }
           ]
         ]

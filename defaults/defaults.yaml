@@ -1357,6 +1357,20 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          switch_control:
+            managed: true
+            description: ''
+            switching_mode_ethernet: end-host
+            switching_mode_fc: end-host
+            jumbo_frame: true
+            vlan_port_count_optimization: false
+            fabric_port_channel_vhba_reset: Disabled
+            reserved_vlan_start_id: 3915
+            mac_address_table_aging: Default
+            mac_aging_time: 14500
+            udld_settings:
+              message_interval: 15
+              recovery_action: none
           vlan:
             managed: true
             description: ''

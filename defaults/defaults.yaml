@@ -1357,6 +1357,11 @@ defaults:
               device_type: cdd
               mount_protocol: nfs
               authentication_protocol: none
+          multicast:
+            description: ''
+            querier_state: Disabled
+            snooping_state: Enabled
+            src_ip_proxy: Enabled
           link_aggregation:
             description: ''
             lacp_rate: normal
@@ -1404,7 +1409,6 @@ defaults:
               auto_allow_on_uplinks: true
               sharing_type: None
               primary_vlan_id: 0
-              multicast_policy: default
           vsan:
             managed: true
             description: ''

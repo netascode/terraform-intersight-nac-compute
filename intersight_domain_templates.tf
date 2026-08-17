@@ -167,9 +167,4 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
       moid        = intersight_networkconfig_policy.network_connectivity_policy[each.value.network_connectivity_policy_key].moid
     }
   }
-
-  organization {
-    object_type = "organization.Organization"
-    moid        = local.org_moids[each.value.org_name]
-  }
 }

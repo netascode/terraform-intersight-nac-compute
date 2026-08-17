@@ -84,7 +84,7 @@ locals {
               fec                          = try(role.fec, "Auto")
               eth_network_group_policy_key = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
               flow_control_policy_key      = try(role.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, role.flow_control_policy) : null
-              link_control_policy_key      = null
+              link_control_policy_key      = try(role.link_control_policy, null) != null ? format("%s/%s", policy.org_name, role.link_control_policy) : null
               user_label                   = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
@@ -109,7 +109,7 @@ locals {
         eth_network_group_policy_key = try(channel.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_group_policy) : null
         flow_control_policy_key      = try(channel.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.flow_control_policy) : null
         link_aggregation_policy_key  = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
-        link_control_policy_key      = null
+        link_control_policy_key      = try(channel.link_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_control_policy) : null
         interfaces = flatten([
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
@@ -214,7 +214,7 @@ locals {
               aggregate_port_id       = leg == 0 ? 0 : phys_port
               admin_speed             = try(role.admin_speed, "Auto")
               fec                     = try(role.fec, "Auto")
-              link_control_policy_key = null
+              link_control_policy_key = try(role.link_control_policy, null) != null ? format("%s/%s", policy.org_name, role.link_control_policy) : null
               user_label              = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
@@ -236,7 +236,7 @@ locals {
         admin_speed                 = try(channel.admin_speed, "Auto")
         fec                         = try(channel.fec, "Auto")
         link_aggregation_policy_key = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
-        link_control_policy_key     = null
+        link_control_policy_key     = try(channel.link_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_control_policy) : null
         interfaces = flatten([
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
@@ -284,7 +284,7 @@ locals {
               eth_network_control_policy_key = try(role.ethernet_network_control_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_control_policy) : null
               eth_network_group_policy_key   = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
               flow_control_policy_key        = try(role.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, role.flow_control_policy) : null
-              link_control_policy_key        = null
+              link_control_policy_key        = try(role.link_control_policy, null) != null ? format("%s/%s", policy.org_name, role.link_control_policy) : null
               user_label                     = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
@@ -452,6 +452,14 @@ resource "intersight_fabric_uplink_role" "uplink_role" {
     }
   }
 
+  dynamic "link_control_policy" {
+    for_each = each.value.link_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkControlPolicy"
+      moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -504,6 +512,14 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
     content {
       object_type = "fabric.LinkAggregationPolicy"
       moid        = intersight_fabric_link_aggregation_policy.link_aggregation_policy[each.value.link_aggregation_policy_key].moid
+    }
+  }
+
+  dynamic "link_control_policy" {
+    for_each = each.value.link_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkControlPolicy"
+      moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
     }
   }
 
@@ -586,6 +602,14 @@ resource "intersight_fabric_fcoe_uplink_role" "fcoe_uplink_role" {
   fec               = each.value.fec
   user_label        = each.value.user_label
 
+  dynamic "link_control_policy" {
+    for_each = each.value.link_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkControlPolicy"
+      moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -622,6 +646,14 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "fcoe_uplink_pc_role" {
     content {
       object_type = "fabric.LinkAggregationPolicy"
       moid        = intersight_fabric_link_aggregation_policy.link_aggregation_policy[each.value.link_aggregation_policy_key].moid
+    }
+  }
+
+  dynamic "link_control_policy" {
+    for_each = each.value.link_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkControlPolicy"
+      moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
     }
   }
 
@@ -671,6 +703,14 @@ resource "intersight_fabric_appliance_role" "appliance_role" {
     content {
       object_type = "fabric.FlowControlPolicy"
       moid        = intersight_fabric_flow_control_policy.flow_control_policy[each.value.flow_control_policy_key].moid
+    }
+  }
+
+  dynamic "link_control_policy" {
+    for_each = each.value.link_control_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.LinkControlPolicy"
+      moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
     }
   }
 

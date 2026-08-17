@@ -77,7 +77,7 @@ resource "intersight_fabric_switch_cluster_profile_template" "domain_template" {
 
   organization {
     object_type = "organization.Organization"
-    moid        = var.intersight_organizations[each.value.org_name]
+    moid        = local.org_moids[each.value.org_name]
   }
 }
 
@@ -167,6 +167,6 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
 
   organization {
     object_type = "organization.Organization"
-    moid        = var.intersight_organizations[each.value.org_name]
+    moid        = local.org_moids[each.value.org_name]
   }
 }

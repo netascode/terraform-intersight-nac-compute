@@ -7,6 +7,7 @@ locals {
         org_name                        = org.name
         name                            = tmpl.name
         description                     = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.domain.description, "")
+        target_platform                 = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.domain.target_platform)
         tags                            = try(tmpl.tags, [])
         switch_a_port_policy_key        = try(tmpl.switch_a_port_policy, null) != null ? format("%s/%s", org.name, tmpl.switch_a_port_policy) : null
         switch_b_port_policy_key        = try(tmpl.switch_b_port_policy, null) != null ? format("%s/%s", org.name, tmpl.switch_b_port_policy) : null
@@ -30,6 +31,7 @@ locals {
         org_name                        = tmpl.org_name
         name                            = format("%s-A", tmpl.name)
         switch_id                       = "A"
+        target_platform                 = tmpl.target_platform
         port_policy_key                 = tmpl.switch_a_port_policy_key
         switch_control_policy_key       = tmpl.switch_control_policy_key
         system_qos_policy_key           = tmpl.system_qos_policy_key
@@ -46,6 +48,7 @@ locals {
         org_name                        = tmpl.org_name
         name                            = format("%s-B", tmpl.name)
         switch_id                       = "B"
+        target_platform                 = tmpl.target_platform
         port_policy_key                 = tmpl.switch_b_port_policy_key
         switch_control_policy_key       = tmpl.switch_control_policy_key
         system_qos_policy_key           = tmpl.system_qos_policy_key
@@ -65,7 +68,7 @@ resource "intersight_fabric_switch_cluster_profile_template" "domain_template" {
 
   name            = each.value.name
   description     = each.value.description
-  target_platform = "UcsDomain"
+  target_platform = each.value.target_platform
 
   dynamic "tags" {
     for_each = each.value.tags
@@ -86,7 +89,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
 
   name            = each.value.name
   switch_id       = each.value.switch_id
-  target_platform = "UcsDomain"
+  target_platform = each.value.target_platform
 
   switch_cluster_profile_template {
     object_type = "fabric.SwitchClusterProfileTemplate"

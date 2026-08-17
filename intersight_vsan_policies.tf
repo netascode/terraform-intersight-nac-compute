@@ -63,4 +63,10 @@ resource "intersight_fabric_vsan" "vsan" {
     object_type = "fabric.FcNetworkPolicy"
     moid        = intersight_fabric_fc_network_policy.vsan_policy[each.value.policy_key].moid
   }
+
+  lifecycle {
+    # default_zoning is deprecated in the Intersight API (sunset 2027-03-01) and
+    # exhibits provider-level drift between applies — ignore it.
+    ignore_changes = [default_zoning]
+  }
 }

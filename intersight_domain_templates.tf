@@ -28,7 +28,6 @@ locals {
       {
         key                             = format("%s/A", tmpl.key)
         cluster_key                     = tmpl.key
-        org_name                        = tmpl.org_name
         name                            = format("%s-A", tmpl.name)
         switch_id                       = "A"
         port_policy_key                 = tmpl.switch_a_port_policy_key
@@ -44,7 +43,6 @@ locals {
       {
         key                             = format("%s/B", tmpl.key)
         cluster_key                     = tmpl.key
-        org_name                        = tmpl.org_name
         name                            = format("%s-B", tmpl.name)
         switch_id                       = "B"
         port_policy_key                 = tmpl.switch_b_port_policy_key
@@ -163,10 +161,5 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
       object_type = "networkconfig.Policy"
       moid        = intersight_networkconfig_policy.network_connectivity_policy[each.value.network_connectivity_policy_key].moid
     }
-  }
-
-  organization {
-    object_type = "organization.Organization"
-    moid        = local.org_moids[each.value.org_name]
   }
 }

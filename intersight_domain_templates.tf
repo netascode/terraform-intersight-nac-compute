@@ -28,10 +28,8 @@ locals {
       {
         key                             = format("%s/A", tmpl.key)
         cluster_key                     = tmpl.key
-        org_name                        = tmpl.org_name
         name                            = format("%s-A", tmpl.name)
         switch_id                       = "A"
-        target_platform                 = tmpl.target_platform
         port_policy_key                 = tmpl.switch_a_port_policy_key
         switch_control_policy_key       = tmpl.switch_control_policy_key
         system_qos_policy_key           = tmpl.system_qos_policy_key
@@ -45,10 +43,8 @@ locals {
       {
         key                             = format("%s/B", tmpl.key)
         cluster_key                     = tmpl.key
-        org_name                        = tmpl.org_name
         name                            = format("%s-B", tmpl.name)
         switch_id                       = "B"
-        target_platform                 = tmpl.target_platform
         port_policy_key                 = tmpl.switch_b_port_policy_key
         switch_control_policy_key       = tmpl.switch_control_policy_key
         system_qos_policy_key           = tmpl.system_qos_policy_key
@@ -87,9 +83,8 @@ resource "intersight_fabric_switch_cluster_profile_template" "domain_template" {
 resource "intersight_fabric_switch_profile_template" "domain_switch_profile_template" {
   for_each = { for t in local.domain_switch_profile_templates : t.key => t }
 
-  name            = each.value.name
-  switch_id       = each.value.switch_id
-  target_platform = each.value.target_platform
+  name      = each.value.name
+  switch_id = each.value.switch_id
 
   switch_cluster_profile_template {
     object_type = "fabric.SwitchClusterProfileTemplate"

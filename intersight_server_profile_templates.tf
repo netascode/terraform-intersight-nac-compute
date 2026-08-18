@@ -1,6 +1,6 @@
 locals {
   server_templates = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for tmpl in try(org.templates.server, []) :
       try(tmpl.managed, true) ? [{
         key                             = format("%s/%s", org.name, tmpl.name)
@@ -38,7 +38,7 @@ locals {
 }
 
 resource "intersight_server_profile_template" "server_profile_template" {
-  for_each = { for t in local.server_templates : t.key => t }
+  for_each = var.manage_intersight_templates ? { for t in local.server_templates : t.key => t } : {}
 
   description     = each.value.description
   name            = each.value.name

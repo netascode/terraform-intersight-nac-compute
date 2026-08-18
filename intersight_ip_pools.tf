@@ -1,6 +1,6 @@
 locals {
   ip_pools = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for pool in try(org.pools.ip, []) :
       try(pool.managed, true) ? [{
         key         = format("%s/%s", org.name, pool.name)
@@ -17,7 +17,7 @@ locals {
 }
 
 resource "intersight_ippool_pool" "ip_pool" {
-  for_each = { for p in local.ip_pools : p.key => p }
+  for_each = var.manage_intersight_pools ? { for p in local.ip_pools : p.key => p } : {}
 
   description = each.value.description
   name        = each.value.name

@@ -9,13 +9,61 @@ This module is part of the Cisco [*Network-as-Code*](https://netascode.cisco.com
 
 This module supports an inventory driven approach, where a complete compute configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
 
-Configuration is modeled as a list of Intersight `organizations`, each of which must already exist in Intersight. Every organization contains three types of building blocks that are referenced by name:
+Configuration is modeled as a list of Intersight `organizations`, each of which must already exist in Intersight. Every organization contains the following building blocks, all referenced by name:
 
 - `pools`: Identifier pools assigned to server profile templates (e.g., IP, MAC, UUID, WWNN, WWPN)
-- `policies`: Configuration policies applied to servers (e.g., BIOS, boot order, network/adapter/QoS, firmware, NTP, local user, storage)
-- `templates.server`: Server profile templates, which reference pools and policies by name to define a complete, reusable server configuration
+- `policies`: Configuration policies applied to servers and domains (e.g., BIOS, boot order, network/adapter/QoS, firmware, NTP, local user, storage, port, switch control, system QoS)
+- `templates.server`: Server profile templates, which reference pools and policies to define a complete, reusable server configuration
+- `templates.domain`: UCS domain (FI pair) profile templates
+- `templates.chassis`: UCS chassis profile templates
+- `profiles.domain`: UCS domain profiles, optionally derived from a domain template
+- `profiles.chassis`: UCS chassis profiles, optionally derived from a chassis template
+
+A top-level `servers` list provisions individual servers through Intersight or Redfish.
 
 The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
+
+## Multi-Workspace Deployment
+
+As the number of UCS domains, chassis, and servers grows, a single Terraform workspace managing all resources can become slow and creates a wide blast radius. Two orthogonal mechanisms let you split the data model across multiple workspaces:
+
+**Category flags** (`manage_*`) enable or disable entire resource categories. All default to `false` — add the flags you need in your workspace `terraform.tfvars`.
+
+**Inclusion lists** (`managed_*`) restrict which named objects or tagged objects within an enabled category are managed. Both a name list and a tag list (supplied as `"key=value"` strings) can be combined — an object is included when its name is in the name list **or** it carries **all** required tags. Empty lists on both variables means include everything.
+
+### Example: policies workspace for DC-A by org name
+
+```hcl
+manage_intersight_policies       = true
+manage_intersight_pools          = true
+managed_intersight_organizations = ["dc-a-prod", "dc-a-dev"]
+```
+
+### Example: profiles workspace filtering by tag
+
+```hcl
+manage_intersight_profiles           = true
+manage_intersight_templates          = true
+managed_intersight_organization_tags = ["datacenter=dc-a"]
+managed_intersight_domains           = ["dc-a-ucs-01", "dc-a-ucs-02"]
+```
+
+### Example: server workspace by tag
+
+```hcl
+manage_servers      = true
+managed_server_tags = ["cluster=vsphere-prod-01"]
+```
+
+### Example: full single-workspace (all categories enabled)
+
+```hcl
+manage_intersight_policies  = true
+manage_intersight_pools     = true
+manage_intersight_templates = true
+manage_intersight_profiles  = true
+manage_servers              = true
+```
 
 ## Examples
 
@@ -96,6 +144,19 @@ module "ip_pool" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_manage_intersight_policies"></a> [manage\_intersight\_policies](#input\_manage\_intersight\_policies) | When true, manage all policy resources under intersight.organizations[].policies. | `bool` | `false` | no |
+| <a name="input_manage_intersight_pools"></a> [manage\_intersight\_pools](#input\_manage\_intersight\_pools) | When true, manage all pool resources under intersight.organizations[].pools. | `bool` | `false` | no |
+| <a name="input_manage_intersight_profiles"></a> [manage\_intersight\_profiles](#input\_manage\_intersight\_profiles) | When true, manage all profile resources (domain and chassis profiles). | `bool` | `false` | no |
+| <a name="input_manage_intersight_templates"></a> [manage\_intersight\_templates](#input\_manage\_intersight\_templates) | When true, manage all template resources (server, domain, chassis). | `bool` | `false` | no |
+| <a name="input_manage_servers"></a> [manage\_servers](#input\_manage\_servers) | When true, manage server provisioning resources. | `bool` | `false` | no |
+| <a name="input_managed_intersight_chassis"></a> [managed\_intersight\_chassis](#input\_managed\_intersight\_chassis) | List of chassis profile names to include within filtered orgs. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_intersight_chassis_tags"></a> [managed\_intersight\_chassis\_tags](#input\_managed\_intersight\_chassis\_tags) | List of "key=value" tag strings. Chassis profiles that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_intersight_domain_tags"></a> [managed\_intersight\_domain\_tags](#input\_managed\_intersight\_domain\_tags) | List of "key=value" tag strings. Domain profiles that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_intersight_domains"></a> [managed\_intersight\_domains](#input\_managed\_intersight\_domains) | List of domain profile names to include within filtered orgs. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_intersight_organization_tags"></a> [managed\_intersight\_organization\_tags](#input\_managed\_intersight\_organization\_tags) | List of "key=value" tag strings. Orgs that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_intersight_organizations"></a> [managed\_intersight\_organizations](#input\_managed\_intersight\_organizations) | List of organization names to include. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_server_tags"></a> [managed\_server\_tags](#input\_managed\_server\_tags) | List of "key=value" tag strings. Servers that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_servers"></a> [managed\_servers](#input\_managed\_servers) | List of server names to include. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |

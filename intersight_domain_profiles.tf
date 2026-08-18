@@ -1,8 +1,17 @@
 locals {
   domain_profiles = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for profile in try(org.profiles.domain, []) :
-      try(profile.managed, true) ? [{
+      (try(profile.managed, true)
+        && (
+          (length(var.managed_intersight_domains) == 0 && length(var.managed_intersight_domain_tags) == 0)
+          || contains(var.managed_intersight_domains, profile.name)
+          || (length(local._tag_filter_intersight_domains) > 0 && alltrue([
+            for tf in local._tag_filter_intersight_domains :
+            anytrue([for pt in try(profile.tags, []) : pt.key == tf.key && pt.value == tf.value])
+          ]))
+        )
+      ) ? [{
         key                             = format("%s/%s", org.name, profile.name)
         org_name                        = org.name
         name                            = profile.name
@@ -70,12 +79,12 @@ locals {
 }
 
 data "intersight_network_element_summary" "fi" {
-  for_each = local.domain_fi_serials
+  for_each = var.manage_intersight_profiles ? local.domain_fi_serials : toset([])
   serial   = each.key
 }
 
 resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
-  for_each = { for p in local.domain_profiles : p.key => p }
+  for_each = var.manage_intersight_profiles ? { for p in local.domain_profiles : p.key => p } : {}
 
   name            = each.value.name
   description     = each.value.description
@@ -104,7 +113,7 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
 }
 
 resource "intersight_fabric_switch_profile" "domain_switch_profile" {
-  for_each = { for sp in local.domain_switch_profiles : sp.key => sp }
+  for_each = var.manage_intersight_profiles ? { for sp in local.domain_switch_profiles : sp.key => sp } : {}
 
   name      = each.value.name
   switch_id = each.value.switch_id

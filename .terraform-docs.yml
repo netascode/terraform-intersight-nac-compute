@@ -13,13 +13,61 @@ content: |-
 
   This module supports an inventory driven approach, where a complete compute configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
 
-  Configuration is modeled as a list of Intersight `organizations`, each of which must already exist in Intersight. Every organization contains three types of building blocks that are referenced by name:
+  Configuration is modeled as a list of Intersight `organizations`, each of which must already exist in Intersight. Every organization contains the following building blocks, all referenced by name:
 
   - `pools`: Identifier pools assigned to server profile templates (e.g., IP, MAC, UUID, WWNN, WWPN)
-  - `policies`: Configuration policies applied to servers (e.g., BIOS, boot order, network/adapter/QoS, firmware, NTP, local user, storage)
-  - `templates.server`: Server profile templates, which reference pools and policies by name to define a complete, reusable server configuration
+  - `policies`: Configuration policies applied to servers and domains (e.g., BIOS, boot order, network/adapter/QoS, firmware, NTP, local user, storage, port, switch control, system QoS)
+  - `templates.server`: Server profile templates, which reference pools and policies to define a complete, reusable server configuration
+  - `templates.domain`: UCS domain (FI pair) profile templates
+  - `templates.chassis`: UCS chassis profile templates
+  - `profiles.domain`: UCS domain profiles, optionally derived from a domain template
+  - `profiles.chassis`: UCS chassis profiles, optionally derived from a chassis template
+
+  A top-level `servers` list provisions individual servers through Intersight or Redfish.
 
   The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
+
+  ## Multi-Workspace Deployment
+
+  As the number of UCS domains, chassis, and servers grows, a single Terraform workspace managing all resources can become slow and creates a wide blast radius. Two orthogonal mechanisms let you split the data model across multiple workspaces:
+
+  **Category flags** (`manage_*`) enable or disable entire resource categories. All default to `false` — add the flags you need in your workspace `terraform.tfvars`.
+
+  **Inclusion lists** (`managed_*`) restrict which named objects or tagged objects within an enabled category are managed. Both a name list and a tag list (supplied as `"key=value"` strings) can be combined — an object is included when its name is in the name list **or** it carries **all** required tags. Empty lists on both variables means include everything.
+
+  ### Example: policies workspace for DC-A by org name
+
+  ```hcl
+  manage_intersight_policies       = true
+  manage_intersight_pools          = true
+  managed_intersight_organizations = ["dc-a-prod", "dc-a-dev"]
+  ```
+
+  ### Example: profiles workspace filtering by tag
+
+  ```hcl
+  manage_intersight_profiles           = true
+  manage_intersight_templates          = true
+  managed_intersight_organization_tags = ["datacenter=dc-a"]
+  managed_intersight_domains           = ["dc-a-ucs-01", "dc-a-ucs-02"]
+  ```
+
+  ### Example: server workspace by tag
+
+  ```hcl
+  manage_servers      = true
+  managed_server_tags = ["cluster=vsphere-prod-01"]
+  ```
+
+  ### Example: full single-workspace (all categories enabled)
+
+  ```hcl
+  manage_intersight_policies  = true
+  manage_intersight_pools     = true
+  manage_intersight_templates = true
+  manage_intersight_profiles  = true
+  manage_servers              = true
+  ```
 
   ## Examples
 

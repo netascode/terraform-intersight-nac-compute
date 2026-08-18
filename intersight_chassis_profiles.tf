@@ -1,8 +1,17 @@
 locals {
   chassis_profiles = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for profile in try(org.profiles.chassis, []) :
-      try(profile.managed, true) ? [{
+      (try(profile.managed, true)
+        && (
+          (length(var.managed_intersight_chassis) == 0 && length(var.managed_intersight_chassis_tags) == 0)
+          || contains(var.managed_intersight_chassis, profile.name)
+          || (length(local._tag_filter_intersight_chassis) > 0 && alltrue([
+            for tf in local._tag_filter_intersight_chassis :
+            anytrue([for pt in try(profile.tags, []) : pt.key == tf.key && pt.value == tf.value])
+          ]))
+        )
+      ) ? [{
         key                   = format("%s/%s", org.name, profile.name)
         org_name              = org.name
         name                  = profile.name
@@ -20,7 +29,7 @@ locals {
 }
 
 resource "intersight_chassis_profile" "chassis_profile" {
-  for_each = { for p in local.chassis_profiles : p.key => p }
+  for_each = var.manage_intersight_profiles ? { for p in local.chassis_profiles : p.key => p } : {}
 
   name                         = each.value.name
   description                  = each.value.description

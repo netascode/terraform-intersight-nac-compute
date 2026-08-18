@@ -1,6 +1,6 @@
 locals {
   lan_connectivity_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.lan_connectivity, []) :
       try(policy.managed, true) ? [{
         key                 = format("%s/%s", org.name, policy.name)
@@ -39,7 +39,7 @@ locals {
 }
 
 resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
-  for_each = { for p in local.lan_connectivity_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.lan_connectivity_policies : p.key => p } : {}
 
   description         = each.value.description
   iqn_allocation_type = each.value.iqn_allocation_type
@@ -62,7 +62,7 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
 }
 
 resource "intersight_vnic_eth_if" "vnic_eth_if" {
-  for_each = { for v in local.lan_connectivity_vnics : v.key => v }
+  for_each = var.manage_intersight_policies ? { for v in local.lan_connectivity_vnics : v.key => v } : {}
 
   failover_enabled = each.value.failover
   mac_address_type = each.value.mac_pool_key != null ? "POOL" : "STATIC"

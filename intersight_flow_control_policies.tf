@@ -1,6 +1,6 @@
 locals {
   flow_control_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.flow_control, []) :
       try(policy.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.policies.flow_control,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_fabric_flow_control_policy" "flow_control_policy" {
-  for_each = { for p in local.flow_control_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.flow_control_policies : p.key => p } : {}
 
   name                       = each.value.name
   description                = try(each.value.description, "")

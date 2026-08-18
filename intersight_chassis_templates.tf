@@ -1,6 +1,6 @@
 locals {
   chassis_templates = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for tmpl in try(org.templates.chassis, []) :
       try(tmpl.managed, true) ? [{
         key                   = format("%s/%s", org.name, tmpl.name)
@@ -18,7 +18,7 @@ locals {
 }
 
 resource "intersight_chassis_profile_template" "chassis_template" {
-  for_each = { for t in local.chassis_templates : t.key => t }
+  for_each = var.manage_intersight_templates ? { for t in local.chassis_templates : t.key => t } : {}
 
   name        = each.value.name
   description = each.value.description

@@ -1,6 +1,6 @@
 locals {
   ipmi_over_lan_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.ipmi_over_lan, []) :
       try(policy.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.policies.ipmi_over_lan,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_ipmioverlan_policy" "ipmi_over_lan_policy" {
-  for_each = { for p in local.ipmi_over_lan_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.ipmi_over_lan_policies : p.key => p } : {}
 
   name           = each.value.name
   description    = try(each.value.description, "")

@@ -1,6 +1,6 @@
 locals {
   san_connectivity_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.san_connectivity, []) :
       try(policy.managed, true) ? [{
         key                 = format("%s/%s", org.name, policy.name)
@@ -41,7 +41,7 @@ locals {
 }
 
 resource "intersight_vnic_san_connectivity_policy" "san_connectivity_policy" {
-  for_each = { for p in local.san_connectivity_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.san_connectivity_policies : p.key => p } : {}
 
   name              = each.value.name
   description       = each.value.description
@@ -72,7 +72,7 @@ resource "intersight_vnic_san_connectivity_policy" "san_connectivity_policy" {
 }
 
 resource "intersight_vnic_fc_if" "vnic_fc_if" {
-  for_each = { for v in local.san_connectivity_vhbas : v.key => v }
+  for_each = var.manage_intersight_policies ? { for v in local.san_connectivity_vhbas : v.key => v } : {}
 
   name                = each.value.name
   order               = each.value.order

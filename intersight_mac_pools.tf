@@ -1,6 +1,6 @@
 locals {
   mac_pools = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for pool in try(org.pools.mac, []) :
       try(pool.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.pools.mac,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_macpool_pool" "mac_pool" {
-  for_each = { for p in local.mac_pools : p.key => p }
+  for_each = var.manage_intersight_pools ? { for p in local.mac_pools : p.key => p } : {}
 
   name        = each.value.name
   description = try(each.value.description, "")

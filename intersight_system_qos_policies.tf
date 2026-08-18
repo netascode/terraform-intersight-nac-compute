@@ -1,6 +1,6 @@
 locals {
   system_qos_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.system_qos, []) :
       try(policy.managed, true) ? [{
         key         = format("%s/%s", org.name, policy.name)
@@ -29,7 +29,7 @@ locals {
 }
 
 resource "intersight_fabric_system_qos_policy" "system_qos_policy" {
-  for_each = { for p in local.system_qos_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.system_qos_policies : p.key => p } : {}
 
   name        = each.value.name
   description = each.value.description

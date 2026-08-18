@@ -1,6 +1,6 @@
 locals {
   local_user_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.local_user, []) :
       try(policy.managed, true) ? [{
         key                       = format("%s/%s", org.name, policy.name)
@@ -20,7 +20,7 @@ locals {
   ])
 
   local_user_users = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.local_user, []) :
       try(policy.managed, true) ? [
         for user in try(policy.users, []) : {
@@ -38,7 +38,7 @@ locals {
 }
 
 resource "intersight_iam_end_point_user_policy" "local_user_policy" {
-  for_each = { for p in local.local_user_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.local_user_policies : p.key => p } : {}
 
   name        = each.value.name
   description = each.value.description
@@ -69,7 +69,7 @@ resource "intersight_iam_end_point_user_policy" "local_user_policy" {
 }
 
 resource "intersight_iam_end_point_user" "local_user" {
-  for_each = { for u in local.local_user_users : u.key => u }
+  for_each = var.manage_intersight_policies ? { for u in local.local_user_users : u.key => u } : {}
 
   name = each.value.username
 
@@ -80,7 +80,7 @@ resource "intersight_iam_end_point_user" "local_user" {
 }
 
 resource "intersight_iam_end_point_user_role" "local_user_role" {
-  for_each = { for u in local.local_user_users : u.key => u }
+  for_each = var.manage_intersight_policies ? { for u in local.local_user_users : u.key => u } : {}
 
   enabled  = each.value.enabled
   password = each.value.password

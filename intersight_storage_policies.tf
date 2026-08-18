@@ -1,6 +1,6 @@
 locals {
   storage_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.storage, []) :
       try(policy.managed, true) ? [{
         key                      = format("%s/%s", org.name, policy.name)
@@ -16,7 +16,7 @@ locals {
   ])
 
   storage_drive_groups = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.storage, []) :
       try(policy.managed, true) ? [
         for dg in try(policy.drive_groups, []) : {
@@ -34,7 +34,7 @@ locals {
 }
 
 resource "intersight_storage_storage_policy" "storage_policy" {
-  for_each = { for p in local.storage_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.storage_policies : p.key => p } : {}
 
   name                     = each.value.name
   description              = each.value.description
@@ -67,7 +67,7 @@ resource "intersight_storage_storage_policy" "storage_policy" {
 }
 
 resource "intersight_storage_drive_group" "storage_drive_group" {
-  for_each = { for dg in local.storage_drive_groups : dg.key => dg }
+  for_each = var.manage_intersight_policies ? { for dg in local.storage_drive_groups : dg.key => dg } : {}
 
   name               = each.value.name
   raid_level         = each.value.raid_level

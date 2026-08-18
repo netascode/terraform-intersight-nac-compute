@@ -1,6 +1,6 @@
 locals {
   virtual_kvm_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.virtual_kvm, []) :
       try(policy.managed, true) ? [{
         key                = format("%s/%s", org.name, policy.name)
@@ -19,7 +19,7 @@ locals {
 }
 
 resource "intersight_kvm_policy" "virtual_kvm_policy" {
-  for_each = { for p in local.virtual_kvm_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.virtual_kvm_policies : p.key => p } : {}
 
   description               = each.value.description
   enabled                   = each.value.enabled

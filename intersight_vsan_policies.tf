@@ -1,6 +1,6 @@
 locals {
   vsan_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.vsan, []) :
       try(policy.managed, true) ? [{
         key             = format("%s/%s", org.name, policy.name)
@@ -52,7 +52,7 @@ resource "intersight_fabric_fc_network_policy" "vsan_policy" {
 }
 
 resource "intersight_fabric_vsan" "vsan" {
-  for_each = { for v in local.vsans : v.key => v }
+  for_each = var.manage_intersight_policies ? { for v in local.vsans : v.key => v } : {}
 
   name       = each.value.name
   vsan_id    = each.value.vsan_id

@@ -1,6 +1,6 @@
 locals {
   snmp_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.snmp, []) :
       try(policy.managed, local.defaults.compute.intersight.organizations.policies.snmp.managed, true) ? [{
         key                     = format("%s/%s", org.name, policy.name)
@@ -44,7 +44,7 @@ locals {
 }
 
 resource "intersight_snmp_policy" "snmp_policy" {
-  for_each = { for p in local.snmp_policies : p.key => p }
+  for_each = var.manage_intersight_policies ? { for p in local.snmp_policies : p.key => p } : {}
 
   name                    = each.value.name
   description             = each.value.description

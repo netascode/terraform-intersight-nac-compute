@@ -1,6 +1,6 @@
 locals {
   port_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.port, []) :
       try(policy.managed, true) ? [{
         key          = format("%s/%s", org.name, policy.name)
@@ -366,7 +366,7 @@ locals {
 }
 
 resource "intersight_fabric_port_policy" "port_policy" {
-  for_each = { for p in local.port_policies : p.key => p }
+  for_each = { for p in local.port_policies : p.key => p if var.manage_intersight_policies }
 
   name         = each.value.name
   description  = each.value.description
@@ -387,7 +387,7 @@ resource "intersight_fabric_port_policy" "port_policy" {
 }
 
 resource "intersight_fabric_port_mode" "port_mode" {
-  for_each = { for m in local.port_modes : m.key => m }
+  for_each = { for m in local.port_modes : m.key => m if var.manage_intersight_policies }
 
   custom_mode   = each.value.custom_mode
   port_id_end   = each.value.to
@@ -403,7 +403,7 @@ resource "intersight_fabric_port_mode" "port_mode" {
 }
 
 resource "intersight_fabric_server_role" "server_role" {
-  for_each = { for r in local.port_role_servers : r.key => r }
+  for_each = { for r in local.port_role_servers : r.key => r if var.manage_intersight_policies }
 
   slot_id                   = each.value.slot_id
   port_id                   = each.value.port_id
@@ -427,7 +427,7 @@ resource "intersight_fabric_server_role" "server_role" {
 }
 
 resource "intersight_fabric_uplink_role" "uplink_role" {
-  for_each = { for r in local.port_role_ethernet_uplinks : r.key => r }
+  for_each = { for r in local.port_role_ethernet_uplinks : r.key => r if var.manage_intersight_policies }
 
   slot_id           = each.value.slot_id
   port_id           = each.value.port_id
@@ -474,7 +474,7 @@ resource "intersight_fabric_uplink_role" "uplink_role" {
 }
 
 resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
-  for_each = { for c in local.port_channel_ethernet_uplinks : c.key => c }
+  for_each = { for c in local.port_channel_ethernet_uplinks : c.key => c if var.manage_intersight_policies }
 
   pc_id       = each.value.pc_id
   admin_speed = each.value.admin_speed
@@ -537,7 +537,7 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
 }
 
 resource "intersight_fabric_fc_uplink_role" "fc_uplink_role" {
-  for_each = { for r in local.port_role_fc_uplinks : r.key => r }
+  for_each = { for r in local.port_role_fc_uplinks : r.key => r if var.manage_intersight_policies }
 
   slot_id           = each.value.slot_id
   port_id           = each.value.port_id
@@ -561,7 +561,7 @@ resource "intersight_fabric_fc_uplink_role" "fc_uplink_role" {
 }
 
 resource "intersight_fabric_fc_uplink_pc_role" "fc_uplink_pc_role" {
-  for_each = { for c in local.port_channel_fc_uplinks : c.key => c }
+  for_each = { for c in local.port_channel_fc_uplinks : c.key => c if var.manage_intersight_policies }
 
   pc_id        = each.value.pc_id
   admin_speed  = each.value.admin_speed
@@ -593,7 +593,7 @@ resource "intersight_fabric_fc_uplink_pc_role" "fc_uplink_pc_role" {
 }
 
 resource "intersight_fabric_fcoe_uplink_role" "fcoe_uplink_role" {
-  for_each = { for r in local.port_role_fcoe_uplinks : r.key => r }
+  for_each = { for r in local.port_role_fcoe_uplinks : r.key => r if var.manage_intersight_policies }
 
   slot_id           = each.value.slot_id
   port_id           = each.value.port_id
@@ -624,7 +624,7 @@ resource "intersight_fabric_fcoe_uplink_role" "fcoe_uplink_role" {
 }
 
 resource "intersight_fabric_fcoe_uplink_pc_role" "fcoe_uplink_pc_role" {
-  for_each = { for c in local.port_channel_fcoe_uplinks : c.key => c }
+  for_each = { for c in local.port_channel_fcoe_uplinks : c.key => c if var.manage_intersight_policies }
 
   pc_id       = each.value.pc_id
   admin_speed = each.value.admin_speed
@@ -671,7 +671,7 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "fcoe_uplink_pc_role" {
 }
 
 resource "intersight_fabric_appliance_role" "appliance_role" {
-  for_each = { for r in local.port_role_appliances : r.key => r }
+  for_each = { for r in local.port_role_appliances : r.key => r if var.manage_intersight_policies }
 
   slot_id           = each.value.slot_id
   port_id           = each.value.port_id
@@ -728,7 +728,7 @@ resource "intersight_fabric_appliance_role" "appliance_role" {
 }
 
 resource "intersight_fabric_appliance_pc_role" "appliance_pc_role" {
-  for_each = { for c in local.port_channel_appliances : c.key => c }
+  for_each = { for c in local.port_channel_appliances : c.key => c if var.manage_intersight_policies }
 
   pc_id       = each.value.pc_id
   admin_speed = each.value.admin_speed
@@ -785,7 +785,7 @@ resource "intersight_fabric_appliance_pc_role" "appliance_pc_role" {
 }
 
 resource "intersight_fabric_fc_storage_role" "fc_storage_role" {
-  for_each = { for r in local.port_role_fc_storage : r.key => r }
+  for_each = { for r in local.port_role_fc_storage : r.key => r if var.manage_intersight_policies }
 
   slot_id           = each.value.slot_id
   port_id           = each.value.port_id

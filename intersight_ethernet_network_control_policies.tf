@@ -1,6 +1,6 @@
 locals {
   ethernet_network_control_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.ethernet_network_control, []) :
       try(policy.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.policies.ethernet_network_control,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_fabric_eth_network_control_policy" "ethernet_network_control_policy" {
-  for_each = { for p in local.ethernet_network_control_policies : p.key => p }
+  for_each = { for p in local.ethernet_network_control_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = try(each.value.description, "")

@@ -1,6 +1,6 @@
 locals {
   wwnn_pools = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for pool in try(org.pools.wwnn, []) :
       try(pool.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.pools.wwnn,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_fcpool_pool" "wwnn_pool" {
-  for_each = { for p in local.wwnn_pools : p.key => p }
+  for_each = { for p in local.wwnn_pools : p.key => p if var.manage_intersight_pools }
 
   name         = each.value.name
   description  = try(each.value.description, "")

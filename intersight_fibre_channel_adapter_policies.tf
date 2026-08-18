@@ -1,6 +1,6 @@
 locals {
   fibre_channel_adapter_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.fibre_channel_adapter, []) :
       try(policy.managed, true) ? [{
         key                         = format("%s/%s", org.name, policy.name)
@@ -27,7 +27,7 @@ locals {
 }
 
 resource "intersight_vnic_fc_adapter_policy" "fibre_channel_adapter_policy" {
-  for_each = { for p in local.fibre_channel_adapter_policies : p.key => p }
+  for_each = { for p in local.fibre_channel_adapter_policies : p.key => p if var.manage_intersight_policies }
 
   name                        = each.value.name
   description                 = each.value.description

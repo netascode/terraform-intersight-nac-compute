@@ -1,6 +1,6 @@
 locals {
   network_connectivity_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.network_connectivity, []) :
       try(policy.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.policies.network_connectivity,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_networkconfig_policy" "network_connectivity_policy" {
-  for_each = { for p in local.network_connectivity_policies : p.key => p }
+  for_each = { for p in local.network_connectivity_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = try(each.value.description, "")

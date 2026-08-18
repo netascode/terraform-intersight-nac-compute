@@ -1,6 +1,6 @@
 locals {
   ntp_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.ntp, []) :
       try(policy.managed, true) ? [{
         key                       = format("%s/%s", org.name, policy.name)
@@ -17,7 +17,7 @@ locals {
 }
 
 resource "intersight_ntp_policy" "ntp_policy" {
-  for_each = { for p in local.ntp_policies : p.key => p }
+  for_each = { for p in local.ntp_policies : p.key => p if var.manage_intersight_policies }
 
   description = each.value.description
   enabled     = each.value.enabled

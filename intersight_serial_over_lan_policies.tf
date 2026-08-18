@@ -1,6 +1,6 @@
 locals {
   serial_over_lan_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.serial_over_lan, []) :
       try(policy.managed, true) ? [merge(
         local.defaults.compute.intersight.organizations.policies.serial_over_lan,
@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_sol_policy" "serial_over_lan_policy" {
-  for_each = { for p in local.serial_over_lan_policies : p.key => p }
+  for_each = { for p in local.serial_over_lan_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = try(each.value.description, "")

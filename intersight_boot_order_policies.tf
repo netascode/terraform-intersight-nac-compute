@@ -35,7 +35,7 @@ locals {
   }
 
   boot_order_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.boot_order, []) :
       try(policy.managed, true) ? [{
         key         = format("%s/%s", org.name, policy.name)
@@ -101,7 +101,7 @@ locals {
 }
 
 resource "intersight_boot_precision_policy" "boot_precision_policy" {
-  for_each = { for p in local.boot_order_policies : p.key => p }
+  for_each = { for p in local.boot_order_policies : p.key => p if var.manage_intersight_policies }
 
   configured_boot_mode     = each.value.boot_mode
   description              = each.value.description

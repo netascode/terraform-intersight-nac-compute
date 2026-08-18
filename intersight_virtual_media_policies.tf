@@ -1,6 +1,6 @@
 locals {
   virtual_media_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.virtual_media, []) :
       try(policy.managed, true) ? [{
         key           = format("%s/%s", org.name, policy.name)
@@ -17,7 +17,7 @@ locals {
 }
 
 resource "intersight_vmedia_policy" "virtual_media_policy" {
-  for_each = { for p in local.virtual_media_policies : p.key => p }
+  for_each = { for p in local.virtual_media_policies : p.key => p if var.manage_intersight_policies }
 
   name          = each.value.name
   description   = each.value.description

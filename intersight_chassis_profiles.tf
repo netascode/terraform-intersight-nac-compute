@@ -1,26 +1,35 @@
 locals {
   chassis_profiles = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for profile in try(org.profiles.chassis, []) :
-      try(profile.managed, true) ? [{
-        key                   = format("%s/%s", org.name, profile.name)
-        org_name              = org.name
-        name                  = profile.name
-        description           = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
-        tags                  = try(profile.tags, [])
-        serial_number         = try(profile.serial_number, null)
-        chassis_template_key  = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
-        imc_access_policy_key = try(profile.imc_access_policy, null) != null ? format("%s/%s", org.name, profile.imc_access_policy) : null
-        power_policy_key      = try(profile.power_policy, null) != null ? format("%s/%s", org.name, profile.power_policy) : null
-        snmp_policy_key       = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
-        thermal_policy_key    = try(profile.thermal_policy, null) != null ? format("%s/%s", org.name, profile.thermal_policy) : null
+      (try(profile.managed, true)
+        && (
+          (length(var.managed_intersight_chassis) == 0 && length(var.managed_intersight_chassis_tags) == 0)
+          || contains(var.managed_intersight_chassis, profile.name)
+          || (length(local._tag_filter_intersight_chassis) > 0 && alltrue([
+            for tf in local._tag_filter_intersight_chassis :
+            anytrue([for pt in try(profile.tags, []) : pt.key == tf.key && pt.value == tf.value])
+          ]))
+        )
+        ) ? [{
+          key                   = format("%s/%s", org.name, profile.name)
+          org_name              = org.name
+          name                  = profile.name
+          description           = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
+          tags                  = try(profile.tags, [])
+          serial_number         = try(profile.serial_number, null)
+          chassis_template_key  = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
+          imc_access_policy_key = try(profile.imc_access_policy, null) != null ? format("%s/%s", org.name, profile.imc_access_policy) : null
+          power_policy_key      = try(profile.power_policy, null) != null ? format("%s/%s", org.name, profile.power_policy) : null
+          snmp_policy_key       = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
+          thermal_policy_key    = try(profile.thermal_policy, null) != null ? format("%s/%s", org.name, profile.thermal_policy) : null
       }] : []
     ]
   ])
 }
 
 resource "intersight_chassis_profile" "chassis_profile" {
-  for_each = { for p in local.chassis_profiles : p.key => p }
+  for_each = { for p in local.chassis_profiles : p.key => p if var.manage_intersight_profiles }
 
   name                         = each.value.name
   description                  = each.value.description
@@ -30,7 +39,7 @@ resource "intersight_chassis_profile" "chassis_profile" {
     for_each = each.value.chassis_template_key != null ? [1] : []
     content {
       object_type = "chassis.ProfileTemplate"
-      moid        = intersight_chassis_profile_template.chassis_template[each.value.chassis_template_key].moid
+      moid        = local.chassis_template_moids[each.value.chassis_template_key]
     }
   }
 
@@ -38,7 +47,7 @@ resource "intersight_chassis_profile" "chassis_profile" {
     for_each = each.value.imc_access_policy_key != null ? [1] : []
     content {
       object_type = "access.Policy"
-      moid        = intersight_access_policy.imc_access_policy[each.value.imc_access_policy_key].moid
+      moid        = local.imc_access_policy_moids[each.value.imc_access_policy_key]
     }
   }
 
@@ -46,7 +55,7 @@ resource "intersight_chassis_profile" "chassis_profile" {
     for_each = each.value.power_policy_key != null ? [1] : []
     content {
       object_type = "power.Policy"
-      moid        = intersight_power_policy.power_policy[each.value.power_policy_key].moid
+      moid        = local.power_policy_moids[each.value.power_policy_key]
     }
   }
 
@@ -54,7 +63,7 @@ resource "intersight_chassis_profile" "chassis_profile" {
     for_each = each.value.snmp_policy_key != null ? [1] : []
     content {
       object_type = "snmp.Policy"
-      moid        = intersight_snmp_policy.snmp_policy[each.value.snmp_policy_key].moid
+      moid        = local.snmp_policy_moids[each.value.snmp_policy_key]
     }
   }
 
@@ -62,7 +71,7 @@ resource "intersight_chassis_profile" "chassis_profile" {
     for_each = each.value.thermal_policy_key != null ? [1] : []
     content {
       object_type = "thermal.Policy"
-      moid        = intersight_thermal_policy.thermal_policy[each.value.thermal_policy_key].moid
+      moid        = local.thermal_policy_moids[each.value.thermal_policy_key]
     }
   }
 

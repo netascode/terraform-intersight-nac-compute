@@ -1,6 +1,6 @@
 locals {
   imc_access_policies = flatten([
-    for org in try(local.intersight.organizations, []) : [
+    for org in local.filtered_intersight_organizations : [
       for policy in try(org.policies.imc_access, []) :
       try(policy.managed, local.defaults.compute.intersight.organizations.policies.imc_access.managed, true) ? [{
         key                     = format("%s/%s", org.name, policy.name)
@@ -20,7 +20,7 @@ locals {
 }
 
 resource "intersight_access_policy" "imc_access_policy" {
-  for_each = { for p in local.imc_access_policies : p.key => p }
+  for_each = { for p in local.imc_access_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = each.value.description

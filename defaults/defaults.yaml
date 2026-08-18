@@ -1443,6 +1443,10 @@ defaults:
             managed: true
             description: ''
             target_platform: UCS Domain
+        profiles:
+          domain:
+            managed: true
+            description: ''
     servers:
       provisioning:
         managed: true

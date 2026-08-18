@@ -7,6 +7,7 @@ locals {
         org_name                        = org.name
         name                            = profile.name
         description                     = try(profile.description, local.defaults.compute.intersight.organizations.profiles.domain.description, "")
+        target_platform                 = try(profile.target_platform, local.defaults.compute.intersight.organizations.profiles.domain.target_platform)
         tags                            = try(profile.tags, [])
         serial_numbers                  = try(profile.serial_numbers, [])
         ucs_domain_template_key         = try(profile.ucs_domain_template, null) != null ? format("%s/%s", org.name, profile.ucs_domain_template) : null
@@ -70,10 +71,7 @@ locals {
 
 data "intersight_network_element_summary" "fi" {
   for_each = local.domain_fi_serials
-  filter {
-    name  = "Serial"
-    value = each.key
-  }
+  serial   = each.key
 }
 
 resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
@@ -81,7 +79,7 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
 
   name            = each.value.name
   description     = each.value.description
-  target_platform = "UcsDomain"
+  target_platform = each.value.target_platform
 
   dynamic "src_template" {
     for_each = each.value.ucs_domain_template_key != null ? [1] : []

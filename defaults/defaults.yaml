@@ -1358,15 +1358,18 @@ defaults:
               mount_protocol: nfs
               authentication_protocol: none
           multicast:
+            managed: true
             description: ''
             querier_state: Disabled
             snooping_state: Enabled
             src_ip_proxy: Enabled
           link_aggregation:
+            managed: true
             description: ''
             lacp_rate: normal
             suspend_individual: false
           link_control:
+            managed: true
             description: ''
             admin_state: Enabled
             mode: normal
@@ -1436,6 +1439,10 @@ defaults:
             managed: true
             target_platform: FIAttached
             description: ''
+          domain:
+            managed: true
+            description: ''
+            target_platform: UCS Domain
     servers:
       provisioning:
         managed: true

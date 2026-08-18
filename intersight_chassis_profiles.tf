@@ -11,18 +11,18 @@ locals {
             anytrue([for pt in try(profile.tags, []) : pt.key == tf.key && pt.value == tf.value])
           ]))
         )
-      ) ? [{
-        key                   = format("%s/%s", org.name, profile.name)
-        org_name              = org.name
-        name                  = profile.name
-        description           = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
-        tags                  = try(profile.tags, [])
-        serial_number         = try(profile.serial_number, null)
-        chassis_template_key  = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
-        imc_access_policy_key = try(profile.imc_access_policy, null) != null ? format("%s/%s", org.name, profile.imc_access_policy) : null
-        power_policy_key      = try(profile.power_policy, null) != null ? format("%s/%s", org.name, profile.power_policy) : null
-        snmp_policy_key       = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
-        thermal_policy_key    = try(profile.thermal_policy, null) != null ? format("%s/%s", org.name, profile.thermal_policy) : null
+        ) ? [{
+          key                   = format("%s/%s", org.name, profile.name)
+          org_name              = org.name
+          name                  = profile.name
+          description           = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
+          tags                  = try(profile.tags, [])
+          serial_number         = try(profile.serial_number, null)
+          chassis_template_key  = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
+          imc_access_policy_key = try(profile.imc_access_policy, null) != null ? format("%s/%s", org.name, profile.imc_access_policy) : null
+          power_policy_key      = try(profile.power_policy, null) != null ? format("%s/%s", org.name, profile.power_policy) : null
+          snmp_policy_key       = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
+          thermal_policy_key    = try(profile.thermal_policy, null) != null ? format("%s/%s", org.name, profile.thermal_policy) : null
       }] : []
     ]
   ])

@@ -6,7 +6,7 @@
 locals {
   imc_access_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_access_policy.imc_access_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_access_policy.imc_access_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -15,7 +15,7 @@ locals {
 
   bios_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_bios_policy.bios_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_bios_policy.bios_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -24,7 +24,7 @@ locals {
 
   boot_precision_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_boot_precision_policy.boot_precision_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_boot_precision_policy.boot_precision_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -33,7 +33,7 @@ locals {
 
   vlan_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_fabric_eth_network_policy.vlan_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_fabric_eth_network_policy.vlan_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -42,7 +42,7 @@ locals {
 
   vsan_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_fabric_fc_network_policy.vsan_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_fabric_fc_network_policy.vsan_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -51,7 +51,7 @@ locals {
 
   port_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_fabric_port_policy.port_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_fabric_port_policy.port_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -60,7 +60,7 @@ locals {
 
   switch_control_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_fabric_switch_control_policy.switch_control_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_fabric_switch_control_policy.switch_control_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -69,7 +69,7 @@ locals {
 
   system_qos_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_fabric_system_qos_policy.system_qos_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_fabric_system_qos_policy.system_qos_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -78,7 +78,7 @@ locals {
 
   firmware_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_firmware_policy.firmware_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_firmware_policy.firmware_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -87,7 +87,7 @@ locals {
 
   local_user_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_iam_end_point_user_policy.local_user_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_iam_end_point_user_policy.local_user_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -96,7 +96,7 @@ locals {
 
   ipmi_over_lan_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_ipmioverlan_policy.ipmi_over_lan_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_ipmioverlan_policy.ipmi_over_lan_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -105,7 +105,7 @@ locals {
 
   virtual_kvm_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_kvm_policy.virtual_kvm_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_kvm_policy.virtual_kvm_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -114,7 +114,7 @@ locals {
 
   network_connectivity_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_networkconfig_policy.network_connectivity_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_networkconfig_policy.network_connectivity_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -123,7 +123,7 @@ locals {
 
   ntp_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_ntp_policy.ntp_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_ntp_policy.ntp_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -132,7 +132,7 @@ locals {
 
   power_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_power_policy.power_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_power_policy.power_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -141,7 +141,7 @@ locals {
 
   smtp_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_smtp_policy.smtp_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_smtp_policy.smtp_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -150,7 +150,7 @@ locals {
 
   snmp_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_snmp_policy.snmp_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_snmp_policy.snmp_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -159,7 +159,7 @@ locals {
 
   serial_over_lan_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_sol_policy.serial_over_lan_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_sol_policy.serial_over_lan_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -168,7 +168,7 @@ locals {
 
   ssh_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_ssh_policy.ssh_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_ssh_policy.ssh_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -177,7 +177,7 @@ locals {
 
   storage_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_storage_storage_policy.storage_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_storage_storage_policy.storage_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -186,7 +186,7 @@ locals {
 
   syslog_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_syslog_policy.syslog_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_syslog_policy.syslog_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -195,7 +195,7 @@ locals {
 
   thermal_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_thermal_policy.thermal_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_thermal_policy.thermal_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -204,7 +204,7 @@ locals {
 
   virtual_media_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_vmedia_policy.virtual_media_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_vmedia_policy.virtual_media_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -213,7 +213,7 @@ locals {
 
   lan_connectivity_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_vnic_lan_connectivity_policy.lan_connectivity_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_vnic_lan_connectivity_policy.lan_connectivity_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -222,7 +222,7 @@ locals {
 
   san_connectivity_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_vnic_san_connectivity_policy.san_connectivity_policy : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_vnic_san_connectivity_policy.san_connectivity_policy : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -232,7 +232,7 @@ locals {
   # Pools
   uuid_pool_moids = var.manage_intersight_pools ? tomap({
     for k, r in intersight_uuidpool_pool.uuid_pool : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_uuidpool_pool.uuid_pool : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -242,7 +242,7 @@ locals {
   # Templates
   chassis_template_moids = var.manage_intersight_templates ? tomap({
     for k, r in intersight_chassis_profile_template.chassis_template : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_chassis_profile_template.chassis_template : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
@@ -251,7 +251,7 @@ locals {
 
   domain_template_moids = var.manage_intersight_templates ? tomap({
     for k, r in intersight_fabric_switch_cluster_profile_template.domain_template : k => r.moid
-  }) : tomap({
+    }) : tomap({
     for k, d in data.intersight_fabric_switch_cluster_profile_template.domain_template : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]

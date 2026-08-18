@@ -11,25 +11,25 @@ locals {
             anytrue([for pt in try(profile.tags, []) : pt.key == tf.key && pt.value == tf.value])
           ]))
         )
-      ) ? [{
-        key                             = format("%s/%s", org.name, profile.name)
-        org_name                        = org.name
-        name                            = profile.name
-        description                     = try(profile.description, local.defaults.compute.intersight.organizations.profiles.domain.description, "")
-        target_platform                 = try(profile.target_platform, local.defaults.compute.intersight.organizations.profiles.domain.target_platform)
-        tags                            = try(profile.tags, [])
-        serial_numbers                  = try(profile.serial_numbers, [])
-        ucs_domain_template_key         = try(profile.ucs_domain_template, null) != null ? format("%s/%s", org.name, profile.ucs_domain_template) : null
-        switch_a_port_policy_key        = try(profile.switch_a_port_policy, null) != null ? format("%s/%s", org.name, profile.switch_a_port_policy) : null
-        switch_b_port_policy_key        = try(profile.switch_b_port_policy, null) != null ? format("%s/%s", org.name, profile.switch_b_port_policy) : null
-        switch_control_policy_key       = try(profile.switch_control_policy, null) != null ? format("%s/%s", org.name, profile.switch_control_policy) : null
-        system_qos_policy_key           = try(profile.system_qos_policy, null) != null ? format("%s/%s", org.name, profile.system_qos_policy) : null
-        vlan_policy_key                 = try(profile.vlan_policy, null) != null ? format("%s/%s", org.name, profile.vlan_policy) : null
-        vsan_policy_key                 = try(profile.vsan_policy, null) != null ? format("%s/%s", org.name, profile.vsan_policy) : null
-        ntp_policy_key                  = try(profile.ntp_policy, null) != null ? format("%s/%s", org.name, profile.ntp_policy) : null
-        snmp_policy_key                 = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
-        syslog_policy_key               = try(profile.syslog_policy, null) != null ? format("%s/%s", org.name, profile.syslog_policy) : null
-        network_connectivity_policy_key = try(profile.network_connectivity_policy, null) != null ? format("%s/%s", org.name, profile.network_connectivity_policy) : null
+        ) ? [{
+          key                             = format("%s/%s", org.name, profile.name)
+          org_name                        = org.name
+          name                            = profile.name
+          description                     = try(profile.description, local.defaults.compute.intersight.organizations.profiles.domain.description, "")
+          target_platform                 = try(profile.target_platform, local.defaults.compute.intersight.organizations.profiles.domain.target_platform)
+          tags                            = try(profile.tags, [])
+          serial_numbers                  = try(profile.serial_numbers, [])
+          ucs_domain_template_key         = try(profile.ucs_domain_template, null) != null ? format("%s/%s", org.name, profile.ucs_domain_template) : null
+          switch_a_port_policy_key        = try(profile.switch_a_port_policy, null) != null ? format("%s/%s", org.name, profile.switch_a_port_policy) : null
+          switch_b_port_policy_key        = try(profile.switch_b_port_policy, null) != null ? format("%s/%s", org.name, profile.switch_b_port_policy) : null
+          switch_control_policy_key       = try(profile.switch_control_policy, null) != null ? format("%s/%s", org.name, profile.switch_control_policy) : null
+          system_qos_policy_key           = try(profile.system_qos_policy, null) != null ? format("%s/%s", org.name, profile.system_qos_policy) : null
+          vlan_policy_key                 = try(profile.vlan_policy, null) != null ? format("%s/%s", org.name, profile.vlan_policy) : null
+          vsan_policy_key                 = try(profile.vsan_policy, null) != null ? format("%s/%s", org.name, profile.vsan_policy) : null
+          ntp_policy_key                  = try(profile.ntp_policy, null) != null ? format("%s/%s", org.name, profile.ntp_policy) : null
+          snmp_policy_key                 = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
+          syslog_policy_key               = try(profile.syslog_policy, null) != null ? format("%s/%s", org.name, profile.syslog_policy) : null
+          network_connectivity_policy_key = try(profile.network_connectivity_policy, null) != null ? format("%s/%s", org.name, profile.network_connectivity_policy) : null
       }] : []
     ]
   ])

@@ -1443,6 +1443,9 @@ defaults:
             managed: true
             description: ''
             target_platform: UCS Domain
+          chassis:
+            managed: true
+            description: ''
         profiles:
           domain:
             managed: true

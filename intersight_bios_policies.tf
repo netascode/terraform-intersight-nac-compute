@@ -20,7 +20,7 @@ locals {
 }
 
 resource "intersight_bios_policy" "bios_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.bios_policies : p.key => p } : {}
+  for_each = { for p in local.bios_policies : p.key => p if var.manage_intersight_policies }
 
   description = each.value.description
   name        = each.value.name

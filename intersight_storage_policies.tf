@@ -34,7 +34,7 @@ locals {
 }
 
 resource "intersight_storage_storage_policy" "storage_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.storage_policies : p.key => p } : {}
+  for_each = { for p in local.storage_policies : p.key => p if var.manage_intersight_policies }
 
   name                     = each.value.name
   description              = each.value.description
@@ -67,7 +67,7 @@ resource "intersight_storage_storage_policy" "storage_policy" {
 }
 
 resource "intersight_storage_drive_group" "storage_drive_group" {
-  for_each = var.manage_intersight_policies ? { for dg in local.storage_drive_groups : dg.key => dg } : {}
+  for_each = { for dg in local.storage_drive_groups : dg.key => dg if var.manage_intersight_policies }
 
   name               = each.value.name
   raid_level         = each.value.raid_level

@@ -76,7 +76,7 @@ resource "intersight_fabric_eth_network_policy" "vlan_policy" {
 }
 
 resource "intersight_fabric_vlan" "vlan" {
-  for_each = var.manage_intersight_policies ? { for v in local.vlans : v.key => v } : {}
+  for_each = { for v in local.vlans : v.key => v if var.manage_intersight_policies }
 
   name                  = each.value.name
   vlan_id               = each.value.vlan_id

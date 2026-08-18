@@ -101,7 +101,7 @@ locals {
 }
 
 resource "intersight_boot_precision_policy" "boot_precision_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.boot_order_policies : p.key => p } : {}
+  for_each = { for p in local.boot_order_policies : p.key => p if var.manage_intersight_policies }
 
   configured_boot_mode     = each.value.boot_mode
   description              = each.value.description

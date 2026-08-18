@@ -29,7 +29,7 @@ locals {
 }
 
 resource "intersight_fabric_system_qos_policy" "system_qos_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.system_qos_policies : p.key => p } : {}
+  for_each = { for p in local.system_qos_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = each.value.description

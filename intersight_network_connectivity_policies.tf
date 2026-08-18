@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_networkconfig_policy" "network_connectivity_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.network_connectivity_policies : p.key => p } : {}
+  for_each = { for p in local.network_connectivity_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = try(each.value.description, "")

@@ -17,7 +17,7 @@ locals {
 }
 
 resource "intersight_ntp_policy" "ntp_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.ntp_policies : p.key => p } : {}
+  for_each = { for p in local.ntp_policies : p.key => p if var.manage_intersight_policies }
 
   description = each.value.description
   enabled     = each.value.enabled

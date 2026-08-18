@@ -60,7 +60,7 @@ locals {
 }
 
 resource "intersight_fabric_switch_cluster_profile_template" "domain_template" {
-  for_each = var.manage_intersight_templates ? { for t in local.domain_templates : t.key => t } : {}
+  for_each = { for t in local.domain_templates : t.key => t if var.manage_intersight_templates }
 
   name            = each.value.name
   description     = each.value.description
@@ -81,7 +81,7 @@ resource "intersight_fabric_switch_cluster_profile_template" "domain_template" {
 }
 
 resource "intersight_fabric_switch_profile_template" "domain_switch_profile_template" {
-  for_each = var.manage_intersight_templates ? { for t in local.domain_switch_profile_templates : t.key => t } : {}
+  for_each = { for t in local.domain_switch_profile_templates : t.key => t if var.manage_intersight_templates }
 
   name      = each.value.name
   switch_id = each.value.switch_id

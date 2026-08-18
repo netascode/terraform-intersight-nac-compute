@@ -16,7 +16,7 @@ locals {
 }
 
 resource "intersight_fcpool_pool" "wwnn_pool" {
-  for_each = var.manage_intersight_pools ? { for p in local.wwnn_pools : p.key => p } : {}
+  for_each = { for p in local.wwnn_pools : p.key => p if var.manage_intersight_pools }
 
   name         = each.value.name
   description  = try(each.value.description, "")

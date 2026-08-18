@@ -52,7 +52,7 @@ resource "intersight_fabric_fc_network_policy" "vsan_policy" {
 }
 
 resource "intersight_fabric_vsan" "vsan" {
-  for_each = var.manage_intersight_policies ? { for v in local.vsans : v.key => v } : {}
+  for_each = { for v in local.vsans : v.key => v if var.manage_intersight_policies }
 
   name       = each.value.name
   vsan_id    = each.value.vsan_id

@@ -44,7 +44,7 @@ locals {
 }
 
 resource "intersight_snmp_policy" "snmp_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.snmp_policies : p.key => p } : {}
+  for_each = { for p in local.snmp_policies : p.key => p if var.manage_intersight_policies }
 
   name                    = each.value.name
   description             = each.value.description

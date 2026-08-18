@@ -18,7 +18,7 @@ locals {
 }
 
 resource "intersight_chassis_profile_template" "chassis_template" {
-  for_each = var.manage_intersight_templates ? { for t in local.chassis_templates : t.key => t } : {}
+  for_each = { for t in local.chassis_templates : t.key => t if var.manage_intersight_templates }
 
   name        = each.value.name
   description = each.value.description

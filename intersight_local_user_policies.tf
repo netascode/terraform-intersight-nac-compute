@@ -38,7 +38,7 @@ locals {
 }
 
 resource "intersight_iam_end_point_user_policy" "local_user_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.local_user_policies : p.key => p } : {}
+  for_each = { for p in local.local_user_policies : p.key => p if var.manage_intersight_policies }
 
   name        = each.value.name
   description = each.value.description
@@ -69,7 +69,7 @@ resource "intersight_iam_end_point_user_policy" "local_user_policy" {
 }
 
 resource "intersight_iam_end_point_user" "local_user" {
-  for_each = var.manage_intersight_policies ? { for u in local.local_user_users : u.key => u } : {}
+  for_each = { for u in local.local_user_users : u.key => u if var.manage_intersight_policies }
 
   name = each.value.username
 
@@ -80,7 +80,7 @@ resource "intersight_iam_end_point_user" "local_user" {
 }
 
 resource "intersight_iam_end_point_user_role" "local_user_role" {
-  for_each = var.manage_intersight_policies ? { for u in local.local_user_users : u.key => u } : {}
+  for_each = { for u in local.local_user_users : u.key => u if var.manage_intersight_policies }
 
   enabled  = each.value.enabled
   password = each.value.password

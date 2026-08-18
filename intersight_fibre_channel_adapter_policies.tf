@@ -27,7 +27,7 @@ locals {
 }
 
 resource "intersight_vnic_fc_adapter_policy" "fibre_channel_adapter_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.fibre_channel_adapter_policies : p.key => p } : {}
+  for_each = { for p in local.fibre_channel_adapter_policies : p.key => p if var.manage_intersight_policies }
 
   name                        = each.value.name
   description                 = each.value.description

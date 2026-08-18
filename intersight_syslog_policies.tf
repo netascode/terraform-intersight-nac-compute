@@ -15,7 +15,7 @@ locals {
 }
 
 resource "intersight_syslog_policy" "syslog_policy" {
-  for_each = var.manage_intersight_policies ? { for p in local.syslog_policies : p.key => p } : {}
+  for_each = { for p in local.syslog_policies : p.key => p if var.manage_intersight_policies }
 
   description = each.value.description
   name        = each.value.name

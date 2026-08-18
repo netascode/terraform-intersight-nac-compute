@@ -38,7 +38,7 @@ locals {
 }
 
 resource "intersight_server_profile_template" "server_profile_template" {
-  for_each = var.manage_intersight_templates ? { for t in local.server_templates : t.key => t } : {}
+  for_each = { for t in local.server_templates : t.key => t if var.manage_intersight_templates }
 
   description     = each.value.description
   name            = each.value.name

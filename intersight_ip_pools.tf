@@ -17,7 +17,7 @@ locals {
 }
 
 resource "intersight_ippool_pool" "ip_pool" {
-  for_each = var.manage_intersight_pools ? { for p in local.ip_pools : p.key => p } : {}
+  for_each = { for p in local.ip_pools : p.key => p if var.manage_intersight_pools }
 
   description = each.value.description
   name        = each.value.name

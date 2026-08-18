@@ -1451,6 +1451,9 @@ defaults:
             managed: true
             description: ''
             target_platform: UCS Domain
+          chassis:
+            managed: true
+            description: ''
     servers:
       provisioning:
         managed: true

@@ -122,6 +122,7 @@ module "ip_pool" {
 | [intersight_access_policy.imc_access_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/access_policy) | resource |
 | [intersight_bios_policy.bios_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bios_policy) | resource |
 | [intersight_boot_precision_policy.boot_precision_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/boot_precision_policy) | resource |
+| [intersight_chassis_profile.chassis_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile) | resource |
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile_template) | resource |
 | [intersight_fabric_appliance_pc_role.appliance_pc_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_appliance_pc_role) | resource |
 | [intersight_fabric_appliance_role.appliance_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_appliance_role) | resource |

@@ -50,7 +50,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.bios_policy_key != null ? [1] : []
     content {
       object_type = "bios.Policy"
-      moid        = intersight_bios_policy.bios_policy[each.value.bios_policy_key].moid
+      moid        = local.bios_policy_moids[each.value.bios_policy_key]
     }
   }
 
@@ -58,7 +58,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.boot_order_policy_key != null ? [1] : []
     content {
       object_type = "boot.PrecisionPolicy"
-      moid        = intersight_boot_precision_policy.boot_precision_policy[each.value.boot_order_policy_key].moid
+      moid        = local.boot_precision_policy_moids[each.value.boot_order_policy_key]
     }
   }
 
@@ -66,7 +66,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.imc_access_policy_key != null ? [1] : []
     content {
       object_type = "access.Policy"
-      moid        = intersight_access_policy.imc_access_policy[each.value.imc_access_policy_key].moid
+      moid        = local.imc_access_policy_moids[each.value.imc_access_policy_key]
     }
   }
 
@@ -74,7 +74,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.ipmi_over_lan_policy_key != null ? [1] : []
     content {
       object_type = "ipmioverlan.Policy"
-      moid        = intersight_ipmioverlan_policy.ipmi_over_lan_policy[each.value.ipmi_over_lan_policy_key].moid
+      moid        = local.ipmi_over_lan_policy_moids[each.value.ipmi_over_lan_policy_key]
     }
   }
 
@@ -82,7 +82,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.lan_connectivity_policy_key != null ? [1] : []
     content {
       object_type = "vnic.LanConnectivityPolicy"
-      moid        = intersight_vnic_lan_connectivity_policy.lan_connectivity_policy[each.value.lan_connectivity_policy_key].moid
+      moid        = local.lan_connectivity_policy_moids[each.value.lan_connectivity_policy_key]
     }
   }
 
@@ -90,7 +90,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.local_user_policy_key != null ? [1] : []
     content {
       object_type = "iam.EndPointUserPolicy"
-      moid        = intersight_iam_end_point_user_policy.local_user_policy[each.value.local_user_policy_key].moid
+      moid        = local.local_user_policy_moids[each.value.local_user_policy_key]
     }
   }
 
@@ -98,7 +98,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.network_connectivity_policy_key != null ? [1] : []
     content {
       object_type = "networkconfig.Policy"
-      moid        = intersight_networkconfig_policy.network_connectivity_policy[each.value.network_connectivity_policy_key].moid
+      moid        = local.network_connectivity_policy_moids[each.value.network_connectivity_policy_key]
     }
   }
 
@@ -106,7 +106,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.ntp_policy_key != null ? [1] : []
     content {
       object_type = "ntp.Policy"
-      moid        = intersight_ntp_policy.ntp_policy[each.value.ntp_policy_key].moid
+      moid        = local.ntp_policy_moids[each.value.ntp_policy_key]
     }
   }
 
@@ -114,7 +114,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.power_policy_key != null ? [1] : []
     content {
       object_type = "power.Policy"
-      moid        = intersight_power_policy.power_policy[each.value.power_policy_key].moid
+      moid        = local.power_policy_moids[each.value.power_policy_key]
     }
   }
 
@@ -122,7 +122,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.san_connectivity_policy_key != null ? [1] : []
     content {
       object_type = "vnic.SanConnectivityPolicy"
-      moid        = intersight_vnic_san_connectivity_policy.san_connectivity_policy[each.value.san_connectivity_policy_key].moid
+      moid        = local.san_connectivity_policy_moids[each.value.san_connectivity_policy_key]
     }
   }
 
@@ -130,7 +130,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.serial_over_lan_policy_key != null ? [1] : []
     content {
       object_type = "sol.Policy"
-      moid        = intersight_sol_policy.serial_over_lan_policy[each.value.serial_over_lan_policy_key].moid
+      moid        = local.serial_over_lan_policy_moids[each.value.serial_over_lan_policy_key]
     }
   }
 
@@ -138,7 +138,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.smtp_policy_key != null ? [1] : []
     content {
       object_type = "smtp.Policy"
-      moid        = intersight_smtp_policy.smtp_policy[each.value.smtp_policy_key].moid
+      moid        = local.smtp_policy_moids[each.value.smtp_policy_key]
     }
   }
 
@@ -146,7 +146,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.snmp_policy_key != null ? [1] : []
     content {
       object_type = "snmp.Policy"
-      moid        = intersight_snmp_policy.snmp_policy[each.value.snmp_policy_key].moid
+      moid        = local.snmp_policy_moids[each.value.snmp_policy_key]
     }
   }
 
@@ -154,7 +154,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.ssh_policy_key != null ? [1] : []
     content {
       object_type = "ssh.Policy"
-      moid        = intersight_ssh_policy.ssh_policy[each.value.ssh_policy_key].moid
+      moid        = local.ssh_policy_moids[each.value.ssh_policy_key]
     }
   }
 
@@ -162,7 +162,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.storage_policy_key != null ? [1] : []
     content {
       object_type = "storage.StoragePolicy"
-      moid        = intersight_storage_storage_policy.storage_policy[each.value.storage_policy_key].moid
+      moid        = local.storage_policy_moids[each.value.storage_policy_key]
     }
   }
 
@@ -170,7 +170,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.syslog_policy_key != null ? [1] : []
     content {
       object_type = "syslog.Policy"
-      moid        = intersight_syslog_policy.syslog_policy[each.value.syslog_policy_key].moid
+      moid        = local.syslog_policy_moids[each.value.syslog_policy_key]
     }
   }
 
@@ -178,7 +178,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.thermal_policy_key != null ? [1] : []
     content {
       object_type = "thermal.Policy"
-      moid        = intersight_thermal_policy.thermal_policy[each.value.thermal_policy_key].moid
+      moid        = local.thermal_policy_moids[each.value.thermal_policy_key]
     }
   }
 
@@ -188,7 +188,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.firmware_policy_key != null ? [1] : []
     content {
       object_type = "firmware.Policy"
-      moid        = intersight_firmware_policy.firmware_policy[each.value.firmware_policy_key].moid
+      moid        = local.firmware_policy_moids[each.value.firmware_policy_key]
     }
   }
 
@@ -196,7 +196,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.virtual_kvm_policy_key != null ? [1] : []
     content {
       object_type = "kvm.Policy"
-      moid        = intersight_kvm_policy.virtual_kvm_policy[each.value.virtual_kvm_policy_key].moid
+      moid        = local.virtual_kvm_policy_moids[each.value.virtual_kvm_policy_key]
     }
   }
 
@@ -204,7 +204,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.virtual_media_policy_key != null ? [1] : []
     content {
       object_type = "vmedia.Policy"
-      moid        = intersight_vmedia_policy.virtual_media_policy[each.value.virtual_media_policy_key].moid
+      moid        = local.virtual_media_policy_moids[each.value.virtual_media_policy_key]
     }
   }
 
@@ -212,7 +212,7 @@ resource "intersight_server_profile_template" "server_profile_template" {
     for_each = each.value.uuid_pool_key != null ? [1] : []
     content {
       object_type = "uuidpool.Pool"
-      moid        = intersight_uuidpool_pool.uuid_pool[each.value.uuid_pool_key].moid
+      moid        = local.uuid_pool_moids[each.value.uuid_pool_key]
     }
   }
 

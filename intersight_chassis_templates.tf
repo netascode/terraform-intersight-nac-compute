@@ -27,7 +27,7 @@ resource "intersight_chassis_profile_template" "chassis_template" {
     for_each = each.value.imc_access_policy_key != null ? [1] : []
     content {
       object_type = "access.Policy"
-      moid        = intersight_access_policy.imc_access_policy[each.value.imc_access_policy_key].moid
+      moid        = local.imc_access_policy_moids[each.value.imc_access_policy_key]
     }
   }
 
@@ -35,7 +35,7 @@ resource "intersight_chassis_profile_template" "chassis_template" {
     for_each = each.value.power_policy_key != null ? [1] : []
     content {
       object_type = "power.Policy"
-      moid        = intersight_power_policy.power_policy[each.value.power_policy_key].moid
+      moid        = local.power_policy_moids[each.value.power_policy_key]
     }
   }
 
@@ -43,7 +43,7 @@ resource "intersight_chassis_profile_template" "chassis_template" {
     for_each = each.value.snmp_policy_key != null ? [1] : []
     content {
       object_type = "snmp.Policy"
-      moid        = intersight_snmp_policy.snmp_policy[each.value.snmp_policy_key].moid
+      moid        = local.snmp_policy_moids[each.value.snmp_policy_key]
     }
   }
 
@@ -51,7 +51,7 @@ resource "intersight_chassis_profile_template" "chassis_template" {
     for_each = each.value.thermal_policy_key != null ? [1] : []
     content {
       object_type = "thermal.Policy"
-      moid        = intersight_thermal_policy.thermal_policy[each.value.thermal_policy_key].moid
+      moid        = local.thermal_policy_moids[each.value.thermal_policy_key]
     }
   }
 

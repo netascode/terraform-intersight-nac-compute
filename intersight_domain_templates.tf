@@ -95,7 +95,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.port_policy_key != null ? [1] : []
     content {
       object_type = "fabric.PortPolicy"
-      moid        = intersight_fabric_port_policy.port_policy[each.value.port_policy_key].moid
+      moid        = local.port_policy_moids[each.value.port_policy_key]
     }
   }
 
@@ -103,7 +103,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.switch_control_policy_key != null ? [1] : []
     content {
       object_type = "fabric.SwitchControlPolicy"
-      moid        = intersight_fabric_switch_control_policy.switch_control_policy[each.value.switch_control_policy_key].moid
+      moid        = local.switch_control_policy_moids[each.value.switch_control_policy_key]
     }
   }
 
@@ -111,7 +111,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.system_qos_policy_key != null ? [1] : []
     content {
       object_type = "fabric.SystemQosPolicy"
-      moid        = intersight_fabric_system_qos_policy.system_qos_policy[each.value.system_qos_policy_key].moid
+      moid        = local.system_qos_policy_moids[each.value.system_qos_policy_key]
     }
   }
 
@@ -119,7 +119,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.vlan_policy_key != null ? [1] : []
     content {
       object_type = "fabric.EthNetworkPolicy"
-      moid        = intersight_fabric_eth_network_policy.vlan_policy[each.value.vlan_policy_key].moid
+      moid        = local.vlan_policy_moids[each.value.vlan_policy_key]
     }
   }
 
@@ -127,7 +127,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.vsan_policy_key != null ? [1] : []
     content {
       object_type = "fabric.FcNetworkPolicy"
-      moid        = intersight_fabric_fc_network_policy.vsan_policy[each.value.vsan_policy_key].moid
+      moid        = local.vsan_policy_moids[each.value.vsan_policy_key]
     }
   }
 
@@ -135,7 +135,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.ntp_policy_key != null ? [1] : []
     content {
       object_type = "ntp.Policy"
-      moid        = intersight_ntp_policy.ntp_policy[each.value.ntp_policy_key].moid
+      moid        = local.ntp_policy_moids[each.value.ntp_policy_key]
     }
   }
 
@@ -143,7 +143,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.snmp_policy_key != null ? [1] : []
     content {
       object_type = "snmp.Policy"
-      moid        = intersight_snmp_policy.snmp_policy[each.value.snmp_policy_key].moid
+      moid        = local.snmp_policy_moids[each.value.snmp_policy_key]
     }
   }
 
@@ -151,7 +151,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.syslog_policy_key != null ? [1] : []
     content {
       object_type = "syslog.Policy"
-      moid        = intersight_syslog_policy.syslog_policy[each.value.syslog_policy_key].moid
+      moid        = local.syslog_policy_moids[each.value.syslog_policy_key]
     }
   }
 
@@ -159,7 +159,7 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     for_each = each.value.network_connectivity_policy_key != null ? [1] : []
     content {
       object_type = "networkconfig.Policy"
-      moid        = intersight_networkconfig_policy.network_connectivity_policy[each.value.network_connectivity_policy_key].moid
+      moid        = local.network_connectivity_policy_moids[each.value.network_connectivity_policy_key]
     }
   }
 }

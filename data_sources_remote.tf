@@ -226,3 +226,27 @@ data "intersight_fabric_switch_cluster_profile_template" "domain_template" {
   }
   name = each.value.name
 }
+
+# ---------------------------------------------------------------------------
+# Templates consumed by servers (manage_intersight_templates = false)
+# Activate when: !manage_intersight_templates && manage_servers
+# ---------------------------------------------------------------------------
+
+data "intersight_server_profile_template" "server_profile_template" {
+  for_each = (var.manage_intersight_templates || !var.manage_servers) ? {} : {
+    for k in local._server_profile_template_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+# ---------------------------------------------------------------------------
+# Pools consumed by servers (manage_intersight_pools = false)
+# Activate when: !manage_intersight_pools && manage_servers
+# ---------------------------------------------------------------------------
+
+data "intersight_resourcepool_pool" "resource_pool" {
+  for_each = (var.manage_intersight_pools || !var.manage_servers) ? {} : {
+    for k in local._resource_pool_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}

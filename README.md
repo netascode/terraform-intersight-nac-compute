@@ -148,12 +148,15 @@ module "ip_pool" {
 | <a name="input_manage_intersight_pools"></a> [manage\_intersight\_pools](#input\_manage\_intersight\_pools) | When true, manage all pool resources under intersight.organizations[].pools. | `bool` | `false` | no |
 | <a name="input_manage_intersight_profiles"></a> [manage\_intersight\_profiles](#input\_manage\_intersight\_profiles) | When true, manage all profile resources (domain and chassis profiles). | `bool` | `false` | no |
 | <a name="input_manage_intersight_templates"></a> [manage\_intersight\_templates](#input\_manage\_intersight\_templates) | When true, manage all template resources (server, domain, chassis). | `bool` | `false` | no |
+| <a name="input_manage_servers"></a> [manage\_servers](#input\_manage\_servers) | When true, manage server provisioning resources under servers[]. | `bool` | `false` | no |
 | <a name="input_managed_intersight_chassis"></a> [managed\_intersight\_chassis](#input\_managed\_intersight\_chassis) | List of chassis profile names to include within filtered orgs. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_chassis_tags"></a> [managed\_intersight\_chassis\_tags](#input\_managed\_intersight\_chassis\_tags) | List of "key=value" tag strings. Chassis profiles that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_domain_tags"></a> [managed\_intersight\_domain\_tags](#input\_managed\_intersight\_domain\_tags) | List of "key=value" tag strings. Domain profiles that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_domains"></a> [managed\_intersight\_domains](#input\_managed\_intersight\_domains) | List of domain profile names to include within filtered orgs. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_organization_tags"></a> [managed\_intersight\_organization\_tags](#input\_managed\_intersight\_organization\_tags) | List of "key=value" tag strings. Orgs that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_organizations"></a> [managed\_intersight\_organizations](#input\_managed\_intersight\_organizations) | List of organization names to include. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_server_tags"></a> [managed\_server\_tags](#input\_managed\_server\_tags) | List of "key=value" tag strings. Servers that carry ALL listed tags are included. Empty = include all. | `list(string)` | `[]` | no |
+| <a name="input_managed_servers"></a> [managed\_servers](#input\_managed\_servers) | List of server names to include. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
@@ -223,6 +226,7 @@ module "ip_pool" {
 | [intersight_networkconfig_policy.network_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/networkconfig_policy) | resource |
 | [intersight_ntp_policy.ntp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/ntp_policy) | resource |
 | [intersight_power_policy.power_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/power_policy) | resource |
+| [intersight_server_profile.server_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/server_profile) | resource |
 | [intersight_server_profile_template.server_profile_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/server_profile_template) | resource |
 | [intersight_smtp_policy.smtp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/smtp_policy) | resource |
 | [intersight_snmp_policy.snmp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/snmp_policy) | resource |
@@ -250,6 +254,7 @@ module "ip_pool" {
 | [intersight_bios_policy.bios_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/bios_policy) | data source |
 | [intersight_boot_precision_policy.boot_precision_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/boot_precision_policy) | data source |
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/chassis_profile_template) | data source |
+| [intersight_compute_physical_summary.server](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_physical_summary) | data source |
 | [intersight_fabric_eth_network_policy.vlan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_policy) | data source |
 | [intersight_fabric_fc_network_policy.vsan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_fc_network_policy) | data source |
 | [intersight_fabric_port_policy.port_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_port_policy) | data source |
@@ -265,6 +270,8 @@ module "ip_pool" {
 | [intersight_ntp_policy.ntp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ntp_policy) | data source |
 | [intersight_organization_organization.organizations](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/organization_organization) | data source |
 | [intersight_power_policy.power_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/power_policy) | data source |
+| [intersight_resourcepool_pool.resource_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/resourcepool_pool) | data source |
+| [intersight_server_profile_template.server_profile_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/server_profile_template) | data source |
 | [intersight_smtp_policy.smtp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/smtp_policy) | data source |
 | [intersight_snmp_policy.snmp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/snmp_policy) | data source |
 | [intersight_sol_policy.serial_over_lan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/sol_policy) | data source |

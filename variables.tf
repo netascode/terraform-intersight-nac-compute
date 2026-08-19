@@ -52,6 +52,12 @@ variable "manage_intersight_profiles" {
   default     = false
 }
 
+variable "manage_servers" {
+  description = "When true, manage server provisioning resources under servers[]."
+  type        = bool
+  default     = false
+}
+
 # ---------------------------------------------------------------------------
 # Workspace scoping — object-group inclusion lists
 # Empty list on both name list and tag list = include all objects.
@@ -91,6 +97,18 @@ variable "managed_intersight_chassis" {
 
 variable "managed_intersight_chassis_tags" {
   description = "List of \"key=value\" tag strings. Chassis profiles that carry ALL listed tags are included. Empty = include all."
+  type        = list(string)
+  default     = []
+}
+
+variable "managed_servers" {
+  description = "List of server names to include. Empty = include all."
+  type        = list(string)
+  default     = []
+}
+
+variable "managed_server_tags" {
+  description = "List of \"key=value\" tag strings. Servers that carry ALL listed tags are included. Empty = include all."
   type        = list(string)
   default     = []
 }

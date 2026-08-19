@@ -17,6 +17,10 @@ locals {
     for t in var.managed_intersight_chassis_tags :
     { key = split("=", t)[0], value = split("=", t)[1] }
   ]
+  _tag_filter_servers = [
+    for t in var.managed_server_tags :
+    { key = split("=", t)[0], value = split("=", t)[1] }
+  ]
 
   # ---------------------------------------------------------------------------
   # filtered_intersight_organizations — orgs that pass the name/tag filters.
@@ -37,6 +41,30 @@ locals {
         for tf in local._tag_filter_intersight_orgs :
         anytrue([for ot in try(org.tags, []) : ot.key == tf.key && ot.value == tf.value])
       ])
+    )
+  ]
+
+  # ---------------------------------------------------------------------------
+  # filtered_servers — servers scoped to this workspace (Intersight-managed only).
+  # A server is included when:
+  #   - both lists are empty (include all), OR
+  #   - its name is in managed_servers, OR
+  #   - it carries ALL tags in managed_server_tags
+  # Only servers with managed_by=intersight are considered.
+  # ---------------------------------------------------------------------------
+  filtered_servers = [
+    for server in try(local.compute.servers, []) : server
+    if try(server.provisioning.managed_by, "") == "intersight"
+    && (
+      (length(var.managed_servers) == 0 && length(var.managed_server_tags) == 0)
+      || contains(var.managed_servers, server.name)
+      || (
+        length(local._tag_filter_servers) > 0
+        && alltrue([
+          for tf in local._tag_filter_servers :
+          anytrue([for ot in try(server.tags, []) : ot.key == tf.key && ot.value == tf.value])
+        ])
+      )
     )
   ]
 }
@@ -156,5 +184,11 @@ locals {
   ])))
   _domain_template_ref_keys = toset(compact(flatten([
     [for p in local.domain_profiles : p.ucs_domain_template_key],
+  ])))
+  _server_profile_template_ref_keys = toset(compact(flatten([
+    [for s in local.intersight_servers : s.profile_template_key],
+  ])))
+  _resource_pool_ref_keys = toset(compact(flatten([
+    [for s in local.intersight_servers : s.resource_pool_key],
   ])))
 }

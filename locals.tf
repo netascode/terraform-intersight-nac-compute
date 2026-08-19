@@ -178,6 +178,34 @@ locals {
     [for t in local.server_templates : t.uuid_pool_key],
   ])))
 
+  _ethernet_adapter_policy_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : v.ethernet_adapter_policy_key],
+    [for t in local.vnic_templates : t.ethernet_adapter_policy_key],
+  ])))
+  _ethernet_qos_policy_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : v.ethernet_qos_policy_key],
+    [for t in local.vnic_templates : t.ethernet_qos_policy_key],
+  ])))
+  _ethernet_network_group_policy_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : v.ethernet_network_group_policy_key],
+    [for t in local.vnic_templates : t.ethernet_network_group_policy_key],
+  ])))
+  _ethernet_network_control_policy_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : v.ethernet_network_control_policy_key],
+    [for t in local.vnic_templates : t.ethernet_network_control_policy_key],
+  ])))
+  _ethernet_network_policy_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : v.ethernet_network_policy_key],
+    [for t in local.vnic_templates : t.ethernet_network_policy_key],
+  ])))
+  _mac_pool_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : v.mac_pool_key],
+    [for t in local.vnic_templates : t.mac_pool_key],
+  ])))
+  _vnic_template_ref_keys = toset(compact(flatten([
+    [for v in local.lan_connectivity_vnics : try(v.vnic_template_key, null)],
+  ])))
+
   # Templates (manage_intersight_templates)
   _chassis_template_ref_keys = toset(compact(flatten([
     [for p in local.chassis_profiles : p.chassis_template_key],

@@ -258,6 +258,70 @@ locals {
     ][0]
   })
 
+  # vNIC-related policy moids (used by lan_connectivity_vnics and vnic_templates)
+  ethernet_adapter_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_eth_adapter_policy.ethernet_adapter_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_eth_adapter_policy.ethernet_adapter_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  ethernet_qos_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_eth_qos_policy.ethernet_qos_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_eth_qos_policy.ethernet_qos_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  ethernet_network_group_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_fabric_eth_network_group_policy.ethernet_network_group_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_fabric_eth_network_group_policy.ethernet_network_group_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  ethernet_network_control_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_fabric_eth_network_control_policy.ethernet_network_control_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_fabric_eth_network_control_policy.ethernet_network_control_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  ethernet_network_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_eth_network_policy.ethernet_network_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_eth_network_policy.ethernet_network_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  mac_pool_moids = var.manage_intersight_pools ? tomap({
+    for k, r in intersight_macpool_pool.mac_pool : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_macpool_pool.mac_pool : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  vnic_template_moids = var.manage_intersight_templates ? tomap({
+    for k, r in intersight_vnic_vnic_template.vnic_template : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_vnic_template.vnic_template : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
   server_profile_template_moids = var.manage_intersight_templates ? tomap({
     for k, r in intersight_server_profile_template.server_profile_template : k => r.moid
     }) : tomap({

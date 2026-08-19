@@ -1446,6 +1446,12 @@ defaults:
           chassis:
             managed: true
             description: ''
+          vnic:
+            managed: true
+            description: ''
+            failover: false
+            allow_override: false
+            cdn_source: vnic
         profiles:
           domain:
             managed: true

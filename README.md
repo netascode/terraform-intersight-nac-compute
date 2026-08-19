@@ -248,6 +248,7 @@ module "ip_pool" {
 | [intersight_vnic_fc_qos_policy.fibre_channel_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_fc_qos_policy) | resource |
 | [intersight_vnic_lan_connectivity_policy.lan_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_lan_connectivity_policy) | resource |
 | [intersight_vnic_san_connectivity_policy.san_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_san_connectivity_policy) | resource |
+| [intersight_vnic_vnic_template.vnic_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_vnic_template) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [intersight_access_policy.imc_access_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/access_policy) | data source |
@@ -255,6 +256,8 @@ module "ip_pool" {
 | [intersight_boot_precision_policy.boot_precision_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/boot_precision_policy) | data source |
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/chassis_profile_template) | data source |
 | [intersight_compute_physical_summary.server](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_physical_summary) | data source |
+| [intersight_fabric_eth_network_control_policy.ethernet_network_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_control_policy) | data source |
+| [intersight_fabric_eth_network_group_policy.ethernet_network_group_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_group_policy) | data source |
 | [intersight_fabric_eth_network_policy.vlan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_policy) | data source |
 | [intersight_fabric_fc_network_policy.vsan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_fc_network_policy) | data source |
 | [intersight_fabric_port_policy.port_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_port_policy) | data source |
@@ -265,6 +268,7 @@ module "ip_pool" {
 | [intersight_iam_end_point_user_policy.local_user_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/iam_end_point_user_policy) | data source |
 | [intersight_ipmioverlan_policy.ipmi_over_lan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ipmioverlan_policy) | data source |
 | [intersight_kvm_policy.virtual_kvm_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/kvm_policy) | data source |
+| [intersight_macpool_pool.mac_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/macpool_pool) | data source |
 | [intersight_network_element_summary.fi](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/network_element_summary) | data source |
 | [intersight_networkconfig_policy.network_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/networkconfig_policy) | data source |
 | [intersight_ntp_policy.ntp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ntp_policy) | data source |
@@ -281,8 +285,12 @@ module "ip_pool" {
 | [intersight_thermal_policy.thermal_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/thermal_policy) | data source |
 | [intersight_uuidpool_pool.uuid_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/uuidpool_pool) | data source |
 | [intersight_vmedia_policy.virtual_media_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vmedia_policy) | data source |
+| [intersight_vnic_eth_adapter_policy.ethernet_adapter_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_eth_adapter_policy) | data source |
+| [intersight_vnic_eth_network_policy.ethernet_network_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_eth_network_policy) | data source |
+| [intersight_vnic_eth_qos_policy.ethernet_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_eth_qos_policy) | data source |
 | [intersight_vnic_lan_connectivity_policy.lan_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_lan_connectivity_policy) | data source |
 | [intersight_vnic_san_connectivity_policy.san_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_san_connectivity_policy) | data source |
+| [intersight_vnic_vnic_template.vnic_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_vnic_template) | data source |
 
 ## Modules
 

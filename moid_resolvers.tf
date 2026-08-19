@@ -321,4 +321,20 @@ locals {
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
     ][0]
   })
+
+  server_profile_template_moids = var.manage_intersight_templates ? tomap({
+    for k, r in intersight_server_profile_template.server_profile_template : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_server_profile_template.server_profile_template : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  resource_pool_moids = tomap({
+    for k, d in data.intersight_resourcepool_pool.resource_pool : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
 }

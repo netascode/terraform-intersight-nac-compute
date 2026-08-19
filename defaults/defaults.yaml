@@ -1463,3 +1463,5 @@ defaults:
     servers:
       provisioning:
         managed: true
+        action: none
+        wait_for_completion: false

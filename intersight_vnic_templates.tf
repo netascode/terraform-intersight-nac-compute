@@ -55,10 +55,16 @@ resource "intersight_vnic_vnic_template" "vnic_template" {
   name             = each.value.name
   switch_id        = each.value.placement_switch_id
 
-  cdn {
-    object_type = "vnic.Cdn"
-    nr_source   = each.value.cdn_source
-    value       = each.value.cdn_source == "user" ? coalesce(each.value.cdn_value, "") : ""
+  # Only emit the cdn block when the user requests a custom CDN name (source=user).
+  # When source=vnic (default), Intersight automatically uses the vNIC name as the
+  # CDN value — emitting value="" would cause a perpetual diff on every plan.
+  dynamic "cdn" {
+    for_each = each.value.cdn_source == "user" ? [1] : []
+    content {
+      object_type = "vnic.Cdn"
+      nr_source   = "user"
+      value       = coalesce(each.value.cdn_value, "")
+    }
   }
 
   dynamic "mac_pool" {

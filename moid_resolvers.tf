@@ -337,4 +337,50 @@ locals {
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
     ][0]
   })
+
+  # FC-related policy and pool moids (used by san_connectivity_vhbas and vhba_templates)
+  fc_adapter_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_fc_adapter_policy.fibre_channel_adapter_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_fc_adapter_policy.fibre_channel_adapter_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  fc_network_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_fc_network_policy.fibre_channel_network_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_fc_network_policy.fibre_channel_network_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  fc_qos_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_fc_qos_policy.fibre_channel_qos_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_fc_qos_policy.fibre_channel_qos_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  wwpn_pool_moids = var.manage_intersight_pools ? tomap({
+    for k, r in intersight_fcpool_pool.wwpn_pool : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_fcpool_pool.wwpn_pool : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  vhba_template_moids = var.manage_intersight_templates ? tomap({
+    for k, r in intersight_vnic_vhba_template.vhba_template : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_vhba_template.vhba_template : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
 }

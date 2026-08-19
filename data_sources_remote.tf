@@ -304,3 +304,43 @@ data "intersight_resourcepool_pool" "resource_pool" {
   }
   name = each.value.name
 }
+
+# ---------------------------------------------------------------------------
+# FC policies and WWPN pool consumed by vhba_templates and san_connectivity_vhbas
+# Activate when: !manage_intersight_policies && manage_intersight_templates
+# ---------------------------------------------------------------------------
+
+data "intersight_vnic_fc_adapter_policy" "fibre_channel_adapter_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._fc_adapter_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_fc_network_policy" "fibre_channel_network_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._fc_network_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_fc_qos_policy" "fibre_channel_qos_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._fc_qos_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_fcpool_pool" "wwpn_pool" {
+  for_each = (var.manage_intersight_pools || !var.manage_intersight_templates) ? {} : {
+    for k in local._wwpn_pool_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_vhba_template" "vhba_template" {
+  for_each = (var.manage_intersight_templates || !var.manage_intersight_policies) ? {} : {
+    for k in local._vhba_template_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}

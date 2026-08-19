@@ -29,6 +29,7 @@ locals {
             fc_adapter_policy_key = try(vhba.fibre_channel_adapter_policy, null) != null ? format("%s/%s", org.name, vhba.fibre_channel_adapter_policy) : null
             fc_network_policy_key = try(vhba.fibre_channel_network_policy, null) != null ? format("%s/%s", org.name, vhba.fibre_channel_network_policy) : null
             fc_qos_policy_key     = try(vhba.fibre_channel_qos_policy, null) != null ? format("%s/%s", org.name, vhba.fibre_channel_qos_policy) : null
+            vhba_template_key     = try(vhba.vhba_template, null) != null ? format("%s/%s", org.name, vhba.vhba_template) : null
           }
         ]
       }] : []
@@ -94,7 +95,7 @@ resource "intersight_vnic_fc_if" "vnic_fc_if" {
     for_each = each.value.wwpn_pool_key != null ? [1] : []
     content {
       object_type = "fcpool.Pool"
-      moid        = intersight_fcpool_pool.wwpn_pool[each.value.wwpn_pool_key].moid
+      moid        = local.wwpn_pool_moids[each.value.wwpn_pool_key]
     }
   }
 
@@ -102,7 +103,7 @@ resource "intersight_vnic_fc_if" "vnic_fc_if" {
     for_each = each.value.fc_adapter_policy_key != null ? [1] : []
     content {
       object_type = "vnic.FcAdapterPolicy"
-      moid        = intersight_vnic_fc_adapter_policy.fibre_channel_adapter_policy[each.value.fc_adapter_policy_key].moid
+      moid        = local.fc_adapter_policy_moids[each.value.fc_adapter_policy_key]
     }
   }
 
@@ -110,7 +111,7 @@ resource "intersight_vnic_fc_if" "vnic_fc_if" {
     for_each = each.value.fc_network_policy_key != null ? [1] : []
     content {
       object_type = "vnic.FcNetworkPolicy"
-      moid        = intersight_vnic_fc_network_policy.fibre_channel_network_policy[each.value.fc_network_policy_key].moid
+      moid        = local.fc_network_policy_moids[each.value.fc_network_policy_key]
     }
   }
 
@@ -118,7 +119,15 @@ resource "intersight_vnic_fc_if" "vnic_fc_if" {
     for_each = each.value.fc_qos_policy_key != null ? [1] : []
     content {
       object_type = "vnic.FcQosPolicy"
-      moid        = intersight_vnic_fc_qos_policy.fibre_channel_qos_policy[each.value.fc_qos_policy_key].moid
+      moid        = local.fc_qos_policy_moids[each.value.fc_qos_policy_key]
+    }
+  }
+
+  dynamic "src_template" {
+    for_each = each.value.vhba_template_key != null ? [1] : []
+    content {
+      object_type = "vnic.VhbaTemplate"
+      moid        = local.vhba_template_moids[each.value.vhba_template_key]
     }
   }
 

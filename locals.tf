@@ -205,6 +205,25 @@ locals {
   _vnic_template_ref_keys = toset(compact(flatten([
     [for v in local.lan_connectivity_vnics : try(v.vnic_template_key, null)],
   ])))
+  _fc_adapter_policy_ref_keys = toset(compact(flatten([
+    [for v in local.san_connectivity_vhbas : v.fc_adapter_policy_key],
+    [for t in local.vhba_templates : t.fc_adapter_policy_key],
+  ])))
+  _fc_network_policy_ref_keys = toset(compact(flatten([
+    [for v in local.san_connectivity_vhbas : v.fc_network_policy_key],
+    [for t in local.vhba_templates : t.fc_network_policy_key],
+  ])))
+  _fc_qos_policy_ref_keys = toset(compact(flatten([
+    [for v in local.san_connectivity_vhbas : v.fc_qos_policy_key],
+    [for t in local.vhba_templates : t.fc_qos_policy_key],
+  ])))
+  _wwpn_pool_ref_keys = toset(compact(flatten([
+    [for v in local.san_connectivity_vhbas : v.wwpn_pool_key],
+    [for t in local.vhba_templates : t.wwpn_pool_key],
+  ])))
+  _vhba_template_ref_keys = toset(compact(flatten([
+    [for v in local.san_connectivity_vhbas : try(v.vhba_template_key, null)],
+  ])))
 
   # Templates (manage_intersight_templates)
   _chassis_template_ref_keys = toset(compact(flatten([

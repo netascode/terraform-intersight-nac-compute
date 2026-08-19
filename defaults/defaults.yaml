@@ -1452,6 +1452,12 @@ defaults:
             failover: false
             allow_override: false
             cdn_source: vnic
+          vhba:
+            managed: true
+            description: ''
+            vhba_type: fc-initiator
+            persistent_lun_bindings: false
+            enable_override: false
         profiles:
           domain:
             managed: true

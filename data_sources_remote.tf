@@ -208,6 +208,53 @@ data "intersight_uuidpool_pool" "uuid_pool" {
   name = each.value.name
 }
 
+data "intersight_macpool_pool" "mac_pool" {
+  for_each = (var.manage_intersight_pools || !var.manage_intersight_templates) ? {} : {
+    for k in local._mac_pool_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+# ---------------------------------------------------------------------------
+# vNIC-related policies consumed by vnic_templates and lan_connectivity_vnics
+# Activate when: !manage_intersight_policies && manage_intersight_templates
+# ---------------------------------------------------------------------------
+
+data "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._ethernet_adapter_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_eth_qos_policy" "ethernet_qos_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._ethernet_qos_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_fabric_eth_network_group_policy" "ethernet_network_group_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._ethernet_network_group_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_fabric_eth_network_control_policy" "ethernet_network_control_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._ethernet_network_control_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_eth_network_policy" "ethernet_network_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._ethernet_network_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
 # ---------------------------------------------------------------------------
 # Templates (manage_intersight_templates = false)
 # Activate when: !manage_intersight_templates && manage_intersight_profiles
@@ -223,6 +270,13 @@ data "intersight_chassis_profile_template" "chassis_template" {
 data "intersight_fabric_switch_cluster_profile_template" "domain_template" {
   for_each = (var.manage_intersight_templates || !var.manage_intersight_profiles) ? {} : {
     for k in local._domain_template_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_vnic_template" "vnic_template" {
+  for_each = (var.manage_intersight_templates || !var.manage_intersight_policies) ? {} : {
+    for k in local._vnic_template_ref_keys : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }

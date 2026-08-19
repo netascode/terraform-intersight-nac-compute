@@ -27,6 +27,7 @@ locals {
             ethernet_network_policy_key         = try(vnic.ethernet_network_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_policy) : null
             ethernet_network_group_policy_key   = try(vnic.ethernet_network_group_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_group_policy) : null
             ethernet_qos_policy_key             = try(vnic.ethernet_qos_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_qos_policy) : null
+            vnic_template_key                   = try(vnic.vnic_template, null) != null ? format("%s/%s", org.name, vnic.vnic_template) : null
           }
         ]
       }] : []
@@ -82,7 +83,7 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     for_each = each.value.mac_pool_key != null ? [1] : []
     content {
       object_type = "macpool.Pool"
-      moid        = intersight_macpool_pool.mac_pool[each.value.mac_pool_key].moid
+      moid        = local.mac_pool_moids[each.value.mac_pool_key]
     }
   }
 
@@ -90,7 +91,7 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     for_each = each.value.ethernet_adapter_policy_key != null ? [1] : []
     content {
       object_type = "vnic.EthAdapterPolicy"
-      moid        = intersight_vnic_eth_adapter_policy.ethernet_adapter_policy[each.value.ethernet_adapter_policy_key].moid
+      moid        = local.ethernet_adapter_policy_moids[each.value.ethernet_adapter_policy_key]
     }
   }
 
@@ -98,7 +99,7 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     for_each = each.value.ethernet_network_control_policy_key != null ? [1] : []
     content {
       object_type = "fabric.EthNetworkControlPolicy"
-      moid        = intersight_fabric_eth_network_control_policy.ethernet_network_control_policy[each.value.ethernet_network_control_policy_key].moid
+      moid        = local.ethernet_network_control_policy_moids[each.value.ethernet_network_control_policy_key]
     }
   }
 
@@ -106,7 +107,7 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     for_each = each.value.ethernet_network_policy_key != null ? [1] : []
     content {
       object_type = "vnic.EthNetworkPolicy"
-      moid        = intersight_vnic_eth_network_policy.ethernet_network_policy[each.value.ethernet_network_policy_key].moid
+      moid        = local.ethernet_network_policy_moids[each.value.ethernet_network_policy_key]
     }
   }
 
@@ -114,7 +115,7 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     for_each = each.value.ethernet_network_group_policy_key != null ? [1] : []
     content {
       object_type = "fabric.EthNetworkGroupPolicy"
-      moid        = intersight_fabric_eth_network_group_policy.ethernet_network_group_policy[each.value.ethernet_network_group_policy_key].moid
+      moid        = local.ethernet_network_group_policy_moids[each.value.ethernet_network_group_policy_key]
     }
   }
 
@@ -122,7 +123,15 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     for_each = each.value.ethernet_qos_policy_key != null ? [1] : []
     content {
       object_type = "vnic.EthQosPolicy"
-      moid        = intersight_vnic_eth_qos_policy.ethernet_qos_policy[each.value.ethernet_qos_policy_key].moid
+      moid        = local.ethernet_qos_policy_moids[each.value.ethernet_qos_policy_key]
+    }
+  }
+
+  dynamic "src_template" {
+    for_each = each.value.vnic_template_key != null ? [1] : []
+    content {
+      object_type = "vnic.VnicTemplate"
+      moid        = local.vnic_template_moids[each.value.vnic_template_key]
     }
   }
 

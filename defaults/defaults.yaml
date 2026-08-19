@@ -1446,6 +1446,13 @@ defaults:
           chassis:
             managed: true
             description: ''
+          vnic:
+            managed: true
+            description: ''
+            placement_switch_id: A
+            failover: false
+            allow_override: false
+            cdn_source: vnic
         profiles:
           domain:
             managed: true

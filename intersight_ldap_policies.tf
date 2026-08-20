@@ -12,10 +12,36 @@ locals {
         user_search_precedence = try(policy.user_search_precedence, local.defaults.compute.intersight.organizations.policies.ldap.user_search_precedence)
         base_properties        = try(policy.base_properties, null)
         dns_parameters         = try(policy.dns_parameters, null)
-        providers              = try(policy.providers, [])
-        groups                 = try(policy.groups, [])
         tags                   = try(policy.tags, [])
       }] : []
+    ]
+  ])
+
+  ldap_providers = flatten([
+    for org in local.filtered_intersight_organizations : [
+      for policy in try(org.policies.ldap, []) :
+      try(policy.managed, true) ? [
+        for provider in try(policy.providers, []) : {
+          key        = format("%s/%s/%s", org.name, policy.name, provider.server)
+          policy_key = format("%s/%s", org.name, policy.name)
+          server     = provider.server
+          port       = try(provider.port, null)
+        }
+      ] : []
+    ]
+  ])
+
+  ldap_groups = flatten([
+    for org in local.filtered_intersight_organizations : [
+      for policy in try(org.policies.ldap, []) :
+      try(policy.managed, true) ? [
+        for group in try(policy.groups, []) : {
+          key        = format("%s/%s/%s", org.name, policy.name, group.name)
+          policy_key = format("%s/%s", org.name, policy.name)
+          name       = group.name
+          role       = try(group.role, null)
+        }
+      ] : []
     ]
   ])
 }
@@ -59,24 +85,6 @@ resource "intersight_iam_ldap_policy" "ldap_policy" {
     }
   }
 
-  dynamic "ldap_providers" {
-    for_each = each.value.providers
-    content {
-      object_type = "iam.LdapProvider"
-      server      = ldap_providers.value.server
-      port        = try(ldap_providers.value.port, null)
-    }
-  }
-
-  dynamic "ldap_groups" {
-    for_each = each.value.groups
-    content {
-      object_type = "iam.LdapGroup"
-      name        = ldap_groups.value.name
-      role        = try(ldap_groups.value.role, null)
-    }
-  }
-
   dynamic "tags" {
     for_each = try(each.value.tags, [])
     content {
@@ -89,4 +97,39 @@ resource "intersight_iam_ldap_policy" "ldap_policy" {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
   }
+}
+
+resource "intersight_iam_ldap_provider" "ldap_provider" {
+  for_each = { for p in local.ldap_providers : p.key => p if var.manage_intersight_policies }
+
+  server = each.value.server
+  port   = each.value.port
+
+  ldap_policy {
+    object_type = "iam.LdapPolicy"
+    moid        = intersight_iam_ldap_policy.ldap_policy[each.value.policy_key].moid
+  }
+
+  depends_on = [intersight_iam_ldap_policy.ldap_policy]
+}
+
+resource "intersight_iam_ldap_group" "ldap_group" {
+  for_each = {
+    for g in local.ldap_groups : g.key => g
+    if var.manage_intersight_policies && g.role != null
+  }
+
+  name = each.value.name
+
+  end_point_role {
+    object_type = "iam.EndPointRole"
+    selector    = "Name eq '${each.value.role}' and Type eq 'IMC'"
+  }
+
+  ldap_policy {
+    object_type = "iam.LdapPolicy"
+    moid        = intersight_iam_ldap_policy.ldap_policy[each.value.policy_key].moid
+  }
+
+  depends_on = [intersight_iam_ldap_policy.ldap_policy]
 }

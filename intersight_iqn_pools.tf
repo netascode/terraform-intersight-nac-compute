@@ -22,14 +22,14 @@ resource "intersight_iqnpool_pool" "iqn_pool" {
   description = try(each.value.description, "")
   prefix      = try(each.value.prefix, null)
 
-  dynamic "iq_n_suffix_blocks" {
+  dynamic "iqn_suffix_blocks" {
     for_each = try(each.value.iqn_suffix_blocks, [])
     content {
       object_type = "iqnpool.Block"
-      suffix      = try(iq_n_suffix_blocks.value.suffix, null)
-      from        = try(iq_n_suffix_blocks.value.from, null)
-      size        = try(iq_n_suffix_blocks.value.size, null)
-      to          = try(iq_n_suffix_blocks.value.to, null)
+      suffix      = try(iqn_suffix_blocks.value.suffix, null)
+      from        = try(iqn_suffix_blocks.value.from, null)
+      size        = try(iqn_suffix_blocks.value.size, null)
+      to          = try(iqn_suffix_blocks.value.to, null)
     }
   }
 

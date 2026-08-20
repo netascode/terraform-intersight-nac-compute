@@ -211,6 +211,15 @@ locals {
     ][0]
   })
 
+  ldap_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_iam_ldap_policy.ldap_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_iam_ldap_policy.ldap_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
   lan_connectivity_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_vnic_lan_connectivity_policy.lan_connectivity_policy : k => r.moid
     }) : tomap({

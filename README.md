@@ -275,6 +275,7 @@ module "ip_pool" {
 | [intersight_fcpool_pool.wwpn_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fcpool_pool) | data source |
 | [intersight_firmware_policy.firmware_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/firmware_policy) | data source |
 | [intersight_iam_end_point_user_policy.local_user_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/iam_end_point_user_policy) | data source |
+| [intersight_iam_ldap_policy.ldap_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/iam_ldap_policy) | data source |
 | [intersight_ipmioverlan_policy.ipmi_over_lan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ipmioverlan_policy) | data source |
 | [intersight_kvm_policy.virtual_kvm_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/kvm_policy) | data source |
 | [intersight_macpool_pool.mac_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/macpool_pool) | data source |

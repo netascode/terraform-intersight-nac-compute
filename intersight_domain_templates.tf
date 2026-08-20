@@ -19,6 +19,7 @@ locals {
         snmp_policy_key                 = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         syslog_policy_key               = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
         network_connectivity_policy_key = try(tmpl.network_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.network_connectivity_policy) : null
+        ldap_policy_key                 = try(tmpl.ldap_policy, null) != null ? format("%s/%s", org.name, tmpl.ldap_policy) : null
       }] : []
     ]
   ])
@@ -39,6 +40,7 @@ locals {
         snmp_policy_key                 = tmpl.snmp_policy_key
         syslog_policy_key               = tmpl.syslog_policy_key
         network_connectivity_policy_key = tmpl.network_connectivity_policy_key
+        ldap_policy_key                 = tmpl.ldap_policy_key
       },
       {
         key                             = format("%s/B", tmpl.key)
@@ -54,6 +56,7 @@ locals {
         snmp_policy_key                 = tmpl.snmp_policy_key
         syslog_policy_key               = tmpl.syslog_policy_key
         network_connectivity_policy_key = tmpl.network_connectivity_policy_key
+        ldap_policy_key                 = tmpl.ldap_policy_key
       },
     ]
   ])
@@ -160,6 +163,14 @@ resource "intersight_fabric_switch_profile_template" "domain_switch_profile_temp
     content {
       object_type = "networkconfig.Policy"
       moid        = local.network_connectivity_policy_moids[each.value.network_connectivity_policy_key]
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.ldap_policy_key != null ? [1] : []
+    content {
+      object_type = "iam.LdapPolicy"
+      moid        = local.ldap_policy_moids[each.value.ldap_policy_key]
     }
   }
 }

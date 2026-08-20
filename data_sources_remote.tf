@@ -93,6 +93,13 @@ data "intersight_vmedia_policy" "virtual_media_policy" {
   name = each.value.name
 }
 
+data "intersight_iam_ldap_policy" "ldap_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._ldap_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
 data "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
   for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
     for k in local._lan_connectivity_policy_ref_keys : k => { name = split("/", k)[1] }

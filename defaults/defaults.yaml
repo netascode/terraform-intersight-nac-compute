@@ -1434,6 +1434,11 @@ defaults:
             managed: true
           wwpn:
             managed: true
+          resource:
+            managed: true
+            description: ''
+            pool_type: Static
+            resource_type: None
         templates:
           server:
             managed: true

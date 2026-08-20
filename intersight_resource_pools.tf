@@ -7,6 +7,7 @@ locals {
         org_name      = org.name
         name          = pool.name
         description   = try(pool.description, local.defaults.compute.intersight.organizations.pools.resource.description, "")
+        pool_type     = try(pool.pool_type, local.defaults.compute.intersight.organizations.pools.resource.pool_type)
         resource_type = try(pool.resource_type, local.defaults.compute.intersight.organizations.pools.resource.resource_type)
         selectors     = try(pool.selectors, [])
         tags          = try(pool.tags, [])
@@ -20,7 +21,7 @@ resource "intersight_resourcepool_pool" "resource_pool" {
 
   description   = each.value.description
   name          = each.value.name
-  pool_type     = "Server"
+  pool_type     = each.value.pool_type
   resource_type = each.value.resource_type
 
   dynamic "selectors" {

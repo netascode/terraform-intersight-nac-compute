@@ -1228,6 +1228,12 @@ defaults:
               failover: false
               fabric: A
               order: 0
+          ldap:
+            managed: true
+            description: ''
+            enabled: true
+            enable_dns: false
+            user_search_precedence: LocalUserDb
           san_connectivity:
             managed: true
             description: ''

@@ -331,7 +331,9 @@ locals {
     ][0]
   })
 
-  resource_pool_moids = tomap({
+  resource_pool_moids = var.manage_intersight_pools ? tomap({
+    for k, r in intersight_resourcepool_pool.resource_pool : k => r.moid
+    }) : tomap({
     for k, d in data.intersight_resourcepool_pool.resource_pool : k => [
       for r in d.results : r.moid
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]

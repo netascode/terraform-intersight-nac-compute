@@ -1434,6 +1434,10 @@ defaults:
             managed: true
           wwpn:
             managed: true
+          resource:
+            managed: true
+            description: ''
+            server_type: Server
         templates:
           server:
             managed: true

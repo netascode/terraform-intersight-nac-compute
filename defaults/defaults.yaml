@@ -1437,8 +1437,8 @@ defaults:
           resource:
             managed: true
             description: ''
-            pool_type: Dynamic
-            resource_type: Server
+            pool_type: Static
+            resource_type: None
         templates:
           server:
             managed: true

@@ -238,4 +238,7 @@ locals {
   _resource_pool_ref_keys = toset(compact(flatten([
     [for s in local.intersight_servers : s.resource_pool_key],
   ])))
+  _fc_zone_policy_ref_keys = toset(compact(flatten([
+    [for v in local.san_connectivity_vhbas : try(v.fc_zone_policy_keys, [])],
+  ])))
 }

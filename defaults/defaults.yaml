@@ -1206,6 +1206,10 @@ defaults:
             cos: 3
             max_data_field_size: 2112
             rate_limit: 0
+          fc_zone:
+            managed: true
+            description: ''
+            fc_target_zoning_type: SIST
           imc_access:
             managed: true
             description: ''

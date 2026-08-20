@@ -344,3 +344,10 @@ data "intersight_vnic_vhba_template" "vhba_template" {
   }
   name = each.value.name
 }
+
+data "intersight_fabric_fc_zone_policy" "fc_zone_policy" {
+  for_each = var.manage_intersight_policies ? {} : {
+    for k in local._fc_zone_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}

@@ -30,6 +30,7 @@ locals {
             fc_network_policy_key = try(vhba.fibre_channel_network_policy, null) != null ? format("%s/%s", org.name, vhba.fibre_channel_network_policy) : null
             fc_qos_policy_key     = try(vhba.fibre_channel_qos_policy, null) != null ? format("%s/%s", org.name, vhba.fibre_channel_qos_policy) : null
             vhba_template_key     = try(vhba.vhba_template, null) != null ? format("%s/%s", org.name, vhba.vhba_template) : null
+            fc_zone_policy_keys   = [for z in try(vhba.fc_zone_policies, []) : format("%s/%s", org.name, z)]
           }
         ]
       }] : []
@@ -128,6 +129,14 @@ resource "intersight_vnic_fc_if" "vnic_fc_if" {
     content {
       object_type = "vnic.VhbaTemplate"
       moid        = local.vhba_template_moids[each.value.vhba_template_key]
+    }
+  }
+
+  dynamic "fc_zone_policies" {
+    for_each = each.value.fc_zone_policy_keys
+    content {
+      object_type = "fabric.FcZonePolicy"
+      moid        = local.fc_zone_policy_moids[fc_zone_policies.value]
     }
   }
 

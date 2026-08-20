@@ -1426,6 +1426,9 @@ defaults:
           ip:
             managed: true
             description: ''
+          iqn:
+            managed: true
+            description: ''
           mac:
             managed: true
           uuid:

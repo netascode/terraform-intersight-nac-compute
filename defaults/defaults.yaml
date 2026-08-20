@@ -1437,7 +1437,7 @@ defaults:
           resource:
             managed: true
             description: ''
-            server_type: Server
+            resource_type: Server
         templates:
           server:
             managed: true

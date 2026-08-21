@@ -1222,6 +1222,12 @@ defaults:
             description: ''
             enabled: true
             privilege: admin
+          iscsi_adapter:
+            managed: true
+            description: ''
+            connection_timeout: 15
+            dhcp_timeout: 60
+            lun_busy_retry_count: 15
           lan_connectivity:
             managed: true
             description: ''

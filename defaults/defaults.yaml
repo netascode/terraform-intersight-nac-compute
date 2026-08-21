@@ -1352,6 +1352,9 @@ defaults:
             baud_rate: 9600
             com_port: com0
             ssh_port: 2400
+          scrub:
+            managed: true
+            description: ''
           smtp:
             managed: true
             description: ''

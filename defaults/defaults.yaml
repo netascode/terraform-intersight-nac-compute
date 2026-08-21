@@ -1231,7 +1231,7 @@ defaults:
           iscsi_boot:
             managed: true
             description: ''
-            target_source_type: DHCP
+            target_source_type: Auto
             initiator_ip_source: Pool
           lan_connectivity:
             managed: true

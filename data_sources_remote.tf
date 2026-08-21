@@ -358,3 +358,24 @@ data "intersight_fabric_fc_zone_policy" "fc_zone_policy" {
   }
   name = each.value.name
 }
+
+data "intersight_ippool_pool" "ip_pool" {
+  for_each = (var.manage_intersight_pools || !var.manage_intersight_policies) ? {} : {
+    for k in local._ip_pool_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_iscsi_adapter_policy" "iscsi_adapter_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_policies) ? {} : {
+    for k in local._iscsi_adapter_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+data "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._iscsi_boot_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}

@@ -403,4 +403,31 @@ locals {
       if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
     ][0]
   })
+
+  ip_pool_moids = var.manage_intersight_pools ? tomap({
+    for k, r in intersight_ippool_pool.ip_pool : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_ippool_pool.ip_pool : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  iscsi_adapter_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_iscsi_adapter_policy.iscsi_adapter_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_iscsi_adapter_policy.iscsi_adapter_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
+  iscsi_boot_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_iscsi_boot_policy.iscsi_boot_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_iscsi_boot_policy.iscsi_boot_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
 }

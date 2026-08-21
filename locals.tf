@@ -182,6 +182,15 @@ locals {
   _uuid_pool_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.uuid_pool_key],
   ])))
+  _ip_pool_ref_keys = toset(compact(flatten([
+    [for p in local.iscsi_boot_policies : p.ip_pool_key],
+  ])))
+  _iscsi_adapter_policy_ref_keys = toset(compact(flatten([
+    [for p in local.iscsi_boot_policies : p.iscsi_adapter_policy_key],
+  ])))
+  _iscsi_boot_policy_ref_keys = toset(compact(flatten([
+    [for t in local.vnic_templates : try(t.iscsi_boot_policy_key, null)],
+  ])))
 
   _ethernet_adapter_policy_ref_keys = toset(compact(flatten([
     [for v in local.lan_connectivity_vnics : v.ethernet_adapter_policy_key],

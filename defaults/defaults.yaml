@@ -1228,6 +1228,12 @@ defaults:
             connection_timeout: 15
             dhcp_timeout: 60
             lun_busy_retry_count: 15
+          iscsi_boot:
+            managed: true
+            description: ''
+            target_source_type: Static
+            initiator_ip_source: Pool
+            auto_targetvendor_name: false
           lan_connectivity:
             managed: true
             description: ''

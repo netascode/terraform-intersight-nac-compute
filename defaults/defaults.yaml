@@ -1233,7 +1233,6 @@ defaults:
             description: ''
             target_source_type: Static
             initiator_ip_source: Pool
-            auto_targetvendor_name: false
           lan_connectivity:
             managed: true
             description: ''

@@ -10,7 +10,7 @@ locals {
         target_source_type             = try(policy.target_source_type, local.defaults.compute.intersight.organizations.policies.iscsi_boot.target_source_type)
         initiator_ip_source            = try(policy.initiator_ip_source, local.defaults.compute.intersight.organizations.policies.iscsi_boot.initiator_ip_source)
         initiator_static_ip_v4_address = try(policy.initiator_static_ip_v4_address, null)
-        auto_targetvendor_name         = try(policy.auto_targetvendor_name, local.defaults.compute.intersight.organizations.policies.iscsi_boot.auto_targetvendor_name)
+        auto_targetvendor_name         = try(policy.auto_targetvendor_name, null)
         ip_pool_key                    = try(policy.ip_pool, null) != null ? format("%s/%s", org.name, policy.ip_pool) : null
         iscsi_adapter_policy_key       = try(policy.iscsi_adapter_policy, null) != null ? format("%s/%s", org.name, policy.iscsi_adapter_policy) : null
         chap                           = try(policy.chap, null)
@@ -30,7 +30,7 @@ resource "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
   target_source_type             = each.value.target_source_type
   initiator_ip_source            = each.value.initiator_ip_source
   initiator_static_ip_v4_address = each.value.initiator_static_ip_v4_address
-  auto_targetvendor_name         = each.value.auto_targetvendor_name
+  auto_targetvendor_name         = each.value.auto_targetvendor_name != null ? each.value.auto_targetvendor_name : null
 
   dynamic "initiator_ip_pool" {
     for_each = each.value.ip_pool_key != null ? [1] : []

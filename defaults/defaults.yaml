@@ -1232,7 +1232,7 @@ defaults:
             managed: true
             description: ''
             target_source_type: Auto
-            initiator_ip_source: Pool
+            initiator_ip_source: DHCP
           lan_connectivity:
             managed: true
             description: ''

@@ -13,6 +13,8 @@ locals {
         auto_targetvendor_name         = try(policy.auto_targetvendor_name, null)
         ip_pool_key                    = try(policy.ip_pool, null) != null ? format("%s/%s", org.name, policy.ip_pool) : null
         iscsi_adapter_policy_key       = try(policy.iscsi_adapter_policy, null) != null ? format("%s/%s", org.name, policy.iscsi_adapter_policy) : null
+        primary_target_policy_key      = try(policy.primary_target_policy, null) != null ? format("%s/%s", org.name, policy.primary_target_policy) : null
+        secondary_target_policy_key    = try(policy.secondary_target_policy, null) != null ? format("%s/%s", org.name, policy.secondary_target_policy) : null
         chap                           = try(policy.chap, null)
         mutual_chap                    = try(policy.mutual_chap, null)
         initiator_static_ip_v4_config  = try(policy.initiator_static_ip_v4_config, null)
@@ -74,6 +76,22 @@ resource "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
       netmask       = try(initiator_static_ip_v4_config.value.subnet_mask, null)
       primary_dns   = try(initiator_static_ip_v4_config.value.primary_dns, null)
       secondary_dns = try(initiator_static_ip_v4_config.value.secondary_dns, null)
+    }
+  }
+
+  dynamic "primary_target_policy" {
+    for_each = each.value.primary_target_policy_key != null ? [1] : []
+    content {
+      object_type = "vnic.IscsiStaticTargetPolicy"
+      moid        = local.iscsi_static_target_policy_moids[each.value.primary_target_policy_key]
+    }
+  }
+
+  dynamic "secondary_target_policy" {
+    for_each = each.value.secondary_target_policy_key != null ? [1] : []
+    content {
+      object_type = "vnic.IscsiStaticTargetPolicy"
+      moid        = local.iscsi_static_target_policy_moids[each.value.secondary_target_policy_key]
     }
   }
 

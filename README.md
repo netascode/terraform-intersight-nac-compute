@@ -254,6 +254,7 @@ module "ip_pool" {
 | [intersight_vnic_fc_qos_policy.fibre_channel_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_fc_qos_policy) | resource |
 | [intersight_vnic_iscsi_adapter_policy.iscsi_adapter_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_iscsi_adapter_policy) | resource |
 | [intersight_vnic_iscsi_boot_policy.iscsi_boot_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_iscsi_boot_policy) | resource |
+| [intersight_vnic_iscsi_static_target_policy.iscsi_static_target_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_iscsi_static_target_policy) | resource |
 | [intersight_vnic_lan_connectivity_policy.lan_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_lan_connectivity_policy) | resource |
 | [intersight_vnic_san_connectivity_policy.san_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_san_connectivity_policy) | resource |
 | [intersight_vnic_vhba_template.vhba_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_vhba_template) | resource |
@@ -306,6 +307,7 @@ module "ip_pool" {
 | [intersight_vnic_fc_qos_policy.fibre_channel_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_fc_qos_policy) | data source |
 | [intersight_vnic_iscsi_adapter_policy.iscsi_adapter_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_iscsi_adapter_policy) | data source |
 | [intersight_vnic_iscsi_boot_policy.iscsi_boot_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_iscsi_boot_policy) | data source |
+| [intersight_vnic_iscsi_static_target_policy.iscsi_static_target_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_iscsi_static_target_policy) | data source |
 | [intersight_vnic_lan_connectivity_policy.lan_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_lan_connectivity_policy) | data source |
 | [intersight_vnic_san_connectivity_policy.san_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_san_connectivity_policy) | data source |
 | [intersight_vnic_vhba_template.vhba_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/vnic_vhba_template) | data source |

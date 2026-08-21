@@ -188,6 +188,10 @@ locals {
   _iscsi_adapter_policy_ref_keys = toset(compact(flatten([
     [for p in local.iscsi_boot_policies : p.iscsi_adapter_policy_key],
   ])))
+  _iscsi_static_target_policy_ref_keys = toset(compact(flatten([
+    [for p in local.iscsi_boot_policies : try(p.primary_target_policy_key, null)],
+    [for p in local.iscsi_boot_policies : try(p.secondary_target_policy_key, null)],
+  ])))
   _iscsi_boot_policy_ref_keys = toset(compact(flatten([
     [for t in local.vnic_templates : try(t.iscsi_boot_policy_key, null)],
   ])))

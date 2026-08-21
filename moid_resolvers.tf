@@ -422,6 +422,15 @@ locals {
     ][0]
   })
 
+  iscsi_static_target_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_vnic_iscsi_static_target_policy.iscsi_static_target_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_vnic_iscsi_static_target_policy.iscsi_static_target_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
   iscsi_boot_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_vnic_iscsi_boot_policy.iscsi_boot_policy : k => r.moid
     }) : tomap({

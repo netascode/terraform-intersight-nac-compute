@@ -72,6 +72,13 @@ data "intersight_sol_policy" "serial_over_lan_policy" {
   name = each.value.name
 }
 
+data "intersight_compute_scrub_policy" "scrub_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
+    for k in local._scrub_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
 data "intersight_ssh_policy" "ssh_policy" {
   for_each = (var.manage_intersight_policies || !var.manage_intersight_templates) ? {} : {
     for k in local._ssh_policy_ref_keys : k => { name = split("/", k)[1] }

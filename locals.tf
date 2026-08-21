@@ -147,6 +147,9 @@ locals {
   _serial_over_lan_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.serial_over_lan_policy_key],
   ])))
+  _scrub_policy_ref_keys = toset(compact(flatten([
+    [for t in local.server_templates : t.scrub_policy_key],
+  ])))
   _ssh_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ssh_policy_key],
   ])))

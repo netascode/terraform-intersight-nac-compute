@@ -166,6 +166,11 @@ locals {
   _virtual_media_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.virtual_media_policy_key],
   ])))
+  _ldap_policy_ref_keys = toset(compact(flatten([
+    [for t in local.server_templates : t.ldap_policy_key],
+    [for st in local.domain_switch_profile_templates : try(st.ldap_policy_key, null)],
+    [for sp in local.domain_switch_profiles : try(sp.ldap_policy_key, null)],
+  ])))
   _lan_connectivity_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.lan_connectivity_policy_key],
   ])))

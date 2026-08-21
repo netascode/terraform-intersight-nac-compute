@@ -197,6 +197,7 @@ locals {
   ])))
   _iscsi_boot_policy_ref_keys = toset(compact(flatten([
     [for t in local.vnic_templates : try(t.iscsi_boot_policy_key, null)],
+    [for v in local.lan_connectivity_vnics : try(v.iscsi_boot_policy_key, null)],
   ])))
 
   _ethernet_adapter_policy_ref_keys = toset(compact(flatten([

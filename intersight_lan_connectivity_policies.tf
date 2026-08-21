@@ -28,6 +28,7 @@ locals {
             ethernet_network_group_policy_key   = try(vnic.ethernet_network_group_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_network_group_policy) : null
             ethernet_qos_policy_key             = try(vnic.ethernet_qos_policy, null) != null ? format("%s/%s", org.name, vnic.ethernet_qos_policy) : null
             vnic_template_key                   = try(vnic.vnic_template, null) != null ? format("%s/%s", org.name, vnic.vnic_template) : null
+            iscsi_boot_policy_key               = try(vnic.iscsi_boot_policy, null) != null ? format("%s/%s", org.name, vnic.iscsi_boot_policy) : null
           }
         ]
       }] : []
@@ -132,6 +133,14 @@ resource "intersight_vnic_eth_if" "vnic_eth_if" {
     content {
       object_type = "vnic.VnicTemplate"
       moid        = local.vnic_template_moids[each.value.vnic_template_key]
+    }
+  }
+
+  dynamic "iscsi_boot_policy" {
+    for_each = each.value.iscsi_boot_policy_key != null ? [1] : []
+    content {
+      object_type = "vnic.IscsiBootPolicy"
+      moid        = local.iscsi_boot_policy_moids[each.value.iscsi_boot_policy_key]
     }
   }
 

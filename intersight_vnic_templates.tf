@@ -21,6 +21,7 @@ locals {
         ethernet_network_group_policy_key   = try(tmpl.ethernet_network_group_policy, null) != null ? format("%s/%s", org.name, tmpl.ethernet_network_group_policy) : null
         ethernet_network_policy_key         = try(tmpl.ethernet_network_policy, null) != null ? format("%s/%s", org.name, tmpl.ethernet_network_policy) : null
         ethernet_qos_policy_key             = try(tmpl.ethernet_qos_policy, null) != null ? format("%s/%s", org.name, tmpl.ethernet_qos_policy) : null
+        iscsi_boot_policy_key               = try(tmpl.iscsi_boot_policy, null) != null ? format("%s/%s", org.name, tmpl.iscsi_boot_policy) : null
         sriov = try(tmpl.sriov, null) != null ? {
           enabled           = try(tmpl.sriov.enabled, false)
           vf_count          = try(tmpl.sriov.number_of_vfs, 64)
@@ -112,6 +113,14 @@ resource "intersight_vnic_vnic_template" "vnic_template" {
     content {
       object_type = "vnic.EthQosPolicy"
       moid        = local.ethernet_qos_policy_moids[each.value.ethernet_qos_policy_key]
+    }
+  }
+
+  dynamic "iscsi_boot_policy" {
+    for_each = each.value.iscsi_boot_policy_key != null ? [1] : []
+    content {
+      object_type = "vnic.IscsiBootPolicy"
+      moid        = local.iscsi_boot_policy_moids[each.value.iscsi_boot_policy_key]
     }
   }
 

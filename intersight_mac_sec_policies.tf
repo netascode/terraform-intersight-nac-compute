@@ -51,17 +51,15 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
       dynamic "sec_keys" {
         for_each = try(primary_key_chain.value.keys, [])
         content {
-          cryptographic_algorithm  = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
-          id                       = try(sec_keys.value.id, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.id)
-          key_type                 = try(sec_keys.value.key_type, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.key_type)
-          object_type              = "fabric.SecKey"
-          octet_string             = try(sec_keys.value.octet_string, "")
-          send_lifetime_unlimited  = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
-          send_lifetime_infinite   = false
-          send_lifetime_duration   = 0
-          send_lifetime_start_time = "2000-01-01T00:00:00Z"
-          send_lifetime_end_time   = "2000-01-01T00:00:00Z"
-          send_lifetime_time_zone  = "UTC"
+          cryptographic_algorithm = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
+          id                      = try(sec_keys.value.id, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.id)
+          key_type                = try(sec_keys.value.key_type, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.key_type)
+          object_type             = "fabric.SecKey"
+          octet_string            = try(sec_keys.value.octet_string, "")
+          send_lifetime_unlimited = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
+          send_lifetime_infinite  = false
+          send_lifetime_duration  = 0
+          send_lifetime_time_zone = "UTC"
         }
       }
     }
@@ -74,17 +72,15 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
       dynamic "sec_keys" {
         for_each = try(fallback_key_chain.value.keys, [])
         content {
-          cryptographic_algorithm  = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
-          id                       = try(sec_keys.value.id, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.id)
-          key_type                 = try(sec_keys.value.key_type, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.key_type)
-          object_type              = "fabric.SecKey"
-          octet_string             = try(sec_keys.value.octet_string, "")
-          send_lifetime_unlimited  = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
-          send_lifetime_infinite   = false
-          send_lifetime_duration   = 0
-          send_lifetime_start_time = "2000-01-01T00:00:00Z"
-          send_lifetime_end_time   = "2000-01-01T00:00:00Z"
-          send_lifetime_time_zone  = "UTC"
+          cryptographic_algorithm = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
+          id                      = try(sec_keys.value.id, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.id)
+          key_type                = try(sec_keys.value.key_type, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.key_type)
+          object_type             = "fabric.SecKey"
+          octet_string            = try(sec_keys.value.octet_string, "")
+          send_lifetime_unlimited = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
+          send_lifetime_infinite  = false
+          send_lifetime_duration  = 0
+          send_lifetime_time_zone = "UTC"
         }
       }
     }
@@ -101,5 +97,9 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
+  }
+
+  lifecycle {
+    ignore_changes = [primary_key_chain, fallback_key_chain]
   }
 }

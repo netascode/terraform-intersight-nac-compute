@@ -1179,6 +1179,11 @@ defaults:
             managed: true
             description: ''
             dimm_blocklisting: true
+          persistent_memory:
+            managed: true
+            description: ''
+            management_mode: configured-from-intersight
+            retain_namespaces: true
           ethernet_adapter:
             managed: true
             description: ''

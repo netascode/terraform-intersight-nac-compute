@@ -188,6 +188,7 @@ module "ip_pool" {
 | [intersight_chassis_profile.chassis_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile) | resource |
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile_template) | resource |
 | [intersight_compute_scrub_policy.scrub_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/compute_scrub_policy) | resource |
+| [intersight_deviceconnector_policy.device_connector_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/deviceconnector_policy) | resource |
 | [intersight_fabric_appliance_pc_role.appliance_pc_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_appliance_pc_role) | resource |
 | [intersight_fabric_appliance_role.appliance_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_appliance_role) | resource |
 | [intersight_fabric_eth_network_control_policy.ethernet_network_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_eth_network_control_policy) | resource |
@@ -273,6 +274,7 @@ module "ip_pool" {
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/chassis_profile_template) | data source |
 | [intersight_compute_physical_summary.server](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_physical_summary) | data source |
 | [intersight_compute_scrub_policy.scrub_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_scrub_policy) | data source |
+| [intersight_deviceconnector_policy.device_connector_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/deviceconnector_policy) | data source |
 | [intersight_fabric_eth_network_control_policy.ethernet_network_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_control_policy) | data source |
 | [intersight_fabric_eth_network_group_policy.ethernet_network_group_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_group_policy) | data source |
 | [intersight_fabric_eth_network_policy.vlan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_policy) | data source |

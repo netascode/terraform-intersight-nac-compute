@@ -1163,6 +1163,10 @@ defaults:
           adapter_configuration:
             managed: true
             description: ''
+          device_connector:
+            managed: true
+            description: ''
+            configuration_from_intersight_only: true
           ethernet_adapter:
             managed: true
             description: ''

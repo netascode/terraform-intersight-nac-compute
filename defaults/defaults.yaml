@@ -1188,12 +1188,12 @@ defaults:
             managed: true
             description: ''
             cipher_suite: GCM-AES-256
-            confidentiality_offset: 0
+            confidentiality_offset: CONF-OFFSET-0
             include_icv_indicator: true
             key_server_priority: 16
             replay_window_size: 0
             sak_expiry_time: 0
-            security_policy: Should-Secure
+            security_policy: Should-secure
           ethernet_adapter:
             managed: true
             description: ''

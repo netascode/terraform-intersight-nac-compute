@@ -1197,6 +1197,7 @@ defaults:
             keys:
               id: "01"
               cryptographic_algorithm: AES_256_CMAC
+              key_type: Type-6
               send_lifetime_unlimited: true
           ethernet_adapter:
             managed: true

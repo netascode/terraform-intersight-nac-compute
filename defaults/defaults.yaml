@@ -1184,6 +1184,21 @@ defaults:
             description: ''
             management_mode: configured-from-intersight
             retain_namespaces: true
+          mac_sec:
+            managed: true
+            description: ''
+            cipher_suite: GCM-AES-256
+            confidentiality_offset: CONF-OFFSET-0
+            include_icv_indicator: true
+            key_server_priority: 16
+            replay_window_size: 0
+            sak_expiry_time: 0
+            security_policy: Should-secure
+            keys:
+              id: "01"
+              cryptographic_algorithm: AES_256_CMAC
+              key_type: Type-6
+              send_lifetime_unlimited: true
           ethernet_adapter:
             managed: true
             description: ''

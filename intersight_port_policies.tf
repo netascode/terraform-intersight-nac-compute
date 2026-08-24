@@ -85,6 +85,7 @@ locals {
               eth_network_group_policy_key = try(role.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, role.ethernet_network_group_policy) : null
               flow_control_policy_key      = try(role.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, role.flow_control_policy) : null
               link_control_policy_key      = try(role.link_control_policy, null) != null ? format("%s/%s", policy.org_name, role.link_control_policy) : null
+              mac_sec_policy_key           = try(role.mac_sec_policy, null) != null ? format("%s/%s", policy.org_name, role.mac_sec_policy) : null
               user_label                   = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
@@ -110,6 +111,7 @@ locals {
         flow_control_policy_key      = try(channel.flow_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.flow_control_policy) : null
         link_aggregation_policy_key  = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
         link_control_policy_key      = try(channel.link_control_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_control_policy) : null
+        mac_sec_policy_key           = try(channel.mac_sec_policy, null) != null ? format("%s/%s", policy.org_name, channel.mac_sec_policy) : null
         interfaces = flatten([
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
@@ -460,6 +462,14 @@ resource "intersight_fabric_uplink_role" "uplink_role" {
     }
   }
 
+  dynamic "mac_sec_policy" {
+    for_each = each.value.mac_sec_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.MacSecPolicy"
+      moid        = local.mac_sec_policy_moids[each.value.mac_sec_policy_key]
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -520,6 +530,14 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
     content {
       object_type = "fabric.LinkControlPolicy"
       moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
+    }
+  }
+
+  dynamic "mac_sec_policy" {
+    for_each = each.value.mac_sec_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.MacSecPolicy"
+      moid        = local.mac_sec_policy_moids[each.value.mac_sec_policy_key]
     }
   }
 

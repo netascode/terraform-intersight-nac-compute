@@ -51,11 +51,11 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
       additional_properties = jsonencode({
         SecKeys = [
           for k in try(primary_key_chain.value.keys, []) : {
-            CryptographicAlgorithm = each.value.cipher_suite
+            CryptographicAlgorithm = try(k.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
             Id                     = try(k.id, 1)
             ObjectType             = "fabric.SecKey"
             OctetString            = try(k.octet_string, "")
-            SendLifetimeUnlimited  = try(k.send_lifetime_unlimited, true)
+            SendLifetimeUnlimited  = try(k.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
             SendLifetimeInfinite   = false
             SendLifetimeDuration   = 0
             SendLifetimeStartTime  = "2000-01-01T00:00:00Z"
@@ -74,11 +74,11 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
       additional_properties = jsonencode({
         SecKeys = [
           for k in try(fallback_key_chain.value.keys, []) : {
-            CryptographicAlgorithm = each.value.cipher_suite
+            CryptographicAlgorithm = try(k.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
             Id                     = try(k.id, 2)
             ObjectType             = "fabric.SecKey"
             OctetString            = try(k.octet_string, "")
-            SendLifetimeUnlimited  = try(k.send_lifetime_unlimited, true)
+            SendLifetimeUnlimited  = try(k.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
             SendLifetimeInfinite   = false
             SendLifetimeDuration   = 0
             SendLifetimeStartTime  = "2000-01-01T00:00:00Z"

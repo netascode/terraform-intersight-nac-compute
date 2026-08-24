@@ -1194,6 +1194,9 @@ defaults:
             replay_window_size: 0
             sak_expiry_time: 0
             security_policy: Should-secure
+            keys:
+              cryptographic_algorithm: AES_256_CMAC
+              send_lifetime_unlimited: true
           ethernet_adapter:
             managed: true
             description: ''

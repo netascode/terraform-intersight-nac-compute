@@ -1157,6 +1157,9 @@ defaults:
             boot_mode: Uefi
             description: ''
             secure_boot: true
+          drive_security:
+            managed: true
+            description: ''
           ethernet_adapter:
             managed: true
             description: ''

@@ -21,6 +21,7 @@ locals {
         san_connectivity_policy_key       = try(tmpl.san_connectivity_policy, null) != null ? format("%s/%s", org.name, tmpl.san_connectivity_policy) : null
         serial_over_lan_policy_key        = try(tmpl.serial_over_lan_policy, null) != null ? format("%s/%s", org.name, tmpl.serial_over_lan_policy) : null
         scrub_policy_key                  = try(tmpl.scrub_policy, null) != null ? format("%s/%s", org.name, tmpl.scrub_policy) : null
+        drive_security_policy_key         = try(tmpl.drive_security_policy, null) != null ? format("%s/%s", org.name, tmpl.drive_security_policy) : null
         smtp_policy_key                   = try(tmpl.smtp_policy, null) != null ? format("%s/%s", org.name, tmpl.smtp_policy) : null
         snmp_policy_key                   = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         ssh_policy_key                    = try(tmpl.ssh_policy, null) != null ? format("%s/%s", org.name, tmpl.ssh_policy) : null
@@ -150,6 +151,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "compute.ScrubPolicy"
       moid        = local.scrub_policy_moids[each.value.scrub_policy_key]
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.drive_security_policy_key != null ? [1] : []
+    content {
+      object_type = "storage.DriveSecurityPolicy"
+      moid        = local.drive_security_policy_moids[each.value.drive_security_policy_key]
     }
   }
 

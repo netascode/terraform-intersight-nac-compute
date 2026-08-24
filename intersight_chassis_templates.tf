@@ -3,15 +3,16 @@ locals {
     for org in local.filtered_intersight_organizations : [
       for tmpl in try(org.templates.chassis, []) :
       try(tmpl.managed, true) ? [{
-        key                   = format("%s/%s", org.name, tmpl.name)
-        org_name              = org.name
-        name                  = tmpl.name
-        description           = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.chassis.description, "")
-        tags                  = try(tmpl.tags, [])
-        imc_access_policy_key = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
-        power_policy_key      = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
-        snmp_policy_key       = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
-        thermal_policy_key    = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
+        key                               = format("%s/%s", org.name, tmpl.name)
+        org_name                          = org.name
+        name                              = tmpl.name
+        description                       = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.chassis.description, "")
+        tags                              = try(tmpl.tags, [])
+        certificate_management_policy_key = try(tmpl.certificate_management_policy, null) != null ? format("%s/%s", org.name, tmpl.certificate_management_policy) : null
+        imc_access_policy_key             = try(tmpl.imc_access_policy, null) != null ? format("%s/%s", org.name, tmpl.imc_access_policy) : null
+        power_policy_key                  = try(tmpl.power_policy, null) != null ? format("%s/%s", org.name, tmpl.power_policy) : null
+        snmp_policy_key                   = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
+        thermal_policy_key                = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
       }] : []
     ]
   ])
@@ -22,6 +23,14 @@ resource "intersight_chassis_profile_template" "chassis_template" {
 
   name        = each.value.name
   description = each.value.description
+
+  dynamic "policy_bucket" {
+    for_each = each.value.certificate_management_policy_key != null ? [1] : []
+    content {
+      object_type = "certificatemanagement.Policy"
+      moid        = local.certificate_management_policy_moids[each.value.certificate_management_policy_key]
+    }
+  }
 
   dynamic "policy_bucket" {
     for_each = each.value.imc_access_policy_key != null ? [1] : []

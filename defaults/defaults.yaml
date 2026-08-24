@@ -1147,6 +1147,9 @@ defaults:
             tpm_disabled:
               tpm_control: disabled
               tpm_support: disabled
+          certificate_management:
+            managed: true
+            description: ''
           boot_order:
             managed: true
             boot_devices:

@@ -48,22 +48,21 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
     for_each = each.value.primary_key_chain != null ? [each.value.primary_key_chain] : []
     content {
       name = primary_key_chain.value.name
-      additional_properties = jsonencode({
-        SecKeys = [
-          for k in try(primary_key_chain.value.keys, []) : {
-            CryptographicAlgorithm = try(k.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
-            Id                     = try(k.id, 1)
-            ObjectType             = "fabric.SecKey"
-            OctetString            = try(k.octet_string, "")
-            SendLifetimeUnlimited  = try(k.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
-            SendLifetimeInfinite   = false
-            SendLifetimeDuration   = 0
-            SendLifetimeStartTime  = "2000-01-01T00:00:00Z"
-            SendLifetimeEndTime    = "2000-01-01T00:00:00Z"
-            SendLifetimeTimeZone   = "UTC"
-          }
-        ]
-      })
+      dynamic "sec_keys" {
+        for_each = try(primary_key_chain.value.keys, [])
+        content {
+          cryptographic_algorithm  = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
+          id                       = tostring(try(sec_keys.value.id, 1))
+          object_type              = "fabric.SecKey"
+          octet_string             = try(sec_keys.value.octet_string, "")
+          send_lifetime_unlimited  = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
+          send_lifetime_infinite   = false
+          send_lifetime_duration   = 0
+          send_lifetime_start_time = "2000-01-01T00:00:00Z"
+          send_lifetime_end_time   = "2000-01-01T00:00:00Z"
+          send_lifetime_time_zone  = "UTC"
+        }
+      }
     }
   }
 
@@ -71,22 +70,21 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
     for_each = each.value.fallback_key_chain != null ? [each.value.fallback_key_chain] : []
     content {
       name = fallback_key_chain.value.name
-      additional_properties = jsonencode({
-        SecKeys = [
-          for k in try(fallback_key_chain.value.keys, []) : {
-            CryptographicAlgorithm = try(k.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
-            Id                     = try(k.id, 2)
-            ObjectType             = "fabric.SecKey"
-            OctetString            = try(k.octet_string, "")
-            SendLifetimeUnlimited  = try(k.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
-            SendLifetimeInfinite   = false
-            SendLifetimeDuration   = 0
-            SendLifetimeStartTime  = "2000-01-01T00:00:00Z"
-            SendLifetimeEndTime    = "2000-01-01T00:00:00Z"
-            SendLifetimeTimeZone   = "UTC"
-          }
-        ]
-      })
+      dynamic "sec_keys" {
+        for_each = try(fallback_key_chain.value.keys, [])
+        content {
+          cryptographic_algorithm  = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
+          id                       = tostring(try(sec_keys.value.id, 2))
+          object_type              = "fabric.SecKey"
+          octet_string             = try(sec_keys.value.octet_string, "")
+          send_lifetime_unlimited  = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)
+          send_lifetime_infinite   = false
+          send_lifetime_duration   = 0
+          send_lifetime_start_time = "2000-01-01T00:00:00Z"
+          send_lifetime_end_time   = "2000-01-01T00:00:00Z"
+          send_lifetime_time_zone  = "UTC"
+        }
+      }
     }
   }
 

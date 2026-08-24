@@ -25,6 +25,7 @@ locals {
         adapter_configuration_policy_key  = try(tmpl.adapter_configuration_policy, null) != null ? format("%s/%s", org.name, tmpl.adapter_configuration_policy) : null
         device_connector_policy_key       = try(tmpl.device_connector_policy, null) != null ? format("%s/%s", org.name, tmpl.device_connector_policy) : null
         sd_card_policy_key                = try(tmpl.sd_card_policy, null) != null ? format("%s/%s", org.name, tmpl.sd_card_policy) : null
+        memory_policy_key                 = try(tmpl.memory_policy, null) != null ? format("%s/%s", org.name, tmpl.memory_policy) : null
         smtp_policy_key                   = try(tmpl.smtp_policy, null) != null ? format("%s/%s", org.name, tmpl.smtp_policy) : null
         snmp_policy_key                   = try(tmpl.snmp_policy, null) != null ? format("%s/%s", org.name, tmpl.snmp_policy) : null
         ssh_policy_key                    = try(tmpl.ssh_policy, null) != null ? format("%s/%s", org.name, tmpl.ssh_policy) : null
@@ -186,6 +187,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
     content {
       object_type = "sdcard.Policy"
       moid        = local.sd_card_policy_moids[each.value.sd_card_policy_key]
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.memory_policy_key != null ? [1] : []
+    content {
+      object_type = "memory.Policy"
+      moid        = local.memory_policy_moids[each.value.memory_policy_key]
     }
   }
 

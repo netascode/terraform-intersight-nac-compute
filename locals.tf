@@ -167,6 +167,9 @@ locals {
   _sd_card_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.sd_card_policy_key],
   ])))
+  _memory_policy_ref_keys = toset(compact(flatten([
+    [for t in local.server_templates : t.memory_policy_key],
+  ])))
   _ssh_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ssh_policy_key],
   ])))

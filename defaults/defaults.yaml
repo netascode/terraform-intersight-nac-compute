@@ -1160,6 +1160,9 @@ defaults:
           drive_security:
             managed: true
             description: ''
+          adapter_configuration:
+            managed: true
+            description: ''
           ethernet_adapter:
             managed: true
             description: ''

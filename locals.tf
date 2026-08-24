@@ -158,6 +158,9 @@ locals {
   _drive_security_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.drive_security_policy_key],
   ])))
+  _adapter_configuration_policy_ref_keys = toset(compact(flatten([
+    [for t in local.server_templates : t.adapter_configuration_policy_key],
+  ])))
   _ssh_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ssh_policy_key],
   ])))

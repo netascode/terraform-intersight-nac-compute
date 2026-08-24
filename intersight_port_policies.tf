@@ -462,6 +462,14 @@ resource "intersight_fabric_uplink_role" "uplink_role" {
     }
   }
 
+  dynamic "mac_sec_policy" {
+    for_each = each.value.mac_sec_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.MacSecPolicy"
+      moid        = local.mac_sec_policy_moids[each.value.mac_sec_policy_key]
+    }
+  }
+
   port_policy {
     object_type = "fabric.PortPolicy"
     moid        = intersight_fabric_port_policy.port_policy[each.value.policy_key].moid
@@ -522,6 +530,14 @@ resource "intersight_fabric_uplink_pc_role" "uplink_pc_role" {
     content {
       object_type = "fabric.LinkControlPolicy"
       moid        = intersight_fabric_link_control_policy.link_control_policy[each.value.link_control_policy_key].moid
+    }
+  }
+
+  dynamic "mac_sec_policy" {
+    for_each = each.value.mac_sec_policy_key != null ? [1] : []
+    content {
+      object_type = "fabric.MacSecPolicy"
+      moid        = local.mac_sec_policy_moids[each.value.mac_sec_policy_key]
     }
   }
 

@@ -12,17 +12,18 @@ locals {
           ]))
         )
         ) ? [{
-          key                   = format("%s/%s", org.name, profile.name)
-          org_name              = org.name
-          name                  = profile.name
-          description           = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
-          tags                  = try(profile.tags, [])
-          serial_number         = try(profile.serial_number, null)
-          chassis_template_key  = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
-          imc_access_policy_key = try(profile.imc_access_policy, null) != null ? format("%s/%s", org.name, profile.imc_access_policy) : null
-          power_policy_key      = try(profile.power_policy, null) != null ? format("%s/%s", org.name, profile.power_policy) : null
-          snmp_policy_key       = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
-          thermal_policy_key    = try(profile.thermal_policy, null) != null ? format("%s/%s", org.name, profile.thermal_policy) : null
+          key                               = format("%s/%s", org.name, profile.name)
+          org_name                          = org.name
+          name                              = profile.name
+          description                       = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
+          tags                              = try(profile.tags, [])
+          serial_number                     = try(profile.serial_number, null)
+          chassis_template_key              = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
+          certificate_management_policy_key = try(profile.certificate_management_policy, null) != null ? format("%s/%s", org.name, profile.certificate_management_policy) : null
+          imc_access_policy_key             = try(profile.imc_access_policy, null) != null ? format("%s/%s", org.name, profile.imc_access_policy) : null
+          power_policy_key                  = try(profile.power_policy, null) != null ? format("%s/%s", org.name, profile.power_policy) : null
+          snmp_policy_key                   = try(profile.snmp_policy, null) != null ? format("%s/%s", org.name, profile.snmp_policy) : null
+          thermal_policy_key                = try(profile.thermal_policy, null) != null ? format("%s/%s", org.name, profile.thermal_policy) : null
       }] : []
     ]
   ])
@@ -40,6 +41,14 @@ resource "intersight_chassis_profile" "chassis_profile" {
     content {
       object_type = "chassis.ProfileTemplate"
       moid        = local.chassis_template_moids[each.value.chassis_template_key]
+    }
+  }
+
+  dynamic "policy_bucket" {
+    for_each = each.value.certificate_management_policy_key != null ? [1] : []
+    content {
+      object_type = "certificatemanagement.Policy"
+      moid        = local.certificate_management_policy_moids[each.value.certificate_management_policy_key]
     }
   }
 

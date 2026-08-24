@@ -84,6 +84,11 @@ locals {
   _bios_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.bios_policy_key],
   ])))
+  _certificate_management_policy_ref_keys = toset(compact(flatten([
+    [for t in local.server_templates : t.certificate_management_policy_key],
+    [for t in local.chassis_templates : t.certificate_management_policy_key],
+    [for p in local.chassis_profiles : p.certificate_management_policy_key],
+  ])))
   _boot_precision_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.boot_order_policy_key],
   ])))

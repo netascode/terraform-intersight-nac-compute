@@ -22,6 +22,15 @@ locals {
     ][0]
   })
 
+  certificate_management_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_certificatemanagement_policy.certificate_management_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_certificatemanagement_policy.certificate_management_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
   boot_precision_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_boot_precision_policy.boot_precision_policy : k => r.moid
     }) : tomap({

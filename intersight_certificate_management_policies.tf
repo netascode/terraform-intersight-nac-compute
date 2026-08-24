@@ -25,11 +25,22 @@ resource "intersight_certificatemanagement_policy" "certificate_management_polic
     content {
       object_type = certificates.value.certificate_type == "Imc" ? "certificatemanagement.Imc" : "certificatemanagement.RootCaCertificate"
       enabled     = try(certificates.value.enabled, true)
-      private_key = try(certificates.value.private_key, null)
+
+      # For IMC: embed private key via additional_properties (not a direct provider attribute)
+      # For RootCA: embed certificate name via additional_properties
+      additional_properties = certificates.value.certificate_type == "Imc" ? jsonencode({
+        CertType   = try(certificates.value.cert_type, "None")
+        Privatekey = base64encode(try(certificates.value.private_key, ""))
+        }) : jsonencode({
+        CertificateName = certificates.value.name
+      })
 
       certificate {
-        pem_certificate = certificates.value.pem_certificate
-        object_type     = "x509.Certificate"
+        object_type = "x509.Certificate"
+        # PEM certificate is set via additional_properties as base64 — not a direct attribute
+        additional_properties = jsonencode({
+          PemCertificate = base64encode(try(certificates.value.pem_certificate, ""))
+        })
       }
     }
   }

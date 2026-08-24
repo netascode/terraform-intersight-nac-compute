@@ -52,7 +52,7 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
         for_each = try(primary_key_chain.value.keys, [])
         content {
           cryptographic_algorithm  = try(sec_keys.value.cryptographic_algorithm, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.cryptographic_algorithm)
-          id                       = tostring(try(sec_keys.value.id, 1))
+          id                       = try(sec_keys.value.id, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.id)
           object_type              = "fabric.SecKey"
           octet_string             = try(sec_keys.value.octet_string, "")
           send_lifetime_unlimited  = try(sec_keys.value.send_lifetime_unlimited, local.defaults.compute.intersight.organizations.policies.mac_sec.keys.send_lifetime_unlimited)

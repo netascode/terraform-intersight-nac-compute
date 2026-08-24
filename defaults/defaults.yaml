@@ -1195,6 +1195,7 @@ defaults:
             sak_expiry_time: 0
             security_policy: Should-secure
             keys:
+              id: "01"
               cryptographic_algorithm: AES_256_CMAC
               send_lifetime_unlimited: true
           ethernet_adapter:

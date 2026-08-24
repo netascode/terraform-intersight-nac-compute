@@ -241,6 +241,7 @@ module "ip_pool" {
 | [intersight_sol_policy.serial_over_lan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/sol_policy) | resource |
 | [intersight_ssh_policy.ssh_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/ssh_policy) | resource |
 | [intersight_storage_drive_group.storage_drive_group](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/storage_drive_group) | resource |
+| [intersight_storage_drive_security_policy.drive_security_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/storage_drive_security_policy) | resource |
 | [intersight_storage_storage_policy.storage_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/storage_storage_policy) | resource |
 | [intersight_syslog_policy.syslog_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/syslog_policy) | resource |
 | [intersight_thermal_policy.thermal_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/thermal_policy) | resource |
@@ -298,6 +299,7 @@ module "ip_pool" {
 | [intersight_snmp_policy.snmp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/snmp_policy) | data source |
 | [intersight_sol_policy.serial_over_lan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/sol_policy) | data source |
 | [intersight_ssh_policy.ssh_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ssh_policy) | data source |
+| [intersight_storage_drive_security_policy.drive_security_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/storage_drive_security_policy) | data source |
 | [intersight_storage_storage_policy.storage_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/storage_storage_policy) | data source |
 | [intersight_syslog_policy.syslog_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/syslog_policy) | data source |
 | [intersight_thermal_policy.thermal_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/thermal_policy) | data source |

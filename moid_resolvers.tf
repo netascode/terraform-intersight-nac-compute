@@ -211,6 +211,15 @@ locals {
     ][0]
   })
 
+  sd_card_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_sdcard_policy.sd_card_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_sdcard_policy.sd_card_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
   ssh_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_ssh_policy.ssh_policy : k => r.moid
     }) : tomap({

@@ -1167,6 +1167,14 @@ defaults:
             managed: true
             description: ''
             configuration_from_intersight_only: true
+          sd_card:
+            managed: true
+            description: ''
+            enable_os: false
+            enable_diagnostics: false
+            enable_drivers: false
+            enable_huu: false
+            enable_scu: false
           ethernet_adapter:
             managed: true
             description: ''

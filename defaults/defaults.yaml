@@ -1175,6 +1175,10 @@ defaults:
             enable_drivers: false
             enable_huu: false
             enable_scu: false
+          memory:
+            managed: true
+            description: ''
+            dimm_blocklisting: true
           ethernet_adapter:
             managed: true
             description: ''

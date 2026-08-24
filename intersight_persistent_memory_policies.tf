@@ -61,7 +61,8 @@ resource "intersight_memory_persistent_memory_policy" "persistent_memory_policy"
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

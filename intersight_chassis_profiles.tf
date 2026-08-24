@@ -88,7 +88,8 @@ resource "intersight_chassis_profile" "chassis_profile" {
     for_each = each.value.tags
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

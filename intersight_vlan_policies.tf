@@ -65,7 +65,8 @@ resource "intersight_fabric_eth_network_policy" "vlan_policy" {
     for_each = each.value.tags
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

@@ -90,7 +90,8 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

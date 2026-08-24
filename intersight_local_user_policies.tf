@@ -58,7 +58,8 @@ resource "intersight_iam_end_point_user_policy" "local_user_policy" {
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

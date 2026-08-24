@@ -29,7 +29,8 @@ resource "intersight_vnic_fc_qos_policy" "fibre_channel_qos_policy" {
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

@@ -99,7 +99,8 @@ resource "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

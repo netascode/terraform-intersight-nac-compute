@@ -36,7 +36,8 @@ resource "intersight_fabric_eth_network_control_policy" "ethernet_network_contro
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

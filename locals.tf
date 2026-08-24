@@ -1,25 +1,39 @@
 locals {
   # ---------------------------------------------------------------------------
   # Tag-match helper — evaluates whether an object's tags satisfy all filters.
-  # filter_tags: list of "key=value" strings (all must match — AND semantics)
-  # obj_tags:    list of {key, value} objects from the data model
+  # filter_tags: list of "key=value" strings (KeyValue match — AND semantics)
+  #              or plain path strings without "=" (PathTag match — AND semantics,
+  #              prefix-aware: "datacenter/madrid" matches "datacenter/madrid/rack1")
+  # obj_tags:    list of {key, value, type?} objects from the data model
   # Returns true when filter_tags is empty OR every filter tag is found in obj_tags.
   # ---------------------------------------------------------------------------
   _tag_filter_intersight_orgs = [
-    for t in var.managed_intersight_organization_tags :
-    { key = split("=", t)[0], value = split("=", t)[1] }
+    for t in var.managed_intersight_organization_tags : {
+      key   = split("=", t)[0]
+      value = length(split("=", t)) > 1 ? split("=", t)[1] : null
+      type  = length(split("=", t)) > 1 ? "KeyValue" : "PathTag"
+    }
   ]
   _tag_filter_intersight_domains = [
-    for t in var.managed_intersight_domain_tags :
-    { key = split("=", t)[0], value = split("=", t)[1] }
+    for t in var.managed_intersight_domain_tags : {
+      key   = split("=", t)[0]
+      value = length(split("=", t)) > 1 ? split("=", t)[1] : null
+      type  = length(split("=", t)) > 1 ? "KeyValue" : "PathTag"
+    }
   ]
   _tag_filter_intersight_chassis = [
-    for t in var.managed_intersight_chassis_tags :
-    { key = split("=", t)[0], value = split("=", t)[1] }
+    for t in var.managed_intersight_chassis_tags : {
+      key   = split("=", t)[0]
+      value = length(split("=", t)) > 1 ? split("=", t)[1] : null
+      type  = length(split("=", t)) > 1 ? "KeyValue" : "PathTag"
+    }
   ]
   _tag_filter_servers = [
-    for t in var.managed_server_tags :
-    { key = split("=", t)[0], value = split("=", t)[1] }
+    for t in var.managed_server_tags : {
+      key   = split("=", t)[0]
+      value = length(split("=", t)) > 1 ? split("=", t)[1] : null
+      type  = length(split("=", t)) > 1 ? "KeyValue" : "PathTag"
+    }
   ]
 
   # ---------------------------------------------------------------------------
@@ -39,7 +53,11 @@ locals {
       length(local._tag_filter_intersight_orgs) > 0
       && alltrue([
         for tf in local._tag_filter_intersight_orgs :
-        anytrue([for ot in try(org.tags, []) : ot.key == tf.key && ot.value == tf.value])
+        anytrue([
+          for ot in try(org.tags, []) :
+          (try(ot.type, "KeyValue") == "KeyValue" && tf.type == "KeyValue" && ot.key == tf.key && ot.value == tf.value)
+          || (try(ot.type, "KeyValue") == "PathTag" && tf.type == "PathTag" && (ot.key == tf.key || startswith(ot.key, "${tf.key}/")))
+        ])
       ])
     )
   ]
@@ -62,7 +80,11 @@ locals {
         length(local._tag_filter_servers) > 0
         && alltrue([
           for tf in local._tag_filter_servers :
-          anytrue([for ot in try(server.tags, []) : ot.key == tf.key && ot.value == tf.value])
+          anytrue([
+            for ot in try(server.tags, []) :
+            (try(ot.type, "KeyValue") == "KeyValue" && tf.type == "KeyValue" && ot.key == tf.key && ot.value == tf.value)
+            || (try(ot.type, "KeyValue") == "PathTag" && tf.type == "PathTag" && (ot.key == tf.key || startswith(ot.key, "${tf.key}/")))
+          ])
         ])
       )
     )

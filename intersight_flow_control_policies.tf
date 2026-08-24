@@ -28,7 +28,8 @@ resource "intersight_fabric_flow_control_policy" "flow_control_policy" {
     for_each = try(each.value.tags, [])
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

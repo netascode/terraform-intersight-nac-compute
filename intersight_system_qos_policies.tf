@@ -60,7 +60,8 @@ resource "intersight_fabric_system_qos_policy" "system_qos_policy" {
     for_each = each.value.tags
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+      type  = try(tags.value.type, "KeyValue")
     }
   }
 

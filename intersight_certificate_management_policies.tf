@@ -25,7 +25,7 @@ resource "intersight_certificatemanagement_policy" "certificate_management_polic
     content {
       object_type = certificates.value.certificate_type == "Imc" ? "certificatemanagement.Imc" : "certificatemanagement.RootCaCertificate"
       enabled     = try(certificates.value.enabled, true)
-      privatekey  = try(certificates.value.private_key, null)
+      private_key = try(certificates.value.private_key, null)
 
       certificate {
         pem_certificate = certificates.value.pem_certificate

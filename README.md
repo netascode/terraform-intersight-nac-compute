@@ -204,6 +204,7 @@ module "ip_pool" {
 | [intersight_fabric_flow_control_policy.flow_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_flow_control_policy) | resource |
 | [intersight_fabric_link_aggregation_policy.link_aggregation_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_link_aggregation_policy) | resource |
 | [intersight_fabric_link_control_policy.link_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_link_control_policy) | resource |
+| [intersight_fabric_mac_sec_policy.mac_sec_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_mac_sec_policy) | resource |
 | [intersight_fabric_multicast_policy.multicast_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_multicast_policy) | resource |
 | [intersight_fabric_port_mode.port_mode](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_port_mode) | resource |
 | [intersight_fabric_port_policy.port_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_port_policy) | resource |
@@ -283,6 +284,7 @@ module "ip_pool" {
 | [intersight_fabric_eth_network_policy.vlan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_policy) | data source |
 | [intersight_fabric_fc_network_policy.vsan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_fc_network_policy) | data source |
 | [intersight_fabric_fc_zone_policy.fc_zone_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_fc_zone_policy) | data source |
+| [intersight_fabric_mac_sec_policy.mac_sec_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_mac_sec_policy) | data source |
 | [intersight_fabric_port_policy.port_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_port_policy) | data source |
 | [intersight_fabric_switch_cluster_profile_template.domain_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_switch_cluster_profile_template) | data source |
 | [intersight_fabric_switch_control_policy.switch_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_switch_control_policy) | data source |

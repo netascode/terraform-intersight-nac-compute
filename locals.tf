@@ -173,6 +173,10 @@ locals {
   _persistent_memory_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.persistent_memory_policy_key],
   ])))
+  _mac_sec_policy_ref_keys = toset(compact(flatten([
+    [for r in local.port_role_ethernet_uplinks : try(r.mac_sec_policy_key, null)],
+    [for c in local.port_channel_ethernet_uplinks : try(c.mac_sec_policy_key, null)],
+  ])))
   _ssh_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ssh_policy_key],
   ])))

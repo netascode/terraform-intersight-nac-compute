@@ -89,7 +89,6 @@ resource "intersight_chassis_profile" "chassis_profile" {
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
     }
   }
 

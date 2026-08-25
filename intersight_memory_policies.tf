@@ -22,11 +22,18 @@ resource "intersight_memory_policy" "memory_policy" {
   enable_dimm_blocklisting = each.value.dimm_blocklisting
 
   dynamic "tags" {
-    for_each = try(each.value.tags, [])
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key                   = tags.value.key
+      additional_properties = jsonencode({ Type = "PathTag" })
     }
   }
 

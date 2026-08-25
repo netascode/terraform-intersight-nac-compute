@@ -61,7 +61,6 @@ resource "intersight_fabric_system_qos_policy" "system_qos_policy" {
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
     }
   }
 

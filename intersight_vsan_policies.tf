@@ -42,7 +42,6 @@ resource "intersight_fabric_fc_network_policy" "vsan_policy" {
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
     }
   }
 

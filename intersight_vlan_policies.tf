@@ -66,7 +66,6 @@ resource "intersight_fabric_eth_network_policy" "vlan_policy" {
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
     }
   }
 

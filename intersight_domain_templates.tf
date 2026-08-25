@@ -74,7 +74,6 @@ resource "intersight_fabric_switch_cluster_profile_template" "domain_template" {
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
     }
   }
 

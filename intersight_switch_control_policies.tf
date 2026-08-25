@@ -52,7 +52,6 @@ resource "intersight_fabric_switch_control_policy" "switch_control_policy" {
     content {
       key   = tags.value.key
       value = try(tags.value.value, "")
-      type  = try(tags.value.type, "KeyValue")
     }
   }
 

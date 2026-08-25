@@ -105,7 +105,7 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
     for_each = each.value.tags
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
     }
   }
 

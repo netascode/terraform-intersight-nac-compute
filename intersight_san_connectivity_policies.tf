@@ -60,10 +60,17 @@ resource "intersight_vnic_san_connectivity_policy" "san_connectivity_policy" {
   }
 
   dynamic "tags" {
-    for_each = try(each.value.tags, [])
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key = tags.value.key
     }
   }
 

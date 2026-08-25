@@ -87,10 +87,17 @@ resource "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
   }
 
   dynamic "tags" {
-    for_each = try(each.value.tags, [])
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key = tags.value.key
     }
   }
 

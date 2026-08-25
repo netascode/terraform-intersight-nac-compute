@@ -41,7 +41,7 @@ resource "intersight_fabric_fc_network_policy" "vsan_policy" {
     for_each = each.value.tags
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
     }
   }
 

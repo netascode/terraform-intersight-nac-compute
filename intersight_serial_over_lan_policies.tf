@@ -26,10 +26,17 @@ resource "intersight_sol_policy" "serial_over_lan_policy" {
   ssh_port    = each.value.ssh_port
 
   dynamic "tags" {
-    for_each = try(each.value.tags, [])
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key = tags.value.key
     }
   }
 

@@ -57,10 +57,17 @@ resource "intersight_adapter_config_policy" "adapter_configuration_policy" {
   }
 
   dynamic "tags" {
-    for_each = try(each.value.tags, [])
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key = tags.value.key
     }
   }
 

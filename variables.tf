@@ -72,7 +72,7 @@ variable "managed_intersight_organizations" {
 }
 
 variable "managed_intersight_organization_tags" {
-  description = "List of \"key=value\" tag strings. Orgs that carry ALL listed tags are included. Empty = include all."
+  description = "Tag filters for org scoping. Use \"key=value\" for KeyValue tags or a bare path (e.g. \"datacenter/madrid\") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all."
   type        = list(string)
   default     = []
 }
@@ -84,7 +84,7 @@ variable "managed_intersight_domains" {
 }
 
 variable "managed_intersight_domain_tags" {
-  description = "List of \"key=value\" tag strings. Domain profiles that carry ALL listed tags are included. Empty = include all."
+  description = "Tag filters for domain profile scoping. Use \"key=value\" for KeyValue tags or a bare path (e.g. \"datacenter/madrid\") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all."
   type        = list(string)
   default     = []
 }
@@ -96,7 +96,7 @@ variable "managed_intersight_chassis" {
 }
 
 variable "managed_intersight_chassis_tags" {
-  description = "List of \"key=value\" tag strings. Chassis profiles that carry ALL listed tags are included. Empty = include all."
+  description = "Tag filters for chassis profile scoping. Use \"key=value\" for KeyValue tags or a bare path (e.g. \"datacenter/madrid\") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all."
   type        = list(string)
   default     = []
 }
@@ -108,7 +108,7 @@ variable "managed_servers" {
 }
 
 variable "managed_server_tags" {
-  description = "List of \"key=value\" tag strings. Servers that carry ALL listed tags are included. Empty = include all."
+  description = "Tag filters for server scoping. Use \"key=value\" for KeyValue tags or a bare path (e.g. \"datacenter/madrid\") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all."
   type        = list(string)
   default     = []
 }

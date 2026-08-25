@@ -25,10 +25,17 @@ resource "intersight_fabric_flow_control_policy" "flow_control_policy" {
   send_direction             = each.value.send
 
   dynamic "tags" {
-    for_each = try(each.value.tags, [])
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key = tags.value.key
     }
   }
 

@@ -51,7 +51,7 @@ resource "intersight_fabric_switch_control_policy" "switch_control_policy" {
     for_each = each.value.tags
     content {
       key   = tags.value.key
-      value = tags.value.value
+      value = try(tags.value.value, "")
     }
   }
 

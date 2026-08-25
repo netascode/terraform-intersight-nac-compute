@@ -96,8 +96,7 @@ resource "intersight_iam_ldap_policy" "ldap_policy" {
   dynamic "tags" {
     for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
     content {
-      key                   = tags.value.key
-      additional_properties = jsonencode({ Type = "PathTag" })
+      key = tags.value.key
     }
   }
 

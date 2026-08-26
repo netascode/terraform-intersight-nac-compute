@@ -1355,12 +1355,12 @@ defaults:
             managed: true
             description: ''
             allocated_budget: 0
-            dynamic_rebalancing: Enabled
-            extended_power_capacity: Enabled
+            dynamic_rebalancing: true
+            extended_power_capacity: true
             power_priority: Low
-            power_profiling: Enabled
+            power_profiling: true
             power_restore_state: AlwaysOff
-            power_save_mode: Enabled
+            power_save_mode: true
             processor_package_power_limit: Default
             redundancy_mode: Grid
           snmp:
@@ -1433,9 +1433,9 @@ defaults:
           multicast:
             managed: true
             description: ''
-            querier_state: Disabled
-            snooping_state: Enabled
-            src_ip_proxy: Enabled
+            querier_enabled: false
+            snooping_enabled: true
+            src_ip_proxy_enabled: true
           link_aggregation:
             managed: true
             description: ''
@@ -1444,19 +1444,19 @@ defaults:
           link_control:
             managed: true
             description: ''
-            admin_state: Enabled
+            enabled: true
             mode: normal
           flow_control:
             managed: true
             description: ''
             priority: auto
-            receive: Disabled
-            send: Disabled
+            receive_enabled: false
+            send_enabled: false
           system_qos:
             managed: true
             description: ''
             classes:
-              state: Enabled
+              enabled: true
               packet_drop: true
               weight: 5
             pfc_watchdog:
@@ -1470,7 +1470,7 @@ defaults:
             switching_mode_fc: end-host
             jumbo_frame: true
             vlan_port_count_optimization: false
-            fabric_port_channel_vhba_reset: Disabled
+            fabric_port_channel_vhba_reset: false
             reserved_vlan_start_id: 3915
             mac_address_table_aging: Default
             mac_aging_time: 14500

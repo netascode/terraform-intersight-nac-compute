@@ -21,8 +21,8 @@ resource "intersight_fabric_flow_control_policy" "flow_control_policy" {
   name                       = each.value.name
   description                = try(each.value.description, "")
   priority_flow_control_mode = each.value.priority
-  receive_direction          = each.value.receive
-  send_direction             = each.value.send
+  receive_direction          = each.value.receive_enabled ? "Enabled" : "Disabled"
+  send_direction             = each.value.send_enabled ? "Enabled" : "Disabled"
 
   dynamic "tags" {
     for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]

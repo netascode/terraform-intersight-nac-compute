@@ -32,7 +32,7 @@ resource "intersight_fabric_switch_control_policy" "switch_control_policy" {
   fc_switching_mode              = each.value.switching_mode_fc
   enable_jumbo_frame             = each.value.jumbo_frame
   vlan_port_optimization_enabled = each.value.vlan_port_count_optimization
-  fabric_pc_vhba_reset           = each.value.fabric_port_channel_vhba_reset
+  fabric_pc_vhba_reset           = each.value.fabric_port_channel_vhba_reset ? "Enabled" : "Disabled"
   reserved_vlan_start_id         = each.value.reserved_vlan_start_id
 
   mac_aging_settings {

@@ -11,7 +11,7 @@ locals {
         classes = [
           for cls in try(policy.classes, []) : {
             priority           = cls.priority
-            admin_state        = try(cls.state, local.defaults.compute.intersight.organizations.policies.system_qos.classes.state)
+            admin_state        = (try(cls.enabled, local.defaults.compute.intersight.organizations.policies.system_qos.classes.enabled)) ? "Enabled" : "Disabled"
             cos                = try(cls.cos, null)
             bandwidth_percent  = try(cls.bandwidth_percent, null)
             mtu                = try(cls.mtu, null)

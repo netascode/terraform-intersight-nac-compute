@@ -20,11 +20,11 @@ resource "intersight_fabric_multicast_policy" "multicast_policy" {
 
   name                    = each.value.name
   description             = try(each.value.description, "")
-  querier_state           = each.value.querier_state
+  querier_state           = each.value.querier_enabled ? "Enabled" : "Disabled"
   querier_ip_address      = try(each.value.querier_ip_address, "")
   querier_ip_address_peer = try(each.value.querier_ip_address_peer, "")
-  snooping_state          = each.value.snooping_state
-  src_ip_proxy            = each.value.src_ip_proxy
+  snooping_state          = each.value.snooping_enabled ? "Enabled" : "Disabled"
+  src_ip_proxy            = each.value.src_ip_proxy_enabled ? "Enabled" : "Disabled"
 
   dynamic "tags" {
     for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]

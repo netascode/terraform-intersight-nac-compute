@@ -21,12 +21,12 @@ resource "intersight_power_policy" "power_policy" {
   name                          = each.value.name
   description                   = try(each.value.description, "")
   allocated_budget              = each.value.allocated_budget
-  dynamic_rebalancing           = each.value.dynamic_rebalancing
-  extended_power_capacity       = each.value.extended_power_capacity
+  dynamic_rebalancing           = each.value.dynamic_rebalancing ? "Enabled" : "Disabled"
+  extended_power_capacity       = each.value.extended_power_capacity ? "Enabled" : "Disabled"
   power_priority                = each.value.power_priority
-  power_profiling               = each.value.power_profiling
+  power_profiling               = each.value.power_profiling ? "Enabled" : "Disabled"
   power_restore_state           = each.value.power_restore_state
-  power_save_mode               = each.value.power_save_mode
+  power_save_mode               = each.value.power_save_mode ? "Enabled" : "Disabled"
   processor_package_power_limit = each.value.processor_package_power_limit
   redundancy_mode               = each.value.redundancy_mode
 

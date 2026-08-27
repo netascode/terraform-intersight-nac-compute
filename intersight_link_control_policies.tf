@@ -23,7 +23,7 @@ resource "intersight_fabric_link_control_policy" "link_control_policy" {
 
   udld_settings {
     object_type = "fabric.UdldSettings"
-    admin_state = each.value.enabled ? "Enabled" : "Disabled"
+    admin_state = each.value.udld_enabled ? "Enabled" : "Disabled"
     mode        = each.value.mode
   }
 

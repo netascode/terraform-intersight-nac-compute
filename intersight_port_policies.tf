@@ -53,7 +53,7 @@ locals {
               aggregate_port_id         = leg == 0 ? 0 : phys_port
               fec                       = try(role.fec, "Auto")
               preferred_device_type     = try(role.preferred_device_type, "Auto")
-              auto_negotiation_disabled = try(role.auto_negotiation_disabled, false)
+              auto_negotiation_disabled = !try(role.auto_negotiation, true)
               user_label                = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key

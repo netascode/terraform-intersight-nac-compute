@@ -1444,7 +1444,7 @@ defaults:
           link_control:
             managed: true
             description: ''
-            enabled: true
+            udld_enabled: true
             mode: normal
           flow_control:
             managed: true
@@ -1474,9 +1474,8 @@ defaults:
             reserved_vlan_start_id: 3915
             mac_address_table_aging: Default
             mac_aging_time: 14500
-            udld_settings:
-              message_interval: 15
-              recovery_action: none
+            udld_message_interval: 15
+            udld_recovery_action: none
           vlan:
             managed: true
             description: ''

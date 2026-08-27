@@ -16,8 +16,8 @@ locals {
         reserved_vlan_start_id         = try(policy.reserved_vlan_start_id, local.defaults.compute.intersight.organizations.policies.switch_control.reserved_vlan_start_id)
         mac_address_table_aging        = try(policy.mac_address_table_aging, local.defaults.compute.intersight.organizations.policies.switch_control.mac_address_table_aging)
         mac_aging_time                 = try(policy.mac_aging_time, local.defaults.compute.intersight.organizations.policies.switch_control.mac_aging_time)
-        udld_message_interval          = try(policy.udld_settings.message_interval, local.defaults.compute.intersight.organizations.policies.switch_control.udld_settings.message_interval)
-        udld_recovery_action           = try(policy.udld_settings.recovery_action, local.defaults.compute.intersight.organizations.policies.switch_control.udld_settings.recovery_action)
+        udld_message_interval          = try(policy.udld_message_interval, local.defaults.compute.intersight.organizations.policies.switch_control.udld_message_interval)
+        udld_recovery_action           = try(policy.udld_recovery_action, local.defaults.compute.intersight.organizations.policies.switch_control.udld_recovery_action)
       }] : []
     ]
   ])

@@ -27,7 +27,7 @@ resource "intersight_resourcepool_pool" "resource_pool" {
   dynamic "selectors" {
     for_each = each.value.selectors
     content {
-      object_type = "resourcepool.Selector"
+      object_type = "resource.Selector"
       selector    = selectors.value
     }
   }

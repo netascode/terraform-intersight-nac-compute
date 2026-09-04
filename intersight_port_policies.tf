@@ -53,6 +53,7 @@ locals {
               aggregate_port_id         = leg == 0 ? 0 : phys_port
               fec                       = try(role.fec, "Auto")
               preferred_device_type     = try(role.preferred_device_type, "Auto")
+              preferred_device_id       = try(role.preferred_device_id, 0)
               auto_negotiation_disabled = !try(role.auto_negotiation, true)
               user_label                = try(role.user_label, "")
               port_mode_key = try([
@@ -419,6 +420,7 @@ resource "intersight_fabric_server_role" "server_role" {
   aggregate_port_id         = each.value.aggregate_port_id
   fec                       = each.value.fec
   preferred_device_type     = each.value.preferred_device_type
+  preferred_device_id       = each.value.preferred_device_id
   auto_negotiation_disabled = each.value.auto_negotiation_disabled
   user_label                = each.value.user_label
 

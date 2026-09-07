@@ -14,7 +14,14 @@ locals {
         name        = policy.name
         description = try(policy.description, local.defaults.compute.intersight.organizations.policies.qualification.description, "")
         tags        = try(policy.tags, [])
-        qualifiers = [
+        # Intersight rejects creation/update of a Qualification Policy that has no
+        # GpuQualifier at all (400 InvalidRequest, messageId
+        # malibu_qualification_policy_not_allowed_with_out_gpu_qualifier) - the GUI
+        # always includes one by default. Since GPU qualification isn't a configurable
+        # qualifier_type in this module (out of scope), append a wildcard one
+        # (GpuEvaluationType = Unspecified means "ignore GPU for matching") so pools
+        # aren't silently narrowed to exclude GPU-equipped servers.
+        qualifiers = concat([
           for q in try(policy.qualifiers, []) : {
             object_type = local.qualifier_object_types[q.qualifier_type]
             additional_properties = jsonencode(merge(
@@ -66,7 +73,12 @@ locals {
               } : {}
             ))
           }
-        ]
+          ], [{
+            object_type = "resource.GpuQualifier"
+            additional_properties = jsonencode({
+              GpuEvaluationType = "Unspecified"
+            })
+        }])
       }] : []
     ]
   ])

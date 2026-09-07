@@ -376,6 +376,18 @@ data "intersight_resourcepool_pool" "resource_pool" {
 }
 
 # ---------------------------------------------------------------------------
+# Policies consumed by pools (manage_intersight_policies = false)
+# Activate when: !manage_intersight_policies && manage_intersight_pools
+# ---------------------------------------------------------------------------
+
+data "intersight_resourcepool_qualification_policy" "qualification_policy" {
+  for_each = (var.manage_intersight_policies || !var.manage_intersight_pools) ? {} : {
+    for k in local._qualification_policy_ref_keys : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
+# ---------------------------------------------------------------------------
 # FC policies and WWPN pool consumed by vhba_templates and san_connectivity_vhbas
 # Activate when: !manage_intersight_policies && manage_intersight_templates
 # ---------------------------------------------------------------------------

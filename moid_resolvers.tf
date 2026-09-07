@@ -40,6 +40,15 @@ locals {
     ][0]
   })
 
+  qualification_policy_moids = var.manage_intersight_policies ? tomap({
+    for k, r in intersight_resourcepool_qualification_policy.qualification_policy : k => r.moid
+    }) : tomap({
+    for k, d in data.intersight_resourcepool_qualification_policy.qualification_policy : k => [
+      for r in d.results : r.moid
+      if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+    ][0]
+  })
+
   vlan_policy_moids = var.manage_intersight_policies ? tomap({
     for k, r in intersight_fabric_eth_network_policy.vlan_policy : k => r.moid
     }) : tomap({

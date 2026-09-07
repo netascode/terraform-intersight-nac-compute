@@ -26,7 +26,7 @@ resource "intersight_vmedia_policy" "virtual_media_policy" {
   low_power_usb = each.value.low_power_usb
 
   dynamic "mappings" {
-    for_each = each.value.mappings
+    for_each = { for m in each.value.mappings : m.volume_name => m }
     content {
       volume_name             = mappings.value.volume_name
       device_type             = try(mappings.value.device_type, local.defaults.compute.intersight.organizations.policies.virtual_media.mappings.device_type)

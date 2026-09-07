@@ -139,4 +139,10 @@ resource "intersight_iam_ldap_group" "ldap_group" {
   }
 
   depends_on = [intersight_iam_ldap_policy.ldap_policy]
+
+  # selector is a client-side query resolved server-side to a moid; the API never echoes back
+  # the selector text, so Terraform cannot detect drift correctly on this attribute.
+  lifecycle {
+    ignore_changes = [end_point_role]
+  }
 }

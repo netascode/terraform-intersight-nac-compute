@@ -114,4 +114,10 @@ resource "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
   }
+
+  # chap/mutual_chap passwords are write-only: the API never echoes back the real value (only an
+  # is_password_set boolean), so Terraform cannot detect drift correctly on these blocks.
+  lifecycle {
+    ignore_changes = [chap, mutual_chap]
+  }
 }

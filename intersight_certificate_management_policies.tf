@@ -36,11 +36,8 @@ resource "intersight_certificatemanagement_policy" "certificate_management_polic
       })
 
       certificate {
-        object_type = "x509.Certificate"
-        # PEM certificate is set via additional_properties as base64 — not a direct attribute
-        additional_properties = jsonencode({
-          PemCertificate = base64encode(try(certificates.value.pem_certificate, ""))
-        })
+        object_type     = "x509.Certificate"
+        pem_certificate = base64encode(try(certificates.value.pem_certificate, ""))
       }
     }
   }
@@ -63,5 +60,11 @@ resource "intersight_certificatemanagement_policy" "certificate_management_polic
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
+  }
+
+  # Privatekey is write-only: the API never returns it (only an IsPrivatekeySet boolean), so
+  # Terraform cannot detect drift correctly on the certificates block.
+  lifecycle {
+    ignore_changes = [certificates]
   }
 }

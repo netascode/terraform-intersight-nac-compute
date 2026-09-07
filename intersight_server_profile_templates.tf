@@ -33,9 +33,10 @@ locals {
         storage_policy_key                = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
         syslog_policy_key                 = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
         thermal_policy_key                = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
-        # Known provider bug: firmware.Policy in policy_bucket is applied correctly but the provider
-        # cannot detect it on subsequent reads, causing a perpetual diff. Tracked for fix in a future
-        # provider version. The implementation is correct per the Intersight OpenAPI spec.
+        # Known provider bug: firmware.Policy and boot.PrecisionPolicy in policy_bucket are applied
+        # correctly but the provider cannot detect them on subsequent reads, causing a perpetual
+        # diff. Tracked for fix in a future provider version. The implementation is correct per the
+        # Intersight OpenAPI spec. See the lifecycle block below for the workaround.
         firmware_policy_key      = try(tmpl.firmware_policy, null) != null ? format("%s/%s", org.name, tmpl.firmware_policy) : null
         virtual_kvm_policy_key   = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
         virtual_media_policy_key = try(tmpl.virtual_media_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_media_policy) : null
@@ -315,5 +316,12 @@ resource "intersight_server_profile_template" "server_profile_template" {
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
+  }
+
+  # Workaround for the known provider bug documented above: the provider fails to read back
+  # firmware.Policy and boot.PrecisionPolicy entries in policy_bucket, causing perpetual drift.
+  # Remove once the provider bug is resolved.
+  lifecycle {
+    ignore_changes = [policy_bucket]
   }
 }

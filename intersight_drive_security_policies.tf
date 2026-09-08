@@ -38,7 +38,7 @@ resource "intersight_storage_drive_security_policy" "drive_security_policy" {
         for_each = try(key_setting.value.remote_key, null) != null ? [key_setting.value.remote_key] : []
         content {
           existing_key       = try(remote_key.value.existing_key, null)
-          server_certificate = try(remote_key.value.server_certificate, null)
+          server_certificate = try(remote_key.value.server_certificate, null) != null ? base64encode(remote_key.value.server_certificate) : null
 
           dynamic "auth_credentials" {
             for_each = try(remote_key.value.auth_credentials, null) != null ? [remote_key.value.auth_credentials] : []

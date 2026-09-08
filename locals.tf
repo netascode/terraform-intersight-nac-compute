@@ -114,6 +114,9 @@ locals {
   _boot_precision_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.boot_order_policy_key],
   ])))
+  _qualification_policy_ref_keys = toset(compact(flatten([
+    [for p in local.resource_pools : p.qualification_policy_key],
+  ])))
   _vlan_policy_ref_keys = toset(compact(flatten([
     [for sp in local.domain_switch_profiles : sp.vlan_policy_key],
     [for st in local.domain_switch_profile_templates : st.vlan_policy_key],

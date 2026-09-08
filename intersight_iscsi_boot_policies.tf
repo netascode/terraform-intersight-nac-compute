@@ -71,7 +71,7 @@ resource "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
   dynamic "initiator_static_ip_v4_config" {
     for_each = each.value.initiator_static_ip_v4_config != null ? [each.value.initiator_static_ip_v4_config] : []
     content {
-      object_type   = "comm.IpV4Interface"
+      object_type   = "ippool.IpV4Config"
       gateway       = try(initiator_static_ip_v4_config.value.default_gateway, null)
       netmask       = try(initiator_static_ip_v4_config.value.subnet_mask, null)
       primary_dns   = try(initiator_static_ip_v4_config.value.primary_dns, null)
@@ -113,5 +113,11 @@ resource "intersight_vnic_iscsi_boot_policy" "iscsi_boot_policy" {
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
+  }
+
+  # chap/mutual_chap passwords are write-only: the API never echoes back the real value (only an
+  # is_password_set boolean), so Terraform cannot detect drift correctly on these blocks.
+  lifecycle {
+    ignore_changes = [chap, mutual_chap]
   }
 }

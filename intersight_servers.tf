@@ -21,6 +21,22 @@ locals {
     deploy          = "Deploy"
     sync_and_deploy = "Deploy" # Sync runs first via template_actions, then Deploy
   }
+
+  # Resolve discovered server Moid/object_type per key, when Intersight has inventoried it
+  server_moids = {
+    for s in local.intersight_servers : s.key => (
+      s.serial_number != null && length(data.intersight_compute_physical_summary.server[s.key].results) > 0
+      ? data.intersight_compute_physical_summary.server[s.key].results[0].moid
+      : null
+    ) if s.serial_number != null
+  }
+  server_object_types = {
+    for s in local.intersight_servers : s.key => (
+      s.serial_number != null && length(data.intersight_compute_physical_summary.server[s.key].results) > 0
+      ? data.intersight_compute_physical_summary.server[s.key].results[0].source_object_type
+      : null
+    ) if s.serial_number != null
+  }
 }
 
 data "intersight_compute_physical_summary" "server" {
@@ -55,12 +71,14 @@ resource "intersight_server_profile" "server_profile" {
   }
 
   dynamic "assigned_server" {
-    for_each = each.value.serial_number != null ? [1] : []
+    for_each = each.value.serial_number != null && local.server_moids[each.key] != null ? [1] : []
     content {
-      object_type = data.intersight_compute_physical_summary.server[each.key].results[0].source_object_type
-      moid        = data.intersight_compute_physical_summary.server[each.key].results[0].moid
+      object_type = local.server_object_types[each.key]
+      moid        = local.server_moids[each.key]
     }
   }
+
+  server_pre_assign_by_serial = each.value.serial_number != null && local.server_moids[each.key] == null ? each.value.serial_number : null
 
   dynamic "server_pool" {
     for_each = each.value.resource_pool_key != null ? [1] : []

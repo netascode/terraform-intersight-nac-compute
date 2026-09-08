@@ -17,6 +17,7 @@ locals {
           name                            = profile.name
           description                     = try(profile.description, local.defaults.compute.intersight.organizations.profiles.domain.description, "")
           target_platform                 = try(profile.target_platform, local.defaults.compute.intersight.organizations.profiles.domain.target_platform)
+          action                          = try(profile.action, local.defaults.compute.intersight.organizations.profiles.domain.action)
           tags                            = try(profile.tags, [])
           serial_numbers                  = try(profile.serial_numbers, [])
           ucs_domain_template_key         = try(profile.ucs_domain_template, null) != null ? format("%s/%s", org.name, profile.ucs_domain_template) : null
@@ -79,6 +80,23 @@ locals {
     for sp in local.domain_switch_profiles : sp.serial_number
     if sp.serial_number != null
   ])
+
+  # Resolve discovered FI Moid per serial, when Intersight has inventoried it
+  domain_fi_moids = {
+    for s in local.domain_fi_serials : s => (
+      length(data.intersight_network_element_summary.fi[s].results) > 0
+      ? data.intersight_network_element_summary.fi[s].results[0].moid
+      : null
+    )
+  }
+
+  # Map data model action values to Intersight provider action strings
+  _intersight_domain_action_map = {
+    none            = "No-op"
+    sync            = "Sync"
+    deploy          = "Deploy"
+    sync_and_deploy = "Deploy" # Sync runs first via template_actions, then Deploy
+  }
 }
 
 data "intersight_network_element_summary" "fi" {
@@ -92,12 +110,22 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
   name            = each.value.name
   description     = each.value.description
   target_platform = each.value.target_platform
+  action          = local._intersight_domain_action_map[each.value.action]
 
   dynamic "src_template" {
     for_each = each.value.ucs_domain_template_key != null ? [1] : []
     content {
       object_type = "fabric.SwitchClusterProfileTemplate"
       moid        = local.domain_template_moids[each.value.ucs_domain_template_key]
+    }
+  }
+
+  # Sync with template before deploying when action is sync_and_deploy
+  dynamic "template_actions" {
+    for_each = each.value.action == "sync_and_deploy" ? [1] : []
+    content {
+      object_type = "fabric.SwitchClusterProfile"
+      type        = "Sync"
     }
   }
 
@@ -127,12 +155,14 @@ resource "intersight_fabric_switch_profile" "domain_switch_profile" {
   }
 
   dynamic "assigned_switch" {
-    for_each = each.value.serial_number != null ? [1] : []
+    for_each = each.value.serial_number != null && local.domain_fi_moids[each.value.serial_number] != null ? [1] : []
     content {
       object_type = "network.Element"
-      moid        = data.intersight_network_element_summary.fi[each.value.serial_number].results[0].moid
+      moid        = local.domain_fi_moids[each.value.serial_number]
     }
   }
+
+  fabric_pre_assign_by_serial = each.value.serial_number != null && local.domain_fi_moids[each.value.serial_number] == null ? each.value.serial_number : null
 
   dynamic "policy_bucket" {
     for_each = each.value.port_policy_key != null ? [1] : []

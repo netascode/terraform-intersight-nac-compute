@@ -29,7 +29,9 @@ resource "intersight_vnic_vhba_template" "vhba_template" {
   description         = each.value.description
   enable_override     = each.value.enable_override
   name                = each.value.name
+  peer_vhba_name      = each.value.peer_vhba_name
   persistent_bindings = each.value.persistent_lun_bindings
+  pin_group_name      = each.value.pin_group_name
   switch_id           = each.value.fabric != null ? each.value.fabric : "None"
   type                = each.value.vhba_type
 

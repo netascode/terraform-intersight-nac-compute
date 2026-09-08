@@ -16,6 +16,8 @@ locals {
           org_name                          = org.name
           name                              = profile.name
           description                       = try(profile.description, local.defaults.compute.intersight.organizations.profiles.chassis.description, "")
+          action                            = try(profile.action, local.defaults.compute.intersight.organizations.profiles.chassis.action)
+          wait_for_completion               = try(profile.wait_for_completion, local.defaults.compute.intersight.organizations.profiles.chassis.wait_for_completion)
           tags                              = try(profile.tags, [])
           serial_number                     = try(profile.serial_number, null)
           chassis_template_key              = try(profile.chassis_template, null) != null ? format("%s/%s", org.name, profile.chassis_template) : null
@@ -27,14 +29,51 @@ locals {
       }] : []
     ]
   ])
+
+  # Collect unique chassis serial numbers needing lookup
+  chassis_serials = toset([
+    for p in local.chassis_profiles : p.serial_number
+    if p.serial_number != null
+  ])
+
+  # Resolve discovered chassis Moid per serial, when Intersight has inventoried it
+  chassis_moids = {
+    for s in local.chassis_serials : s => (
+      length(data.intersight_equipment_chassis.chassis[s].results) > 0
+      ? data.intersight_equipment_chassis.chassis[s].results[0].moid
+      : null
+    )
+  }
+
+  # Map data model action values to Intersight provider action strings
+  _intersight_chassis_action_map = {
+    none   = "No-op"
+    deploy = "Deploy"
+  }
+}
+
+data "intersight_equipment_chassis" "chassis" {
+  for_each = var.manage_intersight_profiles ? local.chassis_serials : toset([])
+  serial   = each.key
 }
 
 resource "intersight_chassis_profile" "chassis_profile" {
   for_each = { for p in local.chassis_profiles : p.key => p if var.manage_intersight_profiles }
 
-  name                         = each.value.name
-  description                  = each.value.description
-  chassis_pre_assign_by_serial = each.value.serial_number != null ? each.value.serial_number : null
+  name                = each.value.name
+  description         = each.value.description
+  action              = local._intersight_chassis_action_map[each.value.action]
+  wait_for_completion = each.value.action != "none" ? each.value.wait_for_completion : false
+
+  dynamic "assigned_chassis" {
+    for_each = each.value.serial_number != null && local.chassis_moids[each.value.serial_number] != null ? [1] : []
+    content {
+      object_type = "equipment.Chassis"
+      moid        = local.chassis_moids[each.value.serial_number]
+    }
+  }
+
+  chassis_pre_assign_by_serial = each.value.serial_number != null && local.chassis_moids[each.value.serial_number] == null ? each.value.serial_number : null
 
   dynamic "src_template" {
     for_each = each.value.chassis_template_key != null ? [1] : []

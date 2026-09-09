@@ -21,6 +21,8 @@ locals {
         port_role_appliances          = try(policy.port_role_appliances, [])
         port_channel_appliances       = try(policy.port_channel_appliances, [])
         port_role_fc_storage          = try(policy.port_role_fc_storage, [])
+        lan_pin_groups                = try(policy.lan_pin_groups, [])
+        san_pin_groups                = try(policy.san_pin_groups, [])
       }] : []
     ]
   ])

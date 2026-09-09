@@ -1354,6 +1354,7 @@ defaults:
             managed: true
             description: ''
             device_model: UCS-FI-6454
+            slot_id: 1
           power:
             managed: true
             description: ''

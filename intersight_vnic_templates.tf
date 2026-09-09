@@ -54,6 +54,7 @@ resource "intersight_vnic_vnic_template" "vnic_template" {
   enable_override  = each.value.allow_override
   failover_enabled = each.value.failover
   name             = each.value.name
+  pin_group_name   = each.value.pin_group_name
   switch_id        = each.value.placement_switch_id
 
   # Only emit the cdn block when the user requests a custom CDN name (source=user).

@@ -202,12 +202,14 @@ module "ip_pool" {
 | [intersight_fabric_fcoe_uplink_pc_role.fcoe_uplink_pc_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_fcoe_uplink_pc_role) | resource |
 | [intersight_fabric_fcoe_uplink_role.fcoe_uplink_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_fcoe_uplink_role) | resource |
 | [intersight_fabric_flow_control_policy.flow_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_flow_control_policy) | resource |
+| [intersight_fabric_lan_pin_group.lan_pin_group](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_lan_pin_group) | resource |
 | [intersight_fabric_link_aggregation_policy.link_aggregation_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_link_aggregation_policy) | resource |
 | [intersight_fabric_link_control_policy.link_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_link_control_policy) | resource |
 | [intersight_fabric_mac_sec_policy.mac_sec_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_mac_sec_policy) | resource |
 | [intersight_fabric_multicast_policy.multicast_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_multicast_policy) | resource |
 | [intersight_fabric_port_mode.port_mode](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_port_mode) | resource |
 | [intersight_fabric_port_policy.port_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_port_policy) | resource |
+| [intersight_fabric_san_pin_group.san_pin_group](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_san_pin_group) | resource |
 | [intersight_fabric_server_role.server_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_server_role) | resource |
 | [intersight_fabric_switch_cluster_profile.domain_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_cluster_profile) | resource |
 | [intersight_fabric_switch_cluster_profile_template.domain_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_cluster_profile_template) | resource |

@@ -104,10 +104,10 @@ locals {
   port_channel_ethernet_uplinks = flatten([
     for policy in local.port_policies : [
       for channel in policy.port_channel_ethernet_uplinks : {
-        key                          = format("%s/%d", policy.key, channel.pc_id)
+        key                          = format("%s/%d", policy.key, channel.port_channel_id)
         policy_key                   = policy.key
         org_name                     = policy.org_name
-        pc_id                        = channel.pc_id
+        pc_id                        = channel.port_channel_id
         admin_speed                  = try(channel.admin_speed, "Auto")
         fec                          = try(channel.fec, "Auto")
         eth_network_group_policy_key = try(channel.ethernet_network_group_policy, null) != null ? format("%s/%s", policy.org_name, channel.ethernet_network_group_policy) : null
@@ -172,9 +172,9 @@ locals {
   port_channel_fc_uplinks = flatten([
     for policy in local.port_policies : [
       for channel in policy.port_channel_fc_uplinks : {
-        key          = format("%s/%d", policy.key, channel.pc_id)
+        key          = format("%s/%d", policy.key, channel.port_channel_id)
         policy_key   = policy.key
-        pc_id        = channel.pc_id
+        pc_id        = channel.port_channel_id
         admin_speed  = try(channel.admin_speed, "32Gbps")
         fill_pattern = try(channel.fill_pattern, "Idle")
         vsan_id      = channel.vsan_id
@@ -235,9 +235,9 @@ locals {
   port_channel_fcoe_uplinks = flatten([
     for policy in local.port_policies : [
       for channel in policy.port_channel_fcoe_uplinks : {
-        key                         = format("%s/%d", policy.key, channel.pc_id)
+        key                         = format("%s/%d", policy.key, channel.port_channel_id)
         policy_key                  = policy.key
-        pc_id                       = channel.pc_id
+        pc_id                       = channel.port_channel_id
         admin_speed                 = try(channel.admin_speed, "Auto")
         fec                         = try(channel.fec, "Auto")
         link_aggregation_policy_key = try(channel.link_aggregation_policy, null) != null ? format("%s/%s", policy.org_name, channel.link_aggregation_policy) : null
@@ -305,10 +305,10 @@ locals {
   port_channel_appliances = flatten([
     for policy in local.port_policies : [
       for channel in policy.port_channel_appliances : {
-        key                            = format("%s/%d", policy.key, channel.pc_id)
+        key                            = format("%s/%d", policy.key, channel.port_channel_id)
         policy_key                     = policy.key
         org_name                       = policy.org_name
-        pc_id                          = channel.pc_id
+        pc_id                          = channel.port_channel_id
         admin_speed                    = try(channel.admin_speed, "Auto")
         fec                            = try(channel.fec, "Auto")
         mode                           = try(channel.mode, "trunk")

@@ -6,7 +6,7 @@ locals {
         policy_key     = policy.key
         name           = pg.name
         interface_type = pg.interface_type
-        slot_id        = try(pg.slot_id, 1)
+        slot_id        = try(pg.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
         port_id        = try(pg.port_id, null)
         pc_id          = try(pg.port_channel_id, null)
       }
@@ -20,7 +20,7 @@ locals {
         policy_key     = policy.key
         name           = pg.name
         interface_type = pg.interface_type
-        slot_id        = try(pg.slot_id, 1)
+        slot_id        = try(pg.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
         port_id        = try(pg.port_id, null)
         pc_id          = try(pg.port_channel_id, null)
       }

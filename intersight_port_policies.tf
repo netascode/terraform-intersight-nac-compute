@@ -30,12 +30,12 @@ locals {
   port_modes = flatten([
     for policy in local.port_policies : [
       for mode in policy.port_modes : {
-        key         = format("%s/%d/%d-%d", policy.key, try(mode.slot_id, 1), mode.from, mode.to)
+        key         = format("%s/%d/%d-%d", policy.key, try(mode.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), mode.from, mode.to)
         policy_key  = policy.key
         custom_mode = mode.custom_mode
         from        = mode.from
         to          = mode.to
-        slot_id     = try(mode.slot_id, 1)
+        slot_id     = try(mode.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
       }
     ]
   ])
@@ -48,9 +48,9 @@ locals {
             for leg in(try(block.from_sub_port, null) != null
               ? range(block.from_sub_port, block.to_sub_port + 1)
               : [0]) : {
-              key                       = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              key                       = format("%s/%d/%d/%d", policy.key, try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), leg, phys_port)
               policy_key                = policy.key
-              slot_id                   = try(block.slot_id, 1)
+              slot_id                   = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
               port_id                   = leg == 0 ? phys_port : leg
               aggregate_port_id         = leg == 0 ? 0 : phys_port
               fec                       = try(role.fec, "Auto")
@@ -60,7 +60,7 @@ locals {
               user_label                = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
               ][0], null)
             }
           ]
@@ -77,10 +77,10 @@ locals {
             for leg in(try(block.from_sub_port, null) != null
               ? range(block.from_sub_port, block.to_sub_port + 1)
               : [0]) : {
-              key                          = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              key                          = format("%s/%d/%d/%d", policy.key, try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), leg, phys_port)
               policy_key                   = policy.key
               org_name                     = policy.org_name
-              slot_id                      = try(block.slot_id, 1)
+              slot_id                      = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
               port_id                      = leg == 0 ? phys_port : leg
               aggregate_port_id            = leg == 0 ? 0 : phys_port
               admin_speed                  = try(role.admin_speed, "Auto")
@@ -92,7 +92,7 @@ locals {
               user_label                   = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
               ][0], null)
             }
           ]
@@ -121,7 +121,7 @@ locals {
               for leg in(try(block.from_sub_port, null) != null
                 ? range(block.from_sub_port, block.to_sub_port + 1)
                 : [0]) : {
-                slot_id           = try(block.slot_id, 1)
+                slot_id           = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
                 port_id           = leg == 0 ? phys_port : leg
                 aggregate_port_id = leg == 0 ? 0 : phys_port
               }
@@ -132,7 +132,7 @@ locals {
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
               for pm in local.port_modes : pm.key
-              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
             ]
           ]
         ]))
@@ -149,9 +149,9 @@ locals {
             for leg in(try(block.from_sub_port, null) != null
               ? range(block.from_sub_port, block.to_sub_port + 1)
               : [0]) : {
-              key               = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              key               = format("%s/%d/%d/%d", policy.key, try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), leg, phys_port)
               policy_key        = policy.key
-              slot_id           = try(block.slot_id, 1)
+              slot_id           = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
               port_id           = leg == 0 ? phys_port : leg
               aggregate_port_id = leg == 0 ? 0 : phys_port
               admin_speed       = try(role.admin_speed, "32Gbps")
@@ -160,7 +160,7 @@ locals {
               user_label        = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
               ][0], null)
             }
           ]
@@ -184,7 +184,7 @@ locals {
               for leg in(try(block.from_sub_port, null) != null
                 ? range(block.from_sub_port, block.to_sub_port + 1)
                 : [0]) : {
-                slot_id           = try(block.slot_id, 1)
+                slot_id           = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
                 port_id           = leg == 0 ? phys_port : leg
                 aggregate_port_id = leg == 0 ? 0 : phys_port
               }
@@ -195,7 +195,7 @@ locals {
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
               for pm in local.port_modes : pm.key
-              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
             ]
           ]
         ]))
@@ -212,9 +212,9 @@ locals {
             for leg in(try(block.from_sub_port, null) != null
               ? range(block.from_sub_port, block.to_sub_port + 1)
               : [0]) : {
-              key                     = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              key                     = format("%s/%d/%d/%d", policy.key, try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), leg, phys_port)
               policy_key              = policy.key
-              slot_id                 = try(block.slot_id, 1)
+              slot_id                 = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
               port_id                 = leg == 0 ? phys_port : leg
               aggregate_port_id       = leg == 0 ? 0 : phys_port
               admin_speed             = try(role.admin_speed, "Auto")
@@ -223,7 +223,7 @@ locals {
               user_label              = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
               ][0], null)
             }
           ]
@@ -248,7 +248,7 @@ locals {
               for leg in(try(block.from_sub_port, null) != null
                 ? range(block.from_sub_port, block.to_sub_port + 1)
                 : [0]) : {
-                slot_id           = try(block.slot_id, 1)
+                slot_id           = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
                 port_id           = leg == 0 ? phys_port : leg
                 aggregate_port_id = leg == 0 ? 0 : phys_port
               }
@@ -259,7 +259,7 @@ locals {
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
               for pm in local.port_modes : pm.key
-              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
             ]
           ]
         ]))
@@ -276,10 +276,10 @@ locals {
             for leg in(try(block.from_sub_port, null) != null
               ? range(block.from_sub_port, block.to_sub_port + 1)
               : [0]) : {
-              key                            = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              key                            = format("%s/%d/%d/%d", policy.key, try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), leg, phys_port)
               policy_key                     = policy.key
               org_name                       = policy.org_name
-              slot_id                        = try(block.slot_id, 1)
+              slot_id                        = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
               port_id                        = leg == 0 ? phys_port : leg
               aggregate_port_id              = leg == 0 ? 0 : phys_port
               admin_speed                    = try(role.admin_speed, "Auto")
@@ -293,7 +293,7 @@ locals {
               user_label                     = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
               ][0], null)
             }
           ]
@@ -322,7 +322,7 @@ locals {
               for leg in(try(block.from_sub_port, null) != null
                 ? range(block.from_sub_port, block.to_sub_port + 1)
                 : [0]) : {
-                slot_id           = try(block.slot_id, 1)
+                slot_id           = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
                 port_id           = leg == 0 ? phys_port : leg
                 aggregate_port_id = leg == 0 ? 0 : phys_port
               }
@@ -333,7 +333,7 @@ locals {
           for block in channel.ports : [
             for phys_port in range(block.from, block.to + 1) : [
               for pm in local.port_modes : pm.key
-              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+              if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
             ]
           ]
         ]))
@@ -350,9 +350,9 @@ locals {
             for leg in(try(block.from_sub_port, null) != null
               ? range(block.from_sub_port, block.to_sub_port + 1)
               : [0]) : {
-              key               = format("%s/%d/%d/%d", policy.key, try(block.slot_id, 1), leg, phys_port)
+              key               = format("%s/%d/%d/%d", policy.key, try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id), leg, phys_port)
               policy_key        = policy.key
-              slot_id           = try(block.slot_id, 1)
+              slot_id           = try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id)
               port_id           = leg == 0 ? phys_port : leg
               aggregate_port_id = leg == 0 ? 0 : phys_port
               admin_speed       = try(role.admin_speed, "Auto")
@@ -360,7 +360,7 @@ locals {
               user_label        = try(role.user_label, "")
               port_mode_key = try([
                 for pm in local.port_modes : pm.key
-                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, 1) && phys_port >= pm.from && phys_port <= pm.to
+                if pm.policy_key == policy.key && pm.slot_id == try(block.slot_id, local.defaults.compute.intersight.organizations.policies.port.slot_id) && phys_port >= pm.from && phys_port <= pm.to
               ][0], null)
             }
           ]

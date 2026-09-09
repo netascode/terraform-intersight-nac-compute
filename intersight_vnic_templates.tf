@@ -7,7 +7,7 @@ locals {
         org_name                            = org.name
         name                                = tmpl.name
         description                         = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.vnic.description, "")
-        placement_switch_id                 = try(tmpl.placement_switch_id, local.defaults.compute.intersight.organizations.templates.vnic.placement_switch_id)
+        switch_id                           = try(tmpl.switch_id, local.defaults.compute.intersight.organizations.templates.vnic.switch_id)
         failover                            = try(tmpl.failover, local.defaults.compute.intersight.organizations.templates.vnic.failover)
         allow_override                      = try(tmpl.allow_override, local.defaults.compute.intersight.organizations.templates.vnic.allow_override)
         pin_group_name                      = try(tmpl.pin_group_name, null)
@@ -55,7 +55,7 @@ resource "intersight_vnic_vnic_template" "vnic_template" {
   failover_enabled = each.value.failover
   name             = each.value.name
   pin_group_name   = each.value.pin_group_name
-  switch_id        = each.value.placement_switch_id
+  switch_id        = each.value.switch_id
 
   # Only emit the cdn block when the user requests a custom CDN name (source=user).
   # When source=vnic (default), Intersight automatically uses the vNIC name as the

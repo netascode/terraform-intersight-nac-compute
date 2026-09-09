@@ -51,8 +51,8 @@ resource "intersight_ntp_policy" "ntp_policy" {
       object_type   = "ntp.AuthNtpServer"
       server_name   = authenticated_ntp_servers.value.server_name
       key_type      = try(authenticated_ntp_servers.value.key_type, "SHA1")
-      sym_key_id    = try(authenticated_ntp_servers.value.sym_key_id, null)
-      sym_key_value = try(authenticated_ntp_servers.value.sym_key_value, null)
+      sym_key_id    = try(authenticated_ntp_servers.value.symmetric_key_id, null)
+      sym_key_value = try(authenticated_ntp_servers.value.symmetric_key_value, null)
     }
   }
 }

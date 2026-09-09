@@ -39,7 +39,7 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
   dynamic "completion_queue_settings" {
     for_each = try(each.value.completion_queue_settings, null) != null ? [each.value.completion_queue_settings] : []
     content {
-      nr_count    = try(completion_queue_settings.value.nr_count, null)
+      nr_count    = try(completion_queue_settings.value.completion_queue_count, null)
       ring_size   = try(completion_queue_settings.value.ring_size, null)
       object_type = "vnic.CompletionQueueSettings"
     }
@@ -50,7 +50,7 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
     content {
       coalescing_time = try(interrupt_settings.value.coalescing_time, null)
       coalescing_type = try(interrupt_settings.value.coalescing_type, null)
-      nr_count        = try(interrupt_settings.value.nr_count, null)
+      nr_count        = try(interrupt_settings.value.interrupt_count, null)
       mode            = try(interrupt_settings.value.mode, null)
       object_type     = "vnic.EthInterruptSettings"
     }
@@ -76,7 +76,7 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
     for_each = try(each.value.roce_settings, null) != null ? [each.value.roce_settings] : []
     content {
       enabled          = try(roce_settings.value.enabled, null)
-      class_of_service = try(roce_settings.value.class_of_service, null)
+      class_of_service = try(roce_settings.value.cos, null)
       memory_regions   = try(roce_settings.value.memory_regions, null)
       queue_pairs      = try(roce_settings.value.queue_pairs, null)
       resource_groups  = try(roce_settings.value.resource_groups, null)
@@ -103,7 +103,7 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
   dynamic "rx_queue_settings" {
     for_each = try(each.value.rx_queue_settings, null) != null ? [each.value.rx_queue_settings] : []
     content {
-      nr_count    = try(rx_queue_settings.value.nr_count, null)
+      nr_count    = try(rx_queue_settings.value.rx_queue_count, null)
       ring_size   = try(rx_queue_settings.value.ring_size, null)
       object_type = "vnic.EthRxQueueSettings"
     }
@@ -123,7 +123,7 @@ resource "intersight_vnic_eth_adapter_policy" "ethernet_adapter_policy" {
   dynamic "tx_queue_settings" {
     for_each = try(each.value.tx_queue_settings, null) != null ? [each.value.tx_queue_settings] : []
     content {
-      nr_count    = try(tx_queue_settings.value.nr_count, null)
+      nr_count    = try(tx_queue_settings.value.tx_queue_count, null)
       ring_size   = try(tx_queue_settings.value.ring_size, null)
       object_type = "vnic.EthTxQueueSettings"
     }

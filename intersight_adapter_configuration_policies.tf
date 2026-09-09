@@ -27,7 +27,7 @@ resource "intersight_adapter_config_policy" "adapter_configuration_policy" {
       slot_id     = settings.value.slot_id
 
       dynamic "eth_settings" {
-        for_each = try(settings.value.eth_settings, null) != null ? [settings.value.eth_settings] : []
+        for_each = try(settings.value.ethernet_settings, null) != null ? [settings.value.ethernet_settings] : []
         content {
           lldp_enabled = try(eth_settings.value.lldp_enabled, false)
         }
@@ -50,7 +50,7 @@ resource "intersight_adapter_config_policy" "adapter_configuration_policy" {
       dynamic "physical_nic_mode_settings" {
         for_each = try(settings.value.physical_nic_mode_settings, null) != null ? [settings.value.physical_nic_mode_settings] : []
         content {
-          phy_nic_enabled = try(physical_nic_mode_settings.value.phy_nic_enabled, false)
+          phy_nic_enabled = try(physical_nic_mode_settings.value.physical_nic_enabled, false)
         }
       }
     }

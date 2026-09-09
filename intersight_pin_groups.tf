@@ -8,7 +8,7 @@ locals {
         interface_type = pg.interface_type
         slot_id        = try(pg.slot_id, 1)
         port_id        = try(pg.port_id, null)
-        pc_id          = try(pg.pc_id, null)
+        pc_id          = try(pg.port_channel_id, null)
       }
     ]
   ])
@@ -22,7 +22,7 @@ locals {
         interface_type = pg.interface_type
         slot_id        = try(pg.slot_id, 1)
         port_id        = try(pg.port_id, null)
-        pc_id          = try(pg.pc_id, null)
+        pc_id          = try(pg.port_channel_id, null)
       }
     ]
   ])

@@ -1546,12 +1546,9 @@ defaults:
             managed: true
             description: ''
             target_platform: UCS Domain
-            action: none
           chassis:
             managed: true
             description: ''
-            action: none
-            wait_for_completion: false
     servers:
       provisioning:
         managed: true

@@ -144,6 +144,7 @@ module "ip_pool" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_manage_intersight_organizations"></a> [manage\_intersight\_organizations](#input\_manage\_intersight\_organizations) | When true, manage organization resources under intersight.organizations[] (per-org managed flag still applies). | `bool` | `true` | no |
 | <a name="input_manage_intersight_policies"></a> [manage\_intersight\_policies](#input\_manage\_intersight\_policies) | When true, manage all policy resources under intersight.organizations[].policies. | `bool` | `false` | no |
 | <a name="input_manage_intersight_pools"></a> [manage\_intersight\_pools](#input\_manage\_intersight\_pools) | When true, manage all pool resources under intersight.organizations[].pools. | `bool` | `false` | no |
 | <a name="input_manage_intersight_profiles"></a> [manage\_intersight\_profiles](#input\_manage\_intersight\_profiles) | When true, manage all profile resources (domain and chassis profiles). | `bool` | `false` | no |
@@ -239,6 +240,7 @@ module "ip_pool" {
 | [intersight_memory_policy.memory_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/memory_policy) | resource |
 | [intersight_networkconfig_policy.network_connectivity_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/networkconfig_policy) | resource |
 | [intersight_ntp_policy.ntp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/ntp_policy) | resource |
+| [intersight_organization_organization.organizations](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/organization_organization) | resource |
 | [intersight_power_policy.power_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/power_policy) | resource |
 | [intersight_resourcepool_pool.resource_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/resourcepool_pool) | resource |
 | [intersight_resourcepool_qualification_policy.qualification_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/resourcepool_qualification_policy) | resource |

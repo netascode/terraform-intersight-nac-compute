@@ -3,6 +3,8 @@ defaults:
   compute:
     intersight:
       organizations:
+        managed: true
+        description: ""
         policies:
           bios:
             managed: true

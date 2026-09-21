@@ -240,6 +240,9 @@ locals {
   _ip_pool_ref_keys = toset(compact(flatten([
     [for p in local.iscsi_boot_policies : p.ip_pool_key],
   ])))
+  _iqn_pool_ref_keys = toset(compact(flatten([
+    [for p in local.lan_connectivity_policies : p.iqn_pool_key],
+  ])))
   _iscsi_adapter_policy_ref_keys = toset(compact(flatten([
     [for p in local.iscsi_boot_policies : p.iscsi_adapter_policy_key],
   ])))

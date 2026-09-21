@@ -450,6 +450,13 @@ data "intersight_ippool_pool" "ip_pool" {
   name = each.value.name
 }
 
+data "intersight_iqnpool_pool" "iqn_pool" {
+  for_each = !var.manage_intersight_policies ? {} : {
+    for k in setsubtract(local._iqn_pool_ref_keys, toset(keys(intersight_iqnpool_pool.iqn_pool))) : k => { name = split("/", k)[1] }
+  }
+  name = each.value.name
+}
+
 data "intersight_vnic_iscsi_adapter_policy" "iscsi_adapter_policy" {
   for_each = {
     for k in setsubtract(local._iscsi_adapter_policy_ref_keys, toset(keys(intersight_vnic_iscsi_adapter_policy.iscsi_adapter_policy))) : k => { name = split("/", k)[1] }

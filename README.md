@@ -301,6 +301,7 @@ module "ip_pool" {
 | [intersight_iam_ldap_policy.ldap_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/iam_ldap_policy) | data source |
 | [intersight_ipmioverlan_policy.ipmi_over_lan_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ipmioverlan_policy) | data source |
 | [intersight_ippool_pool.ip_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/ippool_pool) | data source |
+| [intersight_iqnpool_pool.iqn_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/iqnpool_pool) | data source |
 | [intersight_kvm_policy.virtual_kvm_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/kvm_policy) | data source |
 | [intersight_macpool_pool.mac_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/macpool_pool) | data source |
 | [intersight_memory_persistent_memory_policy.persistent_memory_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/memory_persistent_memory_policy) | data source |

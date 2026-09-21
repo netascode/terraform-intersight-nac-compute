@@ -10,6 +10,7 @@ locals {
         target_platform     = try(policy.target_platform, local.defaults.compute.intersight.organizations.policies.lan_connectivity.target_platform)
         vnic_placement_mode = try(policy.vnic_placement_mode, local.defaults.compute.intersight.organizations.policies.lan_connectivity.vnic_placement_mode)
         iqn_allocation_type = try(policy.iqn_allocation_type, local.defaults.compute.intersight.organizations.policies.lan_connectivity.iqn_allocation_type)
+        iqn_pool_key        = try(policy.iqn_pool, null) != null ? format("%s/%s", org.name, policy.iqn_pool) : null
         vnics = [
           for vnic in try(policy.vnics, []) : {
             key                                 = format("%s/%s/%s", org.name, policy.name, vnic.name)
@@ -61,6 +62,14 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
     for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
     content {
       key = tags.value.key
+    }
+  }
+
+  dynamic "iqn_pool" {
+    for_each = each.value.iqn_pool_key != null ? [1] : []
+    content {
+      object_type = "iqnpool.Pool"
+      moid        = local.iqn_pool_moids[each.value.iqn_pool_key]
     }
   }
 

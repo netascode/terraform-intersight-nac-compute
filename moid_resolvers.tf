@@ -570,6 +570,16 @@ locals {
     })
   )
 
+  iqn_pool_moids = merge(
+    tomap({ for k, r in intersight_iqnpool_pool.iqn_pool : k => r.moid }),
+    tomap({
+      for k, d in data.intersight_iqnpool_pool.iqn_pool : k => [
+        for r in d.results : r.moid
+        if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+      ][0]
+    })
+  )
+
   iscsi_adapter_policy_moids = merge(
     tomap({ for k, r in intersight_vnic_iscsi_adapter_policy.iscsi_adapter_policy : k => r.moid }),
     tomap({

@@ -28,6 +28,12 @@ variable "write_default_values_file" {
 # the corresponding resource category.
 # ---------------------------------------------------------------------------
 
+variable "manage_intersight_organizations" {
+  description = "When true, manage organization resources under intersight.organizations[] (per-org managed flag still applies)."
+  type        = bool
+  default     = true
+}
+
 variable "manage_intersight_policies" {
   description = "When true, manage all policy resources under intersight.organizations[].policies."
   type        = bool

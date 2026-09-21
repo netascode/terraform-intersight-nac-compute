@@ -6,8 +6,16 @@
 # for_each is subtracted against the resource map's keys), so merging them is safe.
 # Data source results are filtered by org moid to handle policies that share a name
 # across multiple organisations.
+#
+# org_moids is the one exception: organizations have no parent org to filter
+# by, so it merges directly on the plain org name with no org-moid filter step.
 
 locals {
+  org_moids = merge(
+    { for k, r in intersight_organization_organization.organizations : k => r.moid },
+    { for k, d in data.intersight_organization_organization.organizations : k => d.results[0].moid }
+  )
+
   imc_access_policy_moids = merge(
     tomap({ for k, r in intersight_access_policy.imc_access_policy : k => r.moid }),
     tomap({

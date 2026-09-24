@@ -48,6 +48,7 @@ jobs:
         env:
           INTERSIGHT_API_KEY: ${{ secrets.INTERSIGHT_API_KEY }}
           INTERSIGHT_SECRET_KEY: ${{ secrets.INTERSIGHT_SECRET_KEY }}
+          INTERSIGHT_ENDPOINT_URL: ${{ secrets.INTERSIGHT_ENDPOINT_URL }}
 
       - name: Webex Notification
         if: always() && github.event_name != 'pull_request'

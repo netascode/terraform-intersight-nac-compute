@@ -55,6 +55,8 @@ resource "intersight_server_profile" "server_profile" {
   action                 = local._intersight_action_map[each.value.action]
   wait_for_completion    = each.value.action != "none" ? each.value.wait_for_completion : false
   server_assignment_mode = each.value.serial_number != null ? "Static" : (each.value.resource_pool_key != null ? "Pool" : "None")
+  # server.Profile defaults to Standalone and does not inherit TargetPlatform from src_template
+  target_platform = local.server_profile_template_target_platforms[each.value.profile_template_key]
 
   src_template {
     object_type = "server.ProfileTemplate"

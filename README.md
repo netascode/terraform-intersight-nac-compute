@@ -314,6 +314,7 @@ module "ip_pool" {
 | [intersight_resourcepool_pool.resource_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/resourcepool_pool) | data source |
 | [intersight_resourcepool_qualification_policy.qualification_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/resourcepool_qualification_policy) | data source |
 | [intersight_sdcard_policy.sd_card_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/sdcard_policy) | data source |
+| [intersight_server_profile.server_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/server_profile) | data source |
 | [intersight_server_profile_template.server_profile_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/server_profile_template) | data source |
 | [intersight_smtp_policy.smtp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/smtp_policy) | data source |
 | [intersight_snmp_policy.snmp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/snmp_policy) | data source |

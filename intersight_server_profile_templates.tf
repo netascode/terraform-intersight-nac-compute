@@ -324,4 +324,14 @@ resource "intersight_server_profile_template" "server_profile_template" {
   lifecycle {
     ignore_changes = [policy_bucket]
   }
+
+  # Policy child objects are not referenced by the template; order them so they are created
+  # before, and destroyed after, the templates and profiles that consume their policies
+  depends_on = [
+    intersight_iam_end_point_user.local_user,
+    intersight_iam_end_point_user_role.local_user_role,
+    intersight_vnic_eth_if.vnic_eth_if,
+    intersight_vnic_fc_if.vnic_fc_if,
+    intersight_storage_drive_group.storage_drive_group,
+  ]
 }

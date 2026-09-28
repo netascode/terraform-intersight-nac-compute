@@ -15,11 +15,23 @@ locals {
   ])
 
   # Map data model action values to Intersight provider action strings
+  # Template sync is sent via template_actions (see server_profile_sync)
   _intersight_action_map = {
     none            = "No-op"
-    sync            = "Sync"
+    sync            = "No-op"
     deploy          = "Deploy"
-    sync_and_deploy = "Deploy" # Sync runs first via template_actions, then Deploy
+    sync_and_deploy = "Deploy"
+  }
+
+  # Sync with the template when the profile is created, and on every apply while action is sync or sync_and_deploy
+  server_profile_sync = {
+    for s in local.intersight_servers : s.key => (
+      contains(["sync", "sync_and_deploy"], s.action) ||
+      length([
+        for r in data.intersight_server_profile.server_profile[s.key].results : r
+        if try(r.organization[0].moid, "") == local.org_moids[s.org_name]
+      ]) == 0
+    ) if var.manage_servers
   }
 
   # Resolve discovered server Moid/object_type per key, when Intersight has inventoried it
@@ -48,6 +60,13 @@ data "intersight_compute_physical_summary" "server" {
   serial = each.value.serial_number
 }
 
+# Existing profiles, used to tell creation apart from later applies for template sync
+data "intersight_server_profile" "server_profile" {
+  for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers }
+
+  name = each.value.name
+}
+
 resource "intersight_server_profile" "server_profile" {
   for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers }
 
@@ -63,9 +82,9 @@ resource "intersight_server_profile" "server_profile" {
     moid        = local.server_profile_template_moids[each.value.profile_template_key]
   }
 
-  # Sync with template before deploying when action is sync_and_deploy
+  # src_template alone does not copy the template's policies; Sync is required to populate the profile
   dynamic "template_actions" {
-    for_each = each.value.action == "sync_and_deploy" ? [1] : []
+    for_each = local.server_profile_sync[each.key] ? [1] : []
     content {
       object_type = "server.Profile"
       type        = "Sync"

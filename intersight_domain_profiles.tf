@@ -93,9 +93,9 @@ locals {
   # Map data model action values to Intersight provider action strings
   _intersight_domain_action_map = {
     none            = "No-op"
-    sync            = "Sync"
+    sync            = "No-op"
     deploy          = "Deploy"
-    sync_and_deploy = "Deploy" # Sync runs first via template_actions, then Deploy
+    sync_and_deploy = "Deploy" # Sync is sent via template_actions
   }
 }
 
@@ -120,9 +120,9 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
     }
   }
 
-  # Sync with template before deploying when action is sync_and_deploy
+  # Re-sync with the template on every apply while action is sync or sync_and_deploy
   dynamic "template_actions" {
-    for_each = each.value.action == "sync_and_deploy" ? [1] : []
+    for_each = each.value.ucs_domain_template_key != null && contains(["sync", "sync_and_deploy"], each.value.action) ? [1] : []
     content {
       object_type = "fabric.SwitchClusterProfile"
       type        = "Sync"

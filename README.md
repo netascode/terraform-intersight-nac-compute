@@ -138,6 +138,7 @@ module "ip_pool" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
 | <a name="requirement_intersight"></a> [intersight](#requirement\_intersight) | >= 1.0.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | =2.0.0 |
 
 ## Inputs
@@ -159,6 +160,7 @@ module "ip_pool" {
 | <a name="input_managed_server_tags"></a> [managed\_server\_tags](#input\_managed\_server\_tags) | Tag filters for server scoping. Use "key=value" for KeyValue tags or a bare path (e.g. "datacenter/madrid") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_servers"></a> [managed\_servers](#input\_managed\_servers) | List of server names to include. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided. | `map(any)` | `{}` | no |
+| <a name="input_profile_sync_wait"></a> [profile\_sync\_wait](#input\_profile\_sync\_wait) | Time to wait after syncing a server or domain profile with its template before deploying it, so the sync workflow can finish. Duration with a unit, e.g. "30s" or "2m". Can also be set with the TF\_VAR\_profile\_sync\_wait environment variable. | `string` | `"30s"` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
 | <a name="input_yaml_directories"></a> [yaml\_directories](#input\_yaml\_directories) | List of paths to YAML directories. | `list(string)` | `[]` | no |
 | <a name="input_yaml_files"></a> [yaml\_files](#input\_yaml\_files) | List of paths to YAML files. | `list(string)` | `[]` | no |
@@ -176,6 +178,7 @@ module "ip_pool" {
 | <a name="provider_intersight"></a> [intersight](#provider\_intersight) | >= 1.0.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
+| <a name="provider_time"></a> [time](#provider\_time) | >= 0.9.0 |
 
 ## Resources
 
@@ -185,6 +188,11 @@ module "ip_pool" {
 | [intersight_adapter_config_policy.adapter_configuration_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/adapter_config_policy) | resource |
 | [intersight_bios_policy.bios_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bios_policy) | resource |
 | [intersight_boot_precision_policy.boot_precision_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/boot_precision_policy) | resource |
+| [intersight_bulk_mo_merger.domain_profile_sync](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_mo_merger) | resource |
+| [intersight_bulk_mo_merger.domain_switch_profile_sync](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_mo_merger) | resource |
+| [intersight_bulk_mo_merger.server_profile_sync](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_mo_merger) | resource |
+| [intersight_bulk_request.domain_profile_deploy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_request) | resource |
+| [intersight_bulk_request.server_profile_deploy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_request) | resource |
 | [intersight_certificatemanagement_policy.certificate_management_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/certificatemanagement_policy) | resource |
 | [intersight_chassis_profile.chassis_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile) | resource |
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile_template) | resource |
@@ -274,7 +282,16 @@ module "ip_pool" {
 | [intersight_vnic_vhba_template.vhba_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_vhba_template) | resource |
 | [intersight_vnic_vnic_template.vnic_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/vnic_vnic_template) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [terraform_data.domain_profile_deploy_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.domain_profile_sync_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.domain_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.domain_switch_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.server_profile_deploy_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.server_profile_sync_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.server_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [time_sleep.domain_profile_sync_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [time_sleep.server_profile_sync_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [intersight_access_policy.imc_access_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/access_policy) | data source |
 | [intersight_adapter_config_policy.adapter_configuration_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/adapter_config_policy) | data source |
 | [intersight_bios_policy.bios_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/bios_policy) | data source |
@@ -294,6 +311,7 @@ module "ip_pool" {
 | [intersight_fabric_port_policy.port_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_port_policy) | data source |
 | [intersight_fabric_switch_cluster_profile_template.domain_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_switch_cluster_profile_template) | data source |
 | [intersight_fabric_switch_control_policy.switch_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_switch_control_policy) | data source |
+| [intersight_fabric_switch_profile_template.domain_switch_profile_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_switch_profile_template) | data source |
 | [intersight_fabric_system_qos_policy.system_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_system_qos_policy) | data source |
 | [intersight_fcpool_pool.wwpn_pool](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fcpool_pool) | data source |
 | [intersight_firmware_policy.firmware_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/firmware_policy) | data source |

@@ -119,3 +119,15 @@ variable "managed_server_tags" {
   default     = []
 }
 
+
+variable "profile_sync_wait" {
+  description = "Time to wait after syncing a server or domain profile with its template before deploying it, so the sync workflow can finish. Duration with a unit, e.g. \"30s\" or \"2m\". Can also be set with the TF_VAR_profile_sync_wait environment variable."
+  type        = string
+  default     = "30s"
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^([0-9]+h)?([0-9]+m)?([0-9]+s)?$", var.profile_sync_wait)) && var.profile_sync_wait != ""
+    error_message = "profile_sync_wait must be a duration such as \"30s\", \"2m\" or \"1m30s\"."
+  }
+}

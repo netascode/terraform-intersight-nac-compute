@@ -89,14 +89,6 @@ locals {
       : null
     )
   }
-
-  # Map data model action values to Intersight provider action strings
-  _intersight_domain_action_map = {
-    none            = "No-op"
-    sync            = "Sync"
-    deploy          = "Deploy"
-    sync_and_deploy = "Deploy" # Sync runs first via template_actions, then Deploy
-  }
 }
 
 data "intersight_network_element_summary" "fi" {
@@ -110,22 +102,14 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
   name            = each.value.name
   description     = each.value.description
   target_platform = each.value.target_platform
-  action          = local._intersight_domain_action_map[each.value.action]
+  # Deploy is sent after the switch profiles are created and synced (see domain_profile_deploy)
+  action = "No-op"
 
   dynamic "src_template" {
     for_each = each.value.ucs_domain_template_key != null ? [1] : []
     content {
       object_type = "fabric.SwitchClusterProfileTemplate"
       moid        = local.domain_template_moids[each.value.ucs_domain_template_key]
-    }
-  }
-
-  # Sync with template before deploying when action is sync_and_deploy
-  dynamic "template_actions" {
-    for_each = each.value.action == "sync_and_deploy" ? [1] : []
-    content {
-      object_type = "fabric.SwitchClusterProfile"
-      type        = "Sync"
     }
   }
 
@@ -244,4 +228,167 @@ resource "intersight_fabric_switch_profile" "domain_switch_profile" {
       moid        = local.ldap_policy_moids[each.value.ldap_policy_key]
     }
   }
+}
+
+# Intersight deletes the sync mergers and the deploy request once they have run, so they would be recreated,
+# re-syncing and re-deploying the profile, on every apply. Instead they are only part of the configuration on
+# the applies that should sync or deploy. The markers below hold the timestamp of the apply that created the
+# profile or changed its template (or, for the deploy marker, that set a deploy action), and
+# input == plantimestamp() identifies it.
+resource "terraform_data" "domain_profile_sync_marker" {
+  for_each = { for p in local.domain_profiles : p.key => p if var.manage_intersight_profiles && p.ucs_domain_template_key != null }
+
+  input            = plantimestamp()
+  triggers_replace = [intersight_fabric_switch_cluster_profile.domain_profile[each.key].moid, each.value.ucs_domain_template_key]
+
+  lifecycle {
+    ignore_changes = [input]
+  }
+}
+
+resource "terraform_data" "domain_profile_deploy_marker" {
+  for_each = { for p in local.domain_profiles : p.key => p if var.manage_intersight_profiles && contains(["deploy", "sync_and_deploy"], p.action) }
+
+  input            = plantimestamp()
+  triggers_replace = [intersight_fabric_switch_cluster_profile.domain_profile[each.key].moid, each.value.ucs_domain_template_key]
+
+  lifecycle {
+    ignore_changes = [input]
+  }
+}
+
+locals {
+  # Sync when the profile is created or its template changed, and on every apply while action is sync or sync_and_deploy
+  domain_profiles_to_sync = {
+    for p in local.domain_profiles : p.key => p
+    if var.manage_intersight_profiles && p.ucs_domain_template_key != null && (
+      contains(["sync", "sync_and_deploy"], p.action)
+      || terraform_data.domain_profile_sync_marker[p.key].input == plantimestamp()
+    )
+  }
+
+  domain_switch_profiles_to_sync = {
+    for sp in local.domain_switch_profiles : sp.key => merge(sp, {
+      template_key = format("%s/%s", local.domain_profiles_to_sync[sp.cluster_key].ucs_domain_template_key, sp.switch_id)
+    }) if contains(keys(local.domain_profiles_to_sync), sp.cluster_key)
+  }
+
+  # Deploy when the profile is created, its template changed or its action set to deploy, and on every apply while action is sync_and_deploy
+  domain_profiles_to_deploy = {
+    for p in local.domain_profiles : p.key => p
+    if var.manage_intersight_profiles && (
+      p.action == "sync_and_deploy"
+      || (p.action == "deploy" && terraform_data.domain_profile_deploy_marker[p.key].input == plantimestamp())
+    )
+  }
+}
+
+# Change on every apply that syncs, so the mergers below are replaced even if Intersight has not yet deleted
+# them. Kept for every templated profile, holding the marker timestamp between syncs, so they are not removed
+# after each sync. The switch copy exists because replace_triggered_by only accepts each.key.
+resource "terraform_data" "domain_profile_sync_trigger" {
+  for_each = { for p in local.domain_profiles : p.key => p if var.manage_intersight_profiles && p.ucs_domain_template_key != null }
+
+  input = contains(["sync", "sync_and_deploy"], each.value.action) ? plantimestamp() : terraform_data.domain_profile_sync_marker[each.key].input
+}
+
+resource "terraform_data" "domain_switch_profile_sync_trigger" {
+  for_each = {
+    for sp in local.domain_switch_profiles : sp.key => sp
+    if contains(keys(terraform_data.domain_profile_sync_trigger), sp.cluster_key)
+  }
+
+  input = terraform_data.domain_profile_sync_trigger[each.value.cluster_key].input
+}
+
+# Syncs the domain profile with its template. template_actions sent with the profile are not executed by
+# Intersight, so the sync is a separate merge of the template into the profile.
+resource "intersight_bulk_mo_merger" "domain_profile_sync" {
+  for_each = local.domain_profiles_to_sync
+
+  merge_action = "Merge"
+
+  sources {
+    class_id    = "fabric.SwitchClusterProfileTemplate"
+    object_type = "fabric.SwitchClusterProfileTemplate"
+    moid        = local.domain_template_moids[each.value.ucs_domain_template_key]
+  }
+
+  targets {
+    class_id    = "fabric.SwitchClusterProfile"
+    object_type = "fabric.SwitchClusterProfile"
+    moid        = intersight_fabric_switch_cluster_profile.domain_profile[each.key].moid
+  }
+
+  lifecycle {
+    ignore_changes       = all
+    replace_triggered_by = [terraform_data.domain_profile_sync_trigger[each.key]]
+  }
+}
+
+# Syncs each switch profile with the matching switch template of the domain template, which carries the policies
+resource "intersight_bulk_mo_merger" "domain_switch_profile_sync" {
+  for_each = local.domain_switch_profiles_to_sync
+
+  merge_action = "Merge"
+
+  sources {
+    class_id    = "fabric.SwitchProfileTemplate"
+    object_type = "fabric.SwitchProfileTemplate"
+    moid        = local.domain_switch_template_moids[each.value.template_key]
+  }
+
+  targets {
+    class_id    = "fabric.SwitchProfile"
+    object_type = "fabric.SwitchProfile"
+    moid        = intersight_fabric_switch_profile.domain_switch_profile[each.key].moid
+  }
+
+  lifecycle {
+    ignore_changes       = all
+    replace_triggered_by = [terraform_data.domain_switch_profile_sync_trigger[each.key]]
+  }
+
+  depends_on = [intersight_bulk_mo_merger.domain_profile_sync]
+}
+
+# Lets the sync workflows finish before the domain profile is deployed
+resource "time_sleep" "domain_profile_sync_wait" {
+  for_each = local.domain_profiles_to_deploy
+
+  create_duration = var.profile_sync_wait
+
+  triggers = {
+    apply = plantimestamp()
+  }
+
+  depends_on = [
+    intersight_fabric_switch_profile.domain_switch_profile,
+    intersight_bulk_mo_merger.domain_switch_profile_sync,
+  ]
+}
+
+# Deploys the domain profile, which cascades to both switch profiles, once they have been synced. Destroying
+# this resource does not affect the profile.
+resource "intersight_bulk_request" "domain_profile_deploy" {
+  for_each = local.domain_profiles_to_deploy
+
+  verb = "PATCH"
+  uri  = "/v1/fabric/SwitchClusterProfiles"
+
+  requests {
+    object_type = "bulk.RestSubRequest"
+    additional_properties = jsonencode({
+      ClassId    = "bulk.RestSubRequest"
+      TargetMoid = intersight_fabric_switch_cluster_profile.domain_profile[each.key].moid
+      Body       = { Action = "Deploy" }
+    })
+  }
+
+  lifecycle {
+    ignore_changes       = all
+    replace_triggered_by = [time_sleep.domain_profile_sync_wait[each.key]]
+  }
+
+  depends_on = [time_sleep.domain_profile_sync_wait]
 }

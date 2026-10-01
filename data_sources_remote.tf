@@ -353,6 +353,17 @@ data "intersight_fabric_switch_cluster_profile_template" "domain_template" {
   name = each.value.name
 }
 
+# Switch profile templates of referenced domain templates, keyed "<org>/<domain template>/<A|B>"
+data "intersight_fabric_switch_profile_template" "domain_switch_profile_template" {
+  for_each = !var.manage_intersight_profiles ? {} : {
+    for k in setsubtract(
+      toset(flatten([for t in local._domain_template_ref_keys : [format("%s/A", t), format("%s/B", t)]])),
+      toset(keys(intersight_fabric_switch_profile_template.domain_switch_profile_template))
+    ) : k => { name = format("%s-%s", split("/", k)[1], split("/", k)[2]) }
+  }
+  name = each.value.name
+}
+
 data "intersight_vnic_vnic_template" "vnic_template" {
   for_each = !var.manage_intersight_policies ? {} : {
     for k in setsubtract(local._vnic_template_ref_keys, toset(keys(intersight_vnic_vnic_template.vnic_template))) : k => { name = split("/", k)[1] }

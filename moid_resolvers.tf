@@ -408,6 +408,17 @@ locals {
     })
   )
 
+  # Keyed "<org>/<domain template>/<A|B>"; matched on the parent domain template, as switch templates have no organization
+  domain_switch_template_moids = merge(
+    tomap({ for k, r in intersight_fabric_switch_profile_template.domain_switch_profile_template : k => r.moid }),
+    tomap({
+      for k, d in data.intersight_fabric_switch_profile_template.domain_switch_profile_template : k => [
+        for r in d.results : r.moid
+        if try(r.switch_cluster_profile_template[0].moid, "") == local.domain_template_moids[join("/", slice(split("/", k), 0, 2))]
+      ][0]
+    })
+  )
+
   # vNIC-related policy moids (used by lan_connectivity_vnics and vnic_templates)
   ethernet_adapter_policy_moids = merge(
     tomap({ for k, r in intersight_vnic_eth_adapter_policy.ethernet_adapter_policy : k => r.moid }),

@@ -43,6 +43,7 @@ locals {
         cluster_key                     = profile.key
         name                            = format("%s-A", profile.name)
         switch_id                       = "A"
+        action                          = profile.action
         serial_number                   = try(profile.serial_numbers[0], null)
         port_policy_key                 = profile.switch_a_port_policy_key
         switch_control_policy_key       = profile.switch_control_policy_key
@@ -60,6 +61,7 @@ locals {
         cluster_key                     = profile.key
         name                            = format("%s-B", profile.name)
         switch_id                       = "B"
+        action                          = profile.action
         serial_number                   = try(profile.serial_numbers[1], null)
         port_policy_key                 = profile.switch_b_port_policy_key
         switch_control_policy_key       = profile.switch_control_policy_key
@@ -130,8 +132,13 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
 resource "intersight_fabric_switch_profile" "domain_switch_profile" {
   for_each = { for sp in local.domain_switch_profiles : sp.key => sp if var.manage_intersight_profiles }
 
-  name      = each.value.name
-  switch_id = each.value.switch_id
+  name = each.value.name
+  # Makes destroy wait for the Unassign workflow to finish before deleting the profile
+  wait_for_completion = true
+  switch_id           = each.value.switch_id
+  # Unassign is a native action on this resource (assignment lives here, not on the cluster profile), so it
+  # is set directly here, every apply while action is "unassign" - same convention as the chassis profile.
+  action = each.value.action == "unassign" ? "Unassign" : "No-op"
 
   switch_cluster_profile {
     object_type = "fabric.SwitchClusterProfile"
@@ -392,3 +399,6 @@ resource "intersight_bulk_request" "domain_profile_deploy" {
 
   depends_on = [time_sleep.domain_profile_sync_wait]
 }
+
+# Unassign is sent directly on intersight_fabric_switch_profile.domain_switch_profile's own `action`
+# attribute above (a native field on fabric.SwitchProfile), not through a bulk_request side channel.

@@ -47,8 +47,9 @@ locals {
 
   # Map data model action values to Intersight provider action strings
   _intersight_chassis_action_map = {
-    none   = "No-op"
-    deploy = "Deploy"
+    none     = "No-op"
+    deploy   = "Deploy"
+    unassign = "Unassign"
   }
 }
 

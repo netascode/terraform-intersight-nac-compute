@@ -44,8 +44,10 @@ resource "intersight_server_profile" "server_profile" {
   for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers }
 
   name = each.value.name
-  # Deploy is sent after the template sync (see server_profile_deploy); the profile has no policies until then
-  action = "No-op"
+  # Deploy is sent after the template sync (see server_profile_deploy); the profile has no policies until then.
+  # Unassign is a native action on this resource, so it is set directly here (every apply while action is
+  # "unassign", same convention as the chassis profile) rather than through a bulk_request side channel.
+  action = each.value.action == "unassign" ? "Unassign" : "No-op"
   # Makes destroy wait for the Unassign workflow to finish before deleting the profile
   wait_for_completion    = true
   server_assignment_mode = each.value.serial_number != null ? "Static" : (each.value.resource_pool_key != null ? "Pool" : "None")
@@ -219,3 +221,6 @@ resource "intersight_bulk_request" "server_profile_deploy" {
 
   depends_on = [time_sleep.server_profile_sync_wait]
 }
+
+# Unassign is sent directly on intersight_server_profile.server_profile's own `action` attribute above
+# (a native field on server.Profile), not through a bulk_request side channel.

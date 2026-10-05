@@ -5,7 +5,7 @@ locals {
       key                  = server.name
       name                 = server.name
       org_name             = server.provisioning.intersight.organization
-      profile_template_key = format("%s/%s", server.provisioning.intersight.organization, server.provisioning.profile_template)
+      profile_template_key = try(server.provisioning.profile_template, null) != null ? format("%s/%s", server.provisioning.intersight.organization, server.provisioning.profile_template) : null
       serial_number        = try(server.provisioning.intersight.serial_number, null)
       resource_pool_key    = try(server.provisioning.intersight.resource_pool, null) != null ? format("%s/%s", server.provisioning.intersight.organization, server.provisioning.intersight.resource_pool) : null
       action               = try(server.provisioning.action, local.defaults.compute.servers.provisioning.action)
@@ -44,28 +44,45 @@ resource "intersight_server_profile" "server_profile" {
   for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers }
 
   name = each.value.name
-  # Deploy is sent after the template sync (see server_profile_deploy); the profile has no policies until then
-  action = "No-op"
+  # Deploy is sent after the template sync (see server_profile_deploy); the profile has no policies until then.
+  # Unassign is a native action on this resource, so it is set directly here (every apply while action is
+  # "unassign", same convention as the chassis profile) rather than through a bulk_request side channel.
+  action = each.value.action == "unassign" ? "Unassign" : "No-op"
   # Makes destroy wait for the Unassign workflow to finish before deleting the profile
   wait_for_completion    = true
   server_assignment_mode = each.value.serial_number != null ? "Static" : (each.value.resource_pool_key != null ? "Pool" : "None")
   # server.Profile defaults to Standalone and does not inherit TargetPlatform from src_template
-  target_platform = local.server_profile_template_target_platforms[each.value.profile_template_key]
+  target_platform = each.value.profile_template_key != null ? local.server_profile_template_target_platforms[each.value.profile_template_key] : "Standalone"
 
-  src_template {
-    object_type = "server.ProfileTemplate"
-    moid        = local.server_profile_template_moids[each.value.profile_template_key]
-  }
+  # SrcTemplate is set here via additional_properties, not the native src_template block, because Intersight
+  # rejects a PATCH that changes src_template directly from one template to another on a profile already
+  # attached to a template (403 gershwin_derived_sp_invalid_src) - confirmed as a genuine two-apply-required
+  # API constraint by the module maintainer in CiscoDevNet/terraform-provider-intersight#261/#263, not a
+  # transport artifact. Reassigning a template therefore requires removing profile_template (sends
+  # SrcTemplate: null) on one apply, then setting the new one on the next. additional_properties is a plain
+  # string attribute under our full control, so normal Terraform diffing sends the right PATCH on every apply
+  # with no extra gating needed, unlike the provider's own optional+computed fields (e.g. assigned_server).
+  additional_properties = jsonencode({
+    SrcTemplate = each.value.profile_template_key != null ? {
+      Moid       = local.server_profile_template_moids[each.value.profile_template_key]
+      ObjectType = "server.ProfileTemplate"
+    } : null
+  })
 
+  # Suppressed while action is "unassign": assigned_server/server_pre_assign_by_serial are computed purely
+  # from serial_number/discovery, with no awareness of action. Without this guard, the first apply after a
+  # successful Unassign would see the still-configured serial_number resolve again and re-attach the server -
+  # Unassign is the one-shot command that actually detaches it; these optional+computed fields must stay out
+  # of the request entirely until the server is reassigned by removing the unassign action.
   dynamic "assigned_server" {
-    for_each = each.value.serial_number != null && local.server_moids[each.key] != null ? [1] : []
+    for_each = each.value.action != "unassign" && each.value.serial_number != null && local.server_moids[each.key] != null ? [1] : []
     content {
       object_type = local.server_object_types[each.key]
       moid        = local.server_moids[each.key]
     }
   }
 
-  server_pre_assign_by_serial = each.value.serial_number != null && local.server_moids[each.key] == null ? each.value.serial_number : null
+  server_pre_assign_by_serial = each.value.action != "unassign" && each.value.serial_number != null && local.server_moids[each.key] == null ? each.value.serial_number : null
 
   dynamic "server_pool" {
     for_each = each.value.resource_pool_key != null ? [1] : []
@@ -96,8 +113,12 @@ resource "intersight_server_profile" "server_profile" {
   }
 
   lifecycle {
-    # Set on the profile by the template sync (see server_profile_sync), not by this resource
-    ignore_changes = [description, uuid_address_type, static_uuid_address]
+    # description is set on the profile by the template sync (see server_profile_sync), not by this resource.
+    # target_platform is a property of the physical hardware, not the template - it is only correct to send
+    # on create (inherited from profile_template_key, see above). Detaching the template later would otherwise
+    # recompute it as "Standalone" and Intersight rejects that PATCH once FI-attached policies are in place
+    # (400 invalid_server_family_for_platform_type), so changes to it after creation are ignored.
+    ignore_changes = [description, uuid_address_type, static_uuid_address, target_platform]
   }
 }
 
@@ -129,10 +150,12 @@ resource "terraform_data" "server_profile_deploy_marker" {
 }
 
 locals {
-  # Sync when the profile is created or its template changed, and on every apply while action is sync or sync_and_deploy
+  # Sync when the profile is created or its template changed, and on every apply while action is sync or sync_and_deploy.
+  # Excludes an untemplated (detached) profile: there is no template to merge in, and
+  # server_profile_template_moids has no entry for a null key.
   server_profiles_to_sync = {
     for s in local.intersight_servers : s.key => s
-    if var.manage_servers && (
+    if var.manage_servers && s.profile_template_key != null && (
       contains(["sync", "sync_and_deploy"], s.action)
       || terraform_data.server_profile_sync_marker[s.key].input == plantimestamp()
     )
@@ -208,7 +231,11 @@ resource "intersight_bulk_request" "server_profile_deploy" {
     additional_properties = jsonencode({
       ClassId    = "bulk.RestSubRequest"
       TargetMoid = intersight_server_profile.server_profile[each.key].moid
-      Body       = { Action = "Deploy" }
+      Body = {
+        ClassId    = "server.Profile"
+        ObjectType = "server.Profile"
+        Action     = "Deploy"
+      }
     })
   }
 
@@ -219,3 +246,6 @@ resource "intersight_bulk_request" "server_profile_deploy" {
 
   depends_on = [time_sleep.server_profile_sync_wait]
 }
+
+# Unassign is sent directly on intersight_server_profile.server_profile's own `action` attribute above
+# (a native field on server.Profile), not through a bulk_request side channel.

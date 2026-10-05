@@ -47,8 +47,9 @@ locals {
 
   # Map data model action values to Intersight provider action strings
   _intersight_chassis_action_map = {
-    none   = "No-op"
-    deploy = "Deploy"
+    none     = "No-op"
+    deploy   = "Deploy"
+    unassign = "Unassign"
   }
 }
 
@@ -65,23 +66,35 @@ resource "intersight_chassis_profile" "chassis_profile" {
   action              = local._intersight_chassis_action_map[each.value.action]
   wait_for_completion = each.value.action != "none" ? each.value.wait_for_completion : false
 
+  # Suppressed while action is "unassign": assigned_chassis/chassis_pre_assign_by_serial are computed purely
+  # from serial_number/discovery, with no awareness of action. Without this guard, the first apply after a
+  # successful Unassign would see the still-configured serial_number resolve again and re-attach the chassis -
+  # Unassign is the one-shot command that actually detaches it; these optional+computed fields must stay out
+  # of the request entirely until the chassis is reassigned by removing the unassign action.
   dynamic "assigned_chassis" {
-    for_each = each.value.serial_number != null && local.chassis_moids[each.value.serial_number] != null ? [1] : []
+    for_each = each.value.action != "unassign" && each.value.serial_number != null && local.chassis_moids[each.value.serial_number] != null ? [1] : []
     content {
       object_type = "equipment.Chassis"
       moid        = local.chassis_moids[each.value.serial_number]
     }
   }
 
-  chassis_pre_assign_by_serial = each.value.serial_number != null && local.chassis_moids[each.value.serial_number] == null ? each.value.serial_number : null
+  chassis_pre_assign_by_serial = each.value.action != "unassign" && each.value.serial_number != null && local.chassis_moids[each.value.serial_number] == null ? each.value.serial_number : null
 
-  dynamic "src_template" {
-    for_each = each.value.chassis_template_key != null ? [1] : []
-    content {
-      object_type = "chassis.ProfileTemplate"
-      moid        = local.chassis_template_moids[each.value.chassis_template_key]
-    }
-  }
+  # src_template is set here via additional_properties, not the native src_template block, because Intersight
+  # rejects a PATCH that changes src_template directly from one template to another on a profile already
+  # attached to a template (403 gershwin_derived_sp_invalid_src) - confirmed as a genuine two-apply-required
+  # API constraint by the module maintainer in CiscoDevNet/terraform-provider-intersight#261/#263, not a
+  # transport artifact. Reassigning a template therefore requires removing chassis_template (sends
+  # SrcTemplate: null) on one apply, then setting the new one on the next. additional_properties is a plain
+  # string attribute under our full control, so normal Terraform diffing sends the right PATCH on every apply
+  # with no extra gating needed.
+  additional_properties = jsonencode({
+    SrcTemplate = each.value.chassis_template_key != null ? {
+      Moid       = local.chassis_template_moids[each.value.chassis_template_key]
+      ObjectType = "chassis.ProfileTemplate"
+    } : null
+  })
 
   dynamic "policy_bucket" {
     for_each = each.value.certificate_management_policy_key != null ? [1] : []
@@ -136,3 +149,4 @@ resource "intersight_chassis_profile" "chassis_profile" {
     moid        = local.org_moids[each.value.org_name]
   }
 }
+

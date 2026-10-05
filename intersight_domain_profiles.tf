@@ -107,13 +107,20 @@ resource "intersight_fabric_switch_cluster_profile" "domain_profile" {
   # Deploy is sent after the switch profiles are created and synced (see domain_profile_deploy)
   action = "No-op"
 
-  dynamic "src_template" {
-    for_each = each.value.ucs_domain_template_key != null ? [1] : []
-    content {
-      object_type = "fabric.SwitchClusterProfileTemplate"
-      moid        = local.domain_template_moids[each.value.ucs_domain_template_key]
-    }
-  }
+  # src_template is set here via additional_properties, not the native src_template block, because Intersight
+  # rejects a PATCH that changes src_template directly from one template to another on a profile already
+  # attached to a template (403 gershwin_derived_sp_invalid_src) - confirmed as a genuine two-apply-required
+  # API constraint by the module maintainer in CiscoDevNet/terraform-provider-intersight#261/#263, not a
+  # transport artifact. Reassigning a template therefore requires removing ucs_domain_template (sends
+  # SrcTemplate: null) on one apply, then setting the new one on the next. additional_properties is a plain
+  # string attribute under our full control, so normal Terraform diffing sends the right PATCH on every apply
+  # with no extra gating needed.
+  additional_properties = jsonencode({
+    SrcTemplate = each.value.ucs_domain_template_key != null ? {
+      Moid       = local.domain_template_moids[each.value.ucs_domain_template_key]
+      ObjectType = "fabric.SwitchClusterProfileTemplate"
+    } : null
+  })
 
   dynamic "tags" {
     for_each = each.value.tags
@@ -145,15 +152,20 @@ resource "intersight_fabric_switch_profile" "domain_switch_profile" {
     moid        = intersight_fabric_switch_cluster_profile.domain_profile[each.value.cluster_key].moid
   }
 
+  # Suppressed while action is "unassign": assigned_switch/fabric_pre_assign_by_serial are computed purely
+  # from serial_number/discovery, with no awareness of action. Without this guard, the first apply after a
+  # successful Unassign would see the still-configured serial_number resolve again and re-attach the switch -
+  # Unassign is the one-shot command that actually detaches it; these optional+computed fields must stay out
+  # of the request entirely until the switch is reassigned by removing the unassign action.
   dynamic "assigned_switch" {
-    for_each = each.value.serial_number != null && local.domain_fi_moids[each.value.serial_number] != null ? [1] : []
+    for_each = each.value.action != "unassign" && each.value.serial_number != null && local.domain_fi_moids[each.value.serial_number] != null ? [1] : []
     content {
       object_type = "network.Element"
       moid        = local.domain_fi_moids[each.value.serial_number]
     }
   }
 
-  fabric_pre_assign_by_serial = each.value.serial_number != null && local.domain_fi_moids[each.value.serial_number] == null ? each.value.serial_number : null
+  fabric_pre_assign_by_serial = each.value.action != "unassign" && each.value.serial_number != null && local.domain_fi_moids[each.value.serial_number] == null ? each.value.serial_number : null
 
   dynamic "policy_bucket" {
     for_each = each.value.port_policy_key != null ? [1] : []
@@ -388,7 +400,11 @@ resource "intersight_bulk_request" "domain_profile_deploy" {
     additional_properties = jsonencode({
       ClassId    = "bulk.RestSubRequest"
       TargetMoid = intersight_fabric_switch_cluster_profile.domain_profile[each.key].moid
-      Body       = { Action = "Deploy" }
+      Body = {
+        ClassId    = "fabric.SwitchClusterProfile"
+        ObjectType = "fabric.SwitchClusterProfile"
+        Action     = "Deploy"
+      }
     })
   }
 

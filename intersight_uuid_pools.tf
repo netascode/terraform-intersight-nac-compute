@@ -9,6 +9,7 @@ locals {
           key      = format("%s/%s", org.name, pool.name)
           org_name = org.name
           name     = pool.name
+          tags     = try(pool.tags, [])
         }
       )] : []
     ]

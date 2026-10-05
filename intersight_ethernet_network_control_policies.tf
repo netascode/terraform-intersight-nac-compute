@@ -9,6 +9,7 @@ locals {
           key      = format("%s/%s", org.name, policy.name)
           org_name = org.name
           name     = policy.name
+          tags     = try(policy.tags, [])
         }
       )] : []
     ]

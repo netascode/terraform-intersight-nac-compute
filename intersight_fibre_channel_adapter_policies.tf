@@ -6,6 +6,7 @@ locals {
         key                         = format("%s/%s", org.name, policy.name)
         org_name                    = org.name
         name                        = policy.name
+        tags                        = try(policy.tags, [])
         description                 = try(policy.description, local.defaults.compute.intersight.organizations.policies.fibre_channel_adapter.description, "")
         error_detection_timeout     = try(policy.error_detection_timeout, local.defaults.compute.intersight.organizations.policies.fibre_channel_adapter.error_detection_timeout)
         io_throttle_count           = try(policy.io_throttle_count, local.defaults.compute.intersight.organizations.policies.fibre_channel_adapter.io_throttle_count)

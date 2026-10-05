@@ -6,6 +6,7 @@ locals {
         key                       = format("%s/%s", org.name, policy.name)
         org_name                  = org.name
         name                      = policy.name
+        tags                      = try(policy.tags, [])
         description               = try(policy.description, local.defaults.compute.intersight.organizations.policies.ntp.description, "")
         enabled                   = try(policy.enabled, local.defaults.compute.intersight.organizations.policies.ntp.enabled)
         timezone                  = try(policy.timezone, local.defaults.compute.intersight.organizations.policies.ntp.timezone)

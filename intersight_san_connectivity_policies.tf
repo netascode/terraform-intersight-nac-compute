@@ -6,6 +6,7 @@ locals {
         key                 = format("%s/%s", org.name, policy.name)
         org_name            = org.name
         name                = policy.name
+        tags                = try(policy.tags, [])
         description         = try(policy.description, local.defaults.compute.intersight.organizations.policies.san_connectivity.description, "")
         target_platform     = try(policy.target_platform, local.defaults.compute.intersight.organizations.policies.san_connectivity.target_platform)
         vhba_placement_mode = try(policy.vhba_placement_mode, local.defaults.compute.intersight.organizations.policies.san_connectivity.vhba_placement_mode)

@@ -6,6 +6,7 @@ locals {
         key                               = format("%s/%s", org.name, tmpl.name)
         org_name                          = org.name
         name                              = tmpl.name
+        tags                              = try(tmpl.tags, [])
         description                       = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.server.description, "")
         target_platform                   = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.server.target_platform)
         bios_policy_key                   = try(tmpl.bios_policy, null) != null ? format("%s/%s", org.name, tmpl.bios_policy) : null

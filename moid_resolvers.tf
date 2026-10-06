@@ -510,6 +510,16 @@ locals {
     })
   )
 
+  server_profile_template_uuid_address_types = merge(
+    tomap({ for k, r in intersight_server_profile_template.server_profile_template : k => r.uuid_address_type }),
+    tomap({
+      for k, d in data.intersight_server_profile_template.server_profile_template : k => [
+        for r in d.results : r.uuid_address_type
+        if try(r.organization[0].moid, "") == local.org_moids[split("/", k)[0]]
+      ][0]
+    })
+  )
+
   resource_pool_moids = merge(
     tomap({ for k, r in intersight_resourcepool_pool.resource_pool : k => r.moid }),
     tomap({

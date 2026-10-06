@@ -6,6 +6,7 @@ locals {
         key           = format("%s/%s", org.name, policy.name)
         org_name      = org.name
         name          = policy.name
+        tags          = try(policy.tags, [])
         description   = try(policy.description, local.defaults.compute.intersight.organizations.policies.virtual_media.description, "")
         enabled       = try(policy.enabled, local.defaults.compute.intersight.organizations.policies.virtual_media.enabled)
         encryption    = try(policy.encryption, local.defaults.compute.intersight.organizations.policies.virtual_media.encryption)

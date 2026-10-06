@@ -6,6 +6,7 @@ locals {
         key                = format("%s/%s", org.name, policy.name)
         org_name           = org.name
         name               = policy.name
+        tags               = try(policy.tags, [])
         description        = try(policy.description, local.defaults.compute.intersight.organizations.policies.virtual_kvm.description, "")
         enabled            = try(policy.enabled, local.defaults.compute.intersight.organizations.policies.virtual_kvm.enabled)
         maximum_sessions   = try(policy.maximum_sessions, local.defaults.compute.intersight.organizations.policies.virtual_kvm.maximum_sessions)

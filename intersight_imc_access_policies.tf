@@ -6,6 +6,7 @@ locals {
         key                     = format("%s/%s", org.name, policy.name)
         org_name                = org.name
         name                    = policy.name
+        tags                    = try(policy.tags, [])
         description             = try(policy.description, local.defaults.compute.intersight.organizations.policies.imc_access.description, "")
         configure_inband        = try(policy.configure_inband, local.defaults.compute.intersight.organizations.policies.imc_access.configure_inband, true)
         configure_out_of_band   = try(policy.configure_out_of_band, local.defaults.compute.intersight.organizations.policies.imc_access.configure_out_of_band, false)

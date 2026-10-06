@@ -41,6 +41,7 @@ locals {
         key         = format("%s/%s", org.name, policy.name)
         org_name    = org.name
         name        = policy.name
+        tags        = try(policy.tags, [])
         description = try(policy.description, local.defaults.compute.intersight.organizations.policies.boot_order.description, "")
         boot_mode   = try(policy.boot_mode, local.defaults.compute.intersight.organizations.policies.boot_order.boot_mode)
         secure_boot = try(policy.secure_boot, local.defaults.compute.intersight.organizations.policies.boot_order.secure_boot)

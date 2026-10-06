@@ -6,6 +6,7 @@ locals {
         key         = format("%s/%s", org.name, pool.name)
         org_name    = org.name
         name        = pool.name
+        tags        = try(pool.tags, [])
         description = try(pool.description, local.defaults.compute.intersight.organizations.pools.ip.description, "")
         ipv4_config = try(pool.ipv4_config, null)
         ipv4_blocks = try(pool.ipv4_blocks, [])

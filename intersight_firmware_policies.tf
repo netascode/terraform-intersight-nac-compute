@@ -6,6 +6,7 @@ locals {
         key                    = format("%s/%s", org.name, policy.name)
         org_name               = org.name
         name                   = policy.name
+        tags                   = try(policy.tags, [])
         description            = try(policy.description, local.defaults.compute.intersight.organizations.policies.firmware.description, "")
         target_platform        = try(policy.target_platform, local.defaults.compute.intersight.organizations.policies.firmware.target_platform)
         exclude_component_list = try(policy.exclude_component_list, [])

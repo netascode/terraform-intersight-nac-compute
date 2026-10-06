@@ -205,47 +205,84 @@ resource "intersight_bulk_mo_merger" "server_profile_sync" {
   }
 }
 
-# Lets the sync workflow finish before the profile is deployed
+# Lets the sync workflow finish before the profile is deployed. Kept for every server with a deploy action and
+# re-created only when the profile is deployed (the marker timestamp changes, or on every apply for
+# sync_and_deploy), so it is not removed and re-added by the plans in between.
 resource "time_sleep" "server_profile_sync_wait" {
-  for_each = local.server_profiles_to_deploy
+  for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers && contains(["deploy", "sync_and_deploy"], s.action) }
 
   create_duration = var.profile_sync_wait
 
   triggers = {
-    apply = plantimestamp()
+    apply = each.value.action == "sync_and_deploy" ? plantimestamp() : terraform_data.server_profile_deploy_marker[each.key].input
   }
 
   depends_on = [intersight_bulk_mo_merger.server_profile_sync]
 }
 
-# Deploys the profile once it has been synced. Destroying this resource does not affect the profile.
-resource "intersight_bulk_request" "server_profile_deploy" {
-  for_each = local.server_profiles_to_deploy
+# Deploys the profile once it has been synced. A second intersight_server_profile for the same name and
+# organization, as easy-imm does: Intersight does not keep a bulk request for a synchronous PATCH, so
+# intersight_bulk_request cannot track it and fails after creating it. Intersight treats the create as an update
+# of the existing profile, so everything but the deploy action is ignored. It is kept for every server, and
+# only sends Deploy on the applies that deploy: removing it from the configuration would delete the profile.
+resource "intersight_server_profile" "server_profile_deploy" {
+  for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers }
 
-  verb                = "PATCH"
-  uri                 = "/v1/server/Profiles"
-  wait_for_completion = each.value.wait_for_completion
+  name   = each.value.name
+  action = contains(keys(local.server_profiles_to_deploy), each.key) ? "Deploy" : "No-op"
+  # Always waits, as easy-imm does: the deploy returns once the profile workflows have finished, and destroying
+  # this resource, which deletes the profile, waits for the Unassign workflow first. A value that changes between
+  # applies would show up as a pending change in the plans in between.
+  wait_for_completion = true
+  target_platform     = each.value.profile_template_key != null ? local.server_profile_template_target_platforms[each.value.profile_template_key] : "Standalone"
+  # The create is applied as an update of the existing profile, and Intersight rejects one that changes properties
+  # a template-derived profile takes from its template (403 gershwin_cannot_edit_derived_sp). The provider would
+  # send NONE, while the sync sets the template's UUID address type.
+  server_assignment_mode = each.value.serial_number != null ? "Static" : (each.value.resource_pool_key != null ? "Pool" : "None")
+  uuid_address_type      = each.value.profile_template_key != null ? local.server_profile_template_uuid_address_types[each.value.profile_template_key] : "NONE"
 
-  requests {
-    object_type = "bulk.RestSubRequest"
-    additional_properties = jsonencode({
-      ClassId    = "bulk.RestSubRequest"
-      TargetMoid = intersight_server_profile.server_profile[each.key].moid
-      Body = {
-        ClassId    = "server.Profile"
-        ObjectType = "server.Profile"
-        Action     = "Deploy"
-      }
-    })
+  # Applies changes that need a host reboot during the deploy, as easy-imm does, instead of waiting for a
+  # manual activation that would leave the profile short of Associated
+  dynamic "scheduled_actions" {
+    for_each = contains(keys(local.server_profiles_to_deploy), each.key) ? [1] : []
+    content {
+      action            = "Activate"
+      object_type       = "policy.ScheduledAction"
+      proceed_on_reboot = true
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") != "PathTag"]
+    content {
+      key   = tags.value.key
+      value = try(tags.value.value, "")
+    }
+  }
+
+  dynamic "tags" {
+    for_each = [for t in try(each.value.tags, []) : t if try(t.type, "KeyValue") == "PathTag"]
+    content {
+      key = tags.value.key
+    }
+  }
+
+  organization {
+    object_type = "organization.Organization"
+    moid        = local.org_moids[each.value.org_name]
   }
 
   lifecycle {
-    ignore_changes       = all
-    replace_triggered_by = [time_sleep.server_profile_sync_wait[each.key]]
+    ignore_changes = [
+      action_params, ancestors, assigned_server, associated_server, associated_server_pool, create_time, description, domain_group_moid,
+      mod_time, owners, parent, permission_resources, policy_bucket, reservation_references, running_workflows,
+      server_pool, shared_scope, src_template, target_platform, uuid, uuid_lease, uuid_pool, version_context,
+      additional_properties,
+    ]
   }
 
-  depends_on = [time_sleep.server_profile_sync_wait]
+  depends_on = [intersight_server_profile.server_profile, time_sleep.server_profile_sync_wait]
 }
 
 # Unassign is sent directly on intersight_server_profile.server_profile's own `action` attribute above
-# (a native field on server.Profile), not through a bulk_request side channel.
+# (a native field on server.Profile).

@@ -6,6 +6,7 @@ locals {
         key                     = format("%s/%s", org.name, policy.name)
         org_name                = org.name
         name                    = policy.name
+        tags                    = try(policy.tags, [])
         description             = try(policy.description, local.defaults.compute.intersight.organizations.policies.snmp.description, "")
         enabled                 = try(policy.enabled, local.defaults.compute.intersight.organizations.policies.snmp.enabled)
         port                    = try(policy.port, local.defaults.compute.intersight.organizations.policies.snmp.port)

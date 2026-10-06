@@ -48,8 +48,12 @@ resource "intersight_fabric_lan_pin_group" "lan_pin_group" {
   }
 
   # Intersight requires the Switch Profile Mo to still exist when un-configuring
-  # a pin group from it, so pin groups must be destroyed before switch profiles.
-  depends_on = [intersight_fabric_switch_profile.domain_switch_profile]
+  # a pin group from it, so pin groups must be destroyed before switch profiles. The deploy resource is a second
+  # resource for the same switch profile, and destroying either one deletes the profile.
+  depends_on = [
+    intersight_fabric_switch_profile.domain_switch_profile,
+    intersight_fabric_switch_profile.domain_switch_profile_deploy,
+  ]
 }
 
 resource "intersight_fabric_san_pin_group" "san_pin_group" {
@@ -72,6 +76,10 @@ resource "intersight_fabric_san_pin_group" "san_pin_group" {
   }
 
   # Intersight requires the Switch Profile Mo to still exist when un-configuring
-  # a pin group from it, so pin groups must be destroyed before switch profiles.
-  depends_on = [intersight_fabric_switch_profile.domain_switch_profile]
+  # a pin group from it, so pin groups must be destroyed before switch profiles. The deploy resource is a second
+  # resource for the same switch profile, and destroying either one deletes the profile.
+  depends_on = [
+    intersight_fabric_switch_profile.domain_switch_profile,
+    intersight_fabric_switch_profile.domain_switch_profile_deploy,
+  ]
 }

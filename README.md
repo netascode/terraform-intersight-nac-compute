@@ -191,8 +191,6 @@ module "ip_pool" {
 | [intersight_bulk_mo_merger.domain_profile_sync](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_mo_merger) | resource |
 | [intersight_bulk_mo_merger.domain_switch_profile_sync](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_mo_merger) | resource |
 | [intersight_bulk_mo_merger.server_profile_sync](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_mo_merger) | resource |
-| [intersight_bulk_request.domain_profile_deploy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_request) | resource |
-| [intersight_bulk_request.server_profile_deploy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/bulk_request) | resource |
 | [intersight_certificatemanagement_policy.certificate_management_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/certificatemanagement_policy) | resource |
 | [intersight_chassis_profile.chassis_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile) | resource |
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/chassis_profile_template) | resource |
@@ -224,6 +222,7 @@ module "ip_pool" {
 | [intersight_fabric_switch_cluster_profile_template.domain_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_cluster_profile_template) | resource |
 | [intersight_fabric_switch_control_policy.switch_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_control_policy) | resource |
 | [intersight_fabric_switch_profile.domain_switch_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_profile) | resource |
+| [intersight_fabric_switch_profile.domain_switch_profile_deploy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_profile) | resource |
 | [intersight_fabric_switch_profile_template.domain_switch_profile_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_switch_profile_template) | resource |
 | [intersight_fabric_system_qos_policy.system_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_system_qos_policy) | resource |
 | [intersight_fabric_uplink_pc_role.uplink_pc_role](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/fabric_uplink_pc_role) | resource |
@@ -254,6 +253,7 @@ module "ip_pool" {
 | [intersight_resourcepool_qualification_policy.qualification_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/resourcepool_qualification_policy) | resource |
 | [intersight_sdcard_policy.sd_card_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/sdcard_policy) | resource |
 | [intersight_server_profile.server_profile](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/server_profile) | resource |
+| [intersight_server_profile.server_profile_deploy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/server_profile) | resource |
 | [intersight_server_profile_template.server_profile_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/server_profile_template) | resource |
 | [intersight_smtp_policy.smtp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/smtp_policy) | resource |
 | [intersight_snmp_policy.snmp_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/resources/snmp_policy) | resource |

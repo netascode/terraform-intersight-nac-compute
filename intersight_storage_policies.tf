@@ -6,6 +6,7 @@ locals {
         key                      = format("%s/%s", org.name, policy.name)
         org_name                 = org.name
         name                     = policy.name
+        tags                     = try(policy.tags, [])
         description              = try(policy.description, local.defaults.compute.intersight.organizations.policies.storage.description, "")
         unused_disks_state       = try(policy.unused_disks_state, local.defaults.compute.intersight.organizations.policies.storage.unused_disks_state)
         use_jbod_for_vd_creation = try(policy.use_jbod_for_vd_creation, local.defaults.compute.intersight.organizations.policies.storage.use_jbod_for_vd_creation)

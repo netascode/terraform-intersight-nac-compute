@@ -6,6 +6,7 @@ locals {
         key                = format("%s/%s", org.name, policy.name)
         org_name           = org.name
         name               = policy.name
+        tags               = try(policy.tags, [])
         description        = try(policy.description, local.defaults.compute.intersight.organizations.policies.syslog.description, "")
         local_min_severity = try(policy.local_min_severity, local.defaults.compute.intersight.organizations.policies.syslog.local_min_severity)
         remote_clients     = try(policy.remote_clients, [])

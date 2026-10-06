@@ -371,14 +371,16 @@ resource "intersight_bulk_mo_merger" "domain_switch_profile_sync" {
   depends_on = [intersight_bulk_mo_merger.domain_profile_sync]
 }
 
-# Lets the sync workflows finish before the domain profile is deployed
+# Lets the sync workflows finish before the domain profile is deployed. Kept for every profile with a deploy
+# action and re-created only when the profile is deployed (the marker timestamp changes, or on every apply for
+# sync_and_deploy), so it is not removed and re-added by the plans in between.
 resource "time_sleep" "domain_profile_sync_wait" {
-  for_each = local.domain_profiles_to_deploy
+  for_each = { for p in local.domain_profiles : p.key => p if var.manage_intersight_profiles && contains(["deploy", "sync_and_deploy"], p.action) }
 
   create_duration = var.profile_sync_wait
 
   triggers = {
-    apply = plantimestamp()
+    apply = each.value.action == "sync_and_deploy" ? plantimestamp() : terraform_data.domain_profile_deploy_marker[each.key].input
   }
 
   depends_on = [
@@ -387,34 +389,39 @@ resource "time_sleep" "domain_profile_sync_wait" {
   ]
 }
 
-# Deploys the domain profile, which cascades to both switch profiles, once they have been synced. Destroying
-# this resource does not affect the profile.
-resource "intersight_bulk_request" "domain_profile_deploy" {
-  for_each = local.domain_profiles_to_deploy
+# Deploys the domain profile through its switch profiles, once they have been synced. A second
+# intersight_fabric_switch_profile for each switch profile, as easy-imm does: Intersight does not keep a bulk
+# request for a synchronous PATCH, so intersight_bulk_request cannot track it and fails after creating it.
+# Intersight treats the create as an update of the existing switch profile, so everything but the deploy action
+# is ignored. It is kept for every switch profile, and only sends Deploy on the applies that deploy: removing it
+# from the configuration would delete the profile. Always waits, as easy-imm does, so a deploy returns once the
+# profile workflows have finished and destroying it waits for the Unassign workflow first.
+resource "intersight_fabric_switch_profile" "domain_switch_profile_deploy" {
+  for_each = { for sp in local.domain_switch_profiles : sp.key => sp if var.manage_intersight_profiles }
 
-  verb = "PATCH"
-  uri  = "/v1/fabric/SwitchClusterProfiles"
+  name                = each.value.name
+  switch_id           = each.value.switch_id
+  action              = contains(keys(local.domain_profiles_to_deploy), each.value.cluster_key) ? "Deploy" : "No-op"
+  wait_for_completion = true
 
-  requests {
-    object_type = "bulk.RestSubRequest"
-    additional_properties = jsonencode({
-      ClassId    = "bulk.RestSubRequest"
-      TargetMoid = intersight_fabric_switch_cluster_profile.domain_profile[each.key].moid
-      Body = {
-        ClassId    = "fabric.SwitchClusterProfile"
-        ObjectType = "fabric.SwitchClusterProfile"
-        Action     = "Deploy"
-      }
-    })
+  switch_cluster_profile {
+    object_type = "fabric.SwitchClusterProfile"
+    moid        = intersight_fabric_switch_cluster_profile.domain_profile[each.value.cluster_key].moid
   }
 
   lifecycle {
-    ignore_changes       = all
-    replace_triggered_by = [time_sleep.domain_profile_sync_wait[each.key]]
+    ignore_changes = [
+      action_params, ancestors, assigned_switch, create_time, description, domain_group_moid, fabric_pre_assign_by_serial,
+      mod_time, owners, parent, permission_resources, policy_bucket, running_workflows, shared_scope, src_template, tags,
+      version_context,
+    ]
   }
 
-  depends_on = [time_sleep.domain_profile_sync_wait]
+  depends_on = [
+    intersight_fabric_switch_profile.domain_switch_profile,
+    time_sleep.domain_profile_sync_wait,
+  ]
 }
 
 # Unassign is sent directly on intersight_fabric_switch_profile.domain_switch_profile's own `action`
-# attribute above (a native field on fabric.SwitchProfile), not through a bulk_request side channel.
+# attribute above (a native field on fabric.SwitchProfile).

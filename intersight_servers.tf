@@ -291,8 +291,11 @@ resource "intersight_server_profile" "server_profile_deploy" {
 # ---------------------------------------------------------------------------
 # Server power state (servers[].provisioning.power_state)
 #
-# The provider has no resource for compute.ServerSetting (only a data source), so the power operation is sent
-# as a bulk PATCH of AdminPowerState. Power is reconciled declaratively: a request is only created when the
+# The provider has no resource for compute.ServerSetting (only a data source). intersight_bulk_request can send the
+# PATCH (top-level uri = collection, sub request with TargetMoid and a typed Body), but a PATCH bulk request is not
+# persisted, so the provider's read-back fails with a 404 / "inconsistent result after apply". The power operation is
+# therefore sent by scripts/set_server_power.py (a signed PATCH of AdminPowerState). AdminPowerState is a trigger, not a state: Intersight starts a power workflow and
+# reads the property back as "Policy", so the actual state is always taken from OperPowerState. Power is reconciled declaratively: a request is only created when the
 # actual power state (compute.PhysicalSummary OperPowerState) differs from the desired one, and it is dropped
 # again once the server has converged. A server without power_state is never touched.
 # ---------------------------------------------------------------------------
@@ -333,26 +336,13 @@ data "intersight_compute_server_setting" "server_setting" {
   }
 }
 
-# Create-only request, kept only while the server differs from the desired power state. The key includes the
-# admin state, so changing power_state sends a new request. Intersight deletes the record of a finished request,
-# which is why every attribute change is ignored.
-resource "intersight_bulk_request" "server_power" {
+# One-shot call, kept only while the server differs from the desired power state. The key includes the admin
+# state, so changing power_state sends a new request, and a failed call is retried on the next apply because the
+# resource is tainted. Credentials reach the script through the INTERSIGHT_* environment variables.
+resource "terraform_data" "server_power" {
   for_each = local.server_power_changes
 
-  verb                = "PATCH"
-  uri                 = "/v1/compute/ServerSettings/${data.intersight_compute_server_setting.server_setting[each.value.key].results[0].moid}"
-  wait_for_completion = true
-
-  requests {
-    object_type = "bulk.SubRequest"
-    verb        = "PATCH"
-    uri         = "/v1/compute/ServerSettings/${data.intersight_compute_server_setting.server_setting[each.value.key].results[0].moid}"
-    additional_properties = jsonencode({
-      Body = { AdminPowerState = each.value.admin_state }
-    })
-  }
-
-  lifecycle {
-    ignore_changes = all
+  provisioner "local-exec" {
+    command = "python3 '${path.module}/scripts/set_server_power.py' --moid ${data.intersight_compute_server_setting.server_setting[each.value.key].results[0].moid} --state ${each.value.admin_state}"
   }
 }

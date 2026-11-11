@@ -23,6 +23,10 @@ A top-level `servers` list provisions individual servers through Intersight or R
 
 The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
 
+## Server power state
+
+`servers[].provisioning.power_state` is applied with `scripts/set_server_power.py`, because the Intersight provider has no resource for it. The script is only run for servers that define `power_state`. In that case the machine running Terraform needs `python3` with the `requests` and `cryptography` packages, and the `INTERSIGHT_API_KEY`, `INTERSIGHT_SECRET_KEY` and `INTERSIGHT_ENDPOINT_URL` environment variables.
+
 ## Multi-Workspace Deployment
 
 As the number of UCS domains, chassis, and servers grows, a single Terraform workspace managing all resources can become slow and creates a wide blast radius. Two orthogonal mechanisms let you split the data model across multiple workspaces:

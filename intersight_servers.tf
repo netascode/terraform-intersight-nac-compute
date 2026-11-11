@@ -336,11 +336,16 @@ data "intersight_compute_server_setting" "server_setting" {
   }
 }
 
-# One-shot call, kept only while the server differs from the desired power state. The key includes the admin
-# state, so changing power_state sends a new request, and a failed call is retried on the next apply because the
-# resource is tainted. Credentials reach the script through the INTERSIGHT_* environment variables.
+# The request exists only while the server differs from the desired power state, and it is re-sent on every apply
+# during that time: triggers_replace changes with each plan, so a marker left over from an earlier request (for
+# example when the server was powered back on in the GUI before the converged plan was applied) cannot hide drift.
+# Once the server has converged the entry is dropped from state, which runs no command. A failed call is retried on
+# the next apply because the resource is tainted. Credentials reach the script through the INTERSIGHT_* environment
+# variables.
 resource "terraform_data" "server_power" {
   for_each = local.server_power_changes
+
+  triggers_replace = plantimestamp()
 
   provisioner "local-exec" {
     command = "python3 '${path.module}/scripts/set_server_power.py' --moid ${data.intersight_compute_server_setting.server_setting[each.value.key].results[0].moid} --state ${each.value.admin_state}"

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright: (c) 2026, Morten Skriver <moskrive@cisco.com>
+
 """Set the admin power state of an Intersight server (compute.ServerSetting).
 
 The CiscoDevNet/intersight provider has no resource for compute.ServerSetting, so the module calls this script

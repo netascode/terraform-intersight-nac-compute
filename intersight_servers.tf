@@ -10,6 +10,7 @@ locals {
       resource_pool_key    = try(server.provisioning.intersight.resource_pool, null) != null ? format("%s/%s", server.provisioning.intersight.organization, server.provisioning.intersight.resource_pool) : null
       action               = try(server.provisioning.action, local.defaults.compute.servers.provisioning.action)
       wait_for_completion  = try(server.provisioning.wait_for_completion, local.defaults.compute.servers.provisioning.wait_for_completion)
+      power_state          = try(server.provisioning.power_state, null)
       tags                 = try(server.tags, [])
     }] : []
   ])
@@ -286,3 +287,67 @@ resource "intersight_server_profile" "server_profile_deploy" {
 
 # Unassign is sent directly on intersight_server_profile.server_profile's own `action` attribute above
 # (a native field on server.Profile).
+
+# ---------------------------------------------------------------------------
+# Server power state (servers[].provisioning.power_state)
+#
+# The provider has no resource for compute.ServerSetting (only a data source). intersight_bulk_request can send the
+# PATCH (top-level uri = collection, sub request with TargetMoid and a typed Body), but a PATCH bulk request is not
+# persisted, so the provider's read-back fails with a 404 / "inconsistent result after apply". The power operation is
+# therefore sent by scripts/set_server_power.py (a signed PATCH of AdminPowerState). AdminPowerState is a trigger, not a state: Intersight starts a power workflow and
+# reads the property back as "Policy", so the actual state is always taken from OperPowerState. Power is reconciled declaratively: a request is only created when the
+# actual power state (compute.PhysicalSummary OperPowerState) differs from the desired one, and it is dropped
+# again once the server has converged. A server without power_state is never touched.
+# ---------------------------------------------------------------------------
+locals {
+  server_power_admin_states = {
+    on       = "PowerOn"
+    shutdown = "Shutdown"
+    off      = "PowerOff"
+  }
+
+  # Servers that set power_state and have been inventoried by Intersight
+  server_power_candidates = {
+    for s in local.intersight_servers : s.key => s
+    if var.manage_servers && s.power_state != null && try(local.server_moids[s.key], null) != null
+  }
+
+  # Actual power state ("on" / "off"), empty when Intersight does not report one
+  server_oper_power_states = {
+    for k, s in local.server_power_candidates : k => lower(try(data.intersight_compute_physical_summary.server[k].results[0].oper_power_state, ""))
+  }
+
+  # Servers whose actual power state differs from the desired one. shutdown and off both mean the server is off.
+  server_power_changes = {
+    for k, s in local.server_power_candidates : format("%s/%s", k, local.server_power_admin_states[s.power_state]) => {
+      key         = k
+      admin_state = local.server_power_admin_states[s.power_state]
+    }
+    if local.server_oper_power_states[k] != "" && local.server_oper_power_states[k] != (s.power_state == "on" ? "on" : "off")
+  }
+}
+
+data "intersight_compute_server_setting" "server_setting" {
+  for_each = local.server_power_candidates
+
+  server {
+    object_type = local.server_object_types[each.key]
+    moid        = local.server_moids[each.key]
+  }
+}
+
+# The request exists only while the server differs from the desired power state, and it is re-sent on every apply
+# during that time: triggers_replace changes with each plan, so a marker left over from an earlier request (for
+# example when the server was powered back on in the GUI before the converged plan was applied) cannot hide drift.
+# Once the server has converged the entry is dropped from state, which runs no command. A failed call is retried on
+# the next apply because the resource is tainted. Credentials reach the script through the INTERSIGHT_* environment
+# variables.
+resource "terraform_data" "server_power" {
+  for_each = local.server_power_changes
+
+  triggers_replace = plantimestamp()
+
+  provisioner "local-exec" {
+    command = "python3 '${path.module}/scripts/set_server_power.py' --moid ${data.intersight_compute_server_setting.server_setting[each.value.key].results[0].moid} --state ${each.value.admin_state}"
+  }
+}

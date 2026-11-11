@@ -23,6 +23,10 @@ A top-level `servers` list provisions individual servers through Intersight or R
 
 The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
 
+## Server power state
+
+`servers[].provisioning.power_state` is applied with `scripts/set_server_power.py`, because the Intersight provider has no resource for it. The script is only run for servers that define `power_state`. In that case the machine running Terraform needs `python3` with the `requests` and `cryptography` packages, and the `INTERSIGHT_API_KEY`, `INTERSIGHT_SECRET_KEY` and `INTERSIGHT_ENDPOINT_URL` environment variables.
+
 ## Multi-Workspace Deployment
 
 As the number of UCS domains, chassis, and servers grows, a single Terraform workspace managing all resources can become slow and creates a wide blast radius. Two orthogonal mechanisms let you split the data model across multiple workspaces:
@@ -286,6 +290,7 @@ module "ip_pool" {
 | [terraform_data.domain_profile_sync_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.domain_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.domain_switch_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.server_power](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.server_profile_deploy_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.server_profile_sync_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.server_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
@@ -300,6 +305,7 @@ module "ip_pool" {
 | [intersight_chassis_profile_template.chassis_template](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/chassis_profile_template) | data source |
 | [intersight_compute_physical_summary.server](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_physical_summary) | data source |
 | [intersight_compute_scrub_policy.scrub_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_scrub_policy) | data source |
+| [intersight_compute_server_setting.server_setting](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/compute_server_setting) | data source |
 | [intersight_deviceconnector_policy.device_connector_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/deviceconnector_policy) | data source |
 | [intersight_equipment_chassis.chassis](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/equipment_chassis) | data source |
 | [intersight_fabric_eth_network_control_policy.ethernet_network_control_policy](https://registry.terraform.io/providers/CiscoDevNet/intersight/latest/docs/data-sources/fabric_eth_network_control_policy) | data source |

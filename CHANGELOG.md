@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add support for Intersight policies: adapter configuration, certificate management, device connector, drive security, FC zone, flow control, iSCSI adapter, iSCSI boot, iSCSI static target, LDAP, link aggregation, link control, MACsec, memory, multicast, persistent memory, qualification, SD card, scrub, switch control, system QoS, VLAN, VSAN
+- Add `servers[].provisioning.power_state` (`on`, `shutdown`, `off`) to manage the server power state declaratively: the power operation is only sent when the actual power state differs from the desired one, and servers without the attribute are never touched. Requires `provisioning.intersight.serial_number`. Sent as a bulk PATCH of `compute.ServerSetting`, because the provider has no resource for it
 - Add support for Intersight templates: chassis, domain, vHBA, vNIC
 - Add support for Intersight pools: IQN, resource
 - Add support for Intersight server, chassis and domain profiles, including assignment and pre-assignment by serial number before Intersight has inventoried the hardware. Profiles are derived from their template, inheriting its policies and target platform, and are synced and deployed according to the `action` attribute (`sync`, `deploy`, `sync_and_deploy`, `unassign`), with consistent behavior across the three profile types

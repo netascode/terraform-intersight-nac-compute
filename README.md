@@ -21,6 +21,13 @@ Configuration is modeled as a list of Intersight `organizations`, each of which 
 
 A top-level `servers` list provisions individual servers through Intersight or Redfish.
 
+## Server profiles
+
+A server's profile takes its policies from its `profile_template`, from per-server settings in `servers[].provisioning.intersight` (`policies`, `uuid_pool`, `target_platform`), or from both:
+
+- A server that uses a template and has no per-server settings gets a profile derived from the template. The template's policies are copied onto it by a template sync.
+- A server that overrides some of its template's settings, or has no template, gets a standalone profile. Intersight does not allow a derived profile to differ from its template, so the module sets the profile's policies itself: the template's, with the server's settings replacing them. The template's settings are taken at the same points in time as a derived profile is synced, so `action` works the same for both.
+
 The full data model documentation is available here: https://netascode.cisco.com/docs/data_models/compute/overview/
 
 ## Server power state
@@ -294,6 +301,7 @@ module "ip_pool" {
 | [terraform_data.server_profile_deploy_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.server_profile_sync_marker](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.server_profile_sync_trigger](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.server_profile_template_snapshot](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [time_sleep.domain_profile_sync_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.server_profile_sync_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |

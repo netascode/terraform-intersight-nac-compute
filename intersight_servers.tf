@@ -12,8 +12,48 @@ locals {
       wait_for_completion  = try(server.provisioning.wait_for_completion, local.defaults.compute.servers.provisioning.wait_for_completion)
       power_state          = try(server.provisioning.power_state, null)
       tags                 = try(server.tags, [])
+      # Per-server settings, which override the template's (servers[].provisioning.intersight)
+      override_policy_keys = {
+        for field, name in try(server.provisioning.intersight.policies, {}) :
+        field => format("%s/%s", server.provisioning.intersight.organization, name) if name != null
+      }
+      override_uuid_pool_key   = try(server.provisioning.intersight.uuid_pool, null) != null ? format("%s/%s", server.provisioning.intersight.organization, server.provisioning.intersight.uuid_pool) : null
+      override_target_platform = try(server.provisioning.intersight.target_platform, null)
     }] : []
   ])
+
+  # A server is standalone when it has no template, or overrides any of its template's settings: Intersight
+  # rejects edits to a profile derived from a template (403 gershwin_cannot_edit_derived_sp), so such a
+  # profile is not attached to its template, and its policies are set by this module instead
+  intersight_server_standalone = {
+    for s in local.intersight_servers : s.key => (
+      s.profile_template_key == null
+      || length(s.override_policy_keys) > 0
+      || s.override_uuid_pool_key != null
+      || s.override_target_platform != null
+    )
+  }
+
+  # The settings of a standalone server's profile: the template's, as of the last snapshot (see
+  # server_profile_template_snapshot), with the server's own settings replacing them
+  intersight_server_settings = {
+    for s in local.intersight_servers : s.key => {
+      policy_keys = merge(
+        try(terraform_data.server_profile_template_snapshot[s.key].output.policy_keys, {}),
+        s.override_policy_keys,
+      )
+      description = try(terraform_data.server_profile_template_snapshot[s.key].output.description, "")
+      uuid_pool_key = s.override_uuid_pool_key != null ? s.override_uuid_pool_key : try(
+        terraform_data.server_profile_template_snapshot[s.key].output.uuid_pool_key, null
+      )
+      # server.Profile defaults to Standalone and does not inherit TargetPlatform from src_template
+      target_platform = coalesce(
+        s.override_target_platform,
+        try(local.server_profile_template_target_platforms[s.profile_template_key], null),
+        "Standalone",
+      )
+    }
+  }
 
   # Resolve discovered server Moid/object_type per key, when Intersight has inventoried it
   server_moids = {
@@ -52,8 +92,8 @@ resource "intersight_server_profile" "server_profile" {
   # Makes destroy wait for the Unassign workflow to finish before deleting the profile
   wait_for_completion    = true
   server_assignment_mode = each.value.serial_number != null ? "Static" : (each.value.resource_pool_key != null ? "Pool" : "None")
-  # server.Profile defaults to Standalone and does not inherit TargetPlatform from src_template
-  target_platform = each.value.profile_template_key != null ? local.server_profile_template_target_platforms[each.value.profile_template_key] : "Standalone"
+  target_platform        = local.intersight_server_settings[each.key].target_platform
+  # The UUID settings are set by server_profile_deploy (see there), so uuid_address_type is ignored here
 
   # SrcTemplate is set here via additional_properties, not the native src_template block, because Intersight
   # rejects a PATCH that changes src_template directly from one template to another on a profile already
@@ -63,12 +103,34 @@ resource "intersight_server_profile" "server_profile" {
   # SrcTemplate: null) on one apply, then setting the new one on the next. additional_properties is a plain
   # string attribute under our full control, so normal Terraform diffing sends the right PATCH on every apply
   # with no extra gating needed, unlike the provider's own optional+computed fields (e.g. assigned_server).
-  additional_properties = jsonencode({
-    SrcTemplate = each.value.profile_template_key != null ? {
-      Moid       = local.server_profile_template_moids[each.value.profile_template_key]
-      ObjectType = "server.ProfileTemplate"
-    } : null
-  })
+  #
+  # A standalone profile (see intersight_server_standalone) has no SrcTemplate, and its policies and description
+  # are set here too, rather than with the native policy_bucket and description: Intersight returns both in
+  # the profile's additional properties, which the provider compares with these, ignoring the order of the
+  # policies. The native policy_bucket is misread for firmware.Policy and boot.PrecisionPolicy entries (known
+  # provider bug, see intersight_server_profile_templates.tf), which would cause a perpetual diff. A derived
+  # profile sets neither, as its policies and description are set by the template sync.
+  additional_properties = jsonencode(merge(
+    {
+      SrcTemplate = !local.intersight_server_standalone[each.key] ? {
+        Moid       = local.server_profile_template_moids[each.value.profile_template_key]
+        ObjectType = "server.ProfileTemplate"
+      } : null
+    },
+    local.intersight_server_standalone[each.key] ? {
+      PolicyBucket = [
+        for field, key in local.intersight_server_settings[each.key].policy_keys : {
+          ClassId    = "mo.MoRef"
+          Moid       = local.server_policy_moids[field][key]
+          ObjectType = local.server_policy_object_types[field]
+        }
+      ]
+    } : {},
+    # Intersight omits an empty description, which would never match an empty string here
+    local.intersight_server_standalone[each.key] && local.intersight_server_settings[each.key].description != "" ? {
+      Description = local.intersight_server_settings[each.key].description
+    } : {},
+  ))
 
   # Suppressed while action is "unassign": assigned_server/server_pre_assign_by_serial are computed purely
   # from serial_number/discovery, with no awareness of action. Without this guard, the first apply after a
@@ -114,12 +176,39 @@ resource "intersight_server_profile" "server_profile" {
   }
 
   lifecycle {
-    # description is set on the profile by the template sync (see server_profile_sync), not by this resource.
-    # target_platform is a property of the physical hardware, not the template - it is only correct to send
-    # on create (inherited from profile_template_key, see above). Detaching the template later would otherwise
-    # recompute it as "Standalone" and Intersight rejects that PATCH once FI-attached policies are in place
-    # (400 invalid_server_family_for_platform_type), so changes to it after creation are ignored.
-    ignore_changes = [description, uuid_address_type, static_uuid_address, target_platform]
+    # description is set on the profile by the template sync (see server_profile_sync), or in
+    # additional_properties for a standalone profile, not by the native attribute.
+    # target_platform is managed (server, then template, then "Standalone"; see intersight_server_settings), so a
+    # server with overrides keeps its template's platform when its profile is detached from the template. It is
+    # not ignored because a profile created by an earlier module version for a server without a template was
+    # always "Standalone"; Intersight then rejects the server's FI-attached settings (400
+    # gershwin_uuid_not_supported) until the platform is corrected. server_profile_deploy ignores it.
+    ignore_changes = [description, uuid_address_type, static_uuid_address]
+  }
+}
+
+# The template settings a server that overrides some of them takes from its template. Taken at the same points
+# in time as a derived profile is synced with its template, so that action works the same for both: when the
+# server is added, its template changes or it starts overriding its template's settings, and on every apply
+# while action is sync or sync_and_deploy. Changes to the server's own settings apply on the next apply.
+resource "terraform_data" "server_profile_template_snapshot" {
+  for_each = {
+    for s in local.intersight_servers : s.key => s
+    if var.manage_servers && local.intersight_server_standalone[s.key] && s.profile_template_key != null
+  }
+
+  input = {
+    policy_keys   = try(local.server_profile_template_policy_keys[each.value.profile_template_key], {})
+    description   = try(local.server_profile_template_settings[each.value.profile_template_key].description, "")
+    uuid_pool_key = try(local.server_profile_template_settings[each.value.profile_template_key].uuid_pool_key, null)
+  }
+  triggers_replace = [
+    each.value.profile_template_key,
+    contains(["sync", "sync_and_deploy"], each.value.action) ? plantimestamp() : "",
+  ]
+
+  lifecycle {
+    ignore_changes = [input]
   }
 }
 
@@ -128,11 +217,15 @@ resource "intersight_server_profile" "server_profile" {
 # the applies that should sync or deploy. The markers below hold the timestamp of the apply that created the
 # profile or changed its template (or, for the deploy marker, that set a deploy action), and
 # input == plantimestamp() identifies it.
+#
+# Both are also replaced when a server with a template starts or stops overriding its template's settings, as that
+# changes where the profile's policies come from, like a template change does
+# (see server_profile_template_identity).
 resource "terraform_data" "server_profile_sync_marker" {
   for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers }
 
   input            = plantimestamp()
-  triggers_replace = [intersight_server_profile.server_profile[each.key].moid, each.value.profile_template_key]
+  triggers_replace = [intersight_server_profile.server_profile[each.key].moid, local.server_profile_template_identity[each.key]]
 
   lifecycle {
     ignore_changes = [input]
@@ -143,7 +236,7 @@ resource "terraform_data" "server_profile_deploy_marker" {
   for_each = { for s in local.intersight_servers : s.key => s if var.manage_servers && contains(["deploy", "sync_and_deploy"], s.action) }
 
   input            = plantimestamp()
-  triggers_replace = [intersight_server_profile.server_profile[each.key].moid, each.value.profile_template_key]
+  triggers_replace = [intersight_server_profile.server_profile[each.key].moid, local.server_profile_template_identity[each.key]]
 
   lifecycle {
     ignore_changes = [input]
@@ -151,12 +244,22 @@ resource "terraform_data" "server_profile_deploy_marker" {
 }
 
 locals {
+  # The template a server's profile takes its settings from, and whether it overrides some of them. Unchanged for a
+  # server without a template, or one that does not override any template settings, so their markers are kept.
+  server_profile_template_identity = {
+    for s in local.intersight_servers : s.key => (
+      s.profile_template_key != null && local.intersight_server_standalone[s.key]
+      ? format("standalone:%s", s.profile_template_key)
+      : s.profile_template_key
+    )
+  }
+
   # Sync when the profile is created or its template changed, and on every apply while action is sync or sync_and_deploy.
-  # Excludes an untemplated (detached) profile: there is no template to merge in, and
-  # server_profile_template_moids has no entry for a null key.
+  # Excludes a standalone profile (see intersight_server_standalone): it has no template to merge in, or overrides
+  # some of its template's settings and takes the others from server_profile_template_snapshot instead.
   server_profiles_to_sync = {
     for s in local.intersight_servers : s.key => s
-    if var.manage_servers && s.profile_template_key != null && (
+    if var.manage_servers && !local.intersight_server_standalone[s.key] && (
       contains(["sync", "sync_and_deploy"], s.action)
       || terraform_data.server_profile_sync_marker[s.key].input == plantimestamp()
     )
@@ -235,12 +338,27 @@ resource "intersight_server_profile" "server_profile_deploy" {
   # this resource, which deletes the profile, waits for the Unassign workflow first. A value that changes between
   # applies would show up as a pending change in the plans in between.
   wait_for_completion = true
-  target_platform     = each.value.profile_template_key != null ? local.server_profile_template_target_platforms[each.value.profile_template_key] : "Standalone"
+  target_platform     = local.intersight_server_settings[each.key].target_platform
   # The create is applied as an update of the existing profile, and Intersight rejects one that changes properties
   # a template-derived profile takes from its template (403 gershwin_cannot_edit_derived_sp). The provider would
   # send NONE, while the sync sets the template's UUID address type.
+  #
+  # A standalone profile's UUID settings follow its settings (see intersight_server_settings) and are set here, not
+  # on server_profile: Intersight does not return them in the profile's additional properties, and server_profile
+  # must ignore uuid_address_type for a derived profile, which ignore_changes cannot do for some profiles only.
+  # uuid_pool is optional and computed, so a derived profile's, set by the template sync, is left alone.
   server_assignment_mode = each.value.serial_number != null ? "Static" : (each.value.resource_pool_key != null ? "Pool" : "None")
-  uuid_address_type      = each.value.profile_template_key != null ? local.server_profile_template_uuid_address_types[each.value.profile_template_key] : "NONE"
+  uuid_address_type = local.intersight_server_standalone[each.key] ? (
+    local.intersight_server_settings[each.key].uuid_pool_key != null ? "POOL" : "NONE"
+  ) : local.server_profile_template_uuid_address_types[each.value.profile_template_key]
+
+  dynamic "uuid_pool" {
+    for_each = local.intersight_server_standalone[each.key] && local.intersight_server_settings[each.key].uuid_pool_key != null ? [1] : []
+    content {
+      object_type = "uuidpool.Pool"
+      moid        = local.uuid_pool_moids[local.intersight_server_settings[each.key].uuid_pool_key]
+    }
+  }
 
   # Applies changes that need a host reboot during the deploy, as easy-imm does, instead of waiting for a
   # manual activation that would leave the profile short of Associated
@@ -277,7 +395,7 @@ resource "intersight_server_profile" "server_profile_deploy" {
     ignore_changes = [
       action_params, ancestors, assigned_server, associated_server, associated_server_pool, create_time, description, domain_group_moid,
       mod_time, owners, parent, permission_resources, policy_bucket, reservation_references, running_workflows,
-      server_pool, shared_scope, src_template, target_platform, uuid, uuid_lease, uuid_pool, version_context,
+      server_pool, shared_scope, src_template, target_platform, uuid, uuid_lease, version_context,
       additional_properties,
     ]
   }

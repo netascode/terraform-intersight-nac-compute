@@ -34,18 +34,104 @@ locals {
         storage_policy_key                = try(tmpl.storage_policy, null) != null ? format("%s/%s", org.name, tmpl.storage_policy) : null
         syslog_policy_key                 = try(tmpl.syslog_policy, null) != null ? format("%s/%s", org.name, tmpl.syslog_policy) : null
         thermal_policy_key                = try(tmpl.thermal_policy, null) != null ? format("%s/%s", org.name, tmpl.thermal_policy) : null
-        # Known provider bug: firmware.Policy and boot.PrecisionPolicy in policy_bucket are applied
-        # correctly but the provider cannot detect them on subsequent reads, causing a perpetual
-        # diff. Tracked for fix in a future provider version. The implementation is correct per the
-        # Intersight OpenAPI spec. See the lifecycle block below for the workaround.
-        firmware_policy_key      = try(tmpl.firmware_policy, null) != null ? format("%s/%s", org.name, tmpl.firmware_policy) : null
-        virtual_kvm_policy_key   = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
-        virtual_media_policy_key = try(tmpl.virtual_media_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_media_policy) : null
-        ldap_policy_key          = try(tmpl.ldap_policy, null) != null ? format("%s/%s", org.name, tmpl.ldap_policy) : null
-        uuid_pool_key            = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
+        firmware_policy_key               = try(tmpl.firmware_policy, null) != null ? format("%s/%s", org.name, tmpl.firmware_policy) : null
+        virtual_kvm_policy_key            = try(tmpl.virtual_kvm_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_kvm_policy) : null
+        virtual_media_policy_key          = try(tmpl.virtual_media_policy, null) != null ? format("%s/%s", org.name, tmpl.virtual_media_policy) : null
+        ldap_policy_key                   = try(tmpl.ldap_policy, null) != null ? format("%s/%s", org.name, tmpl.ldap_policy) : null
+        uuid_pool_key                     = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
       }] : []
     ]
   ])
+
+  # The policies a server profile or server profile template can reference, by data model field: the
+  # Intersight object type in its policy bucket, and the map that resolves a policy key to its Moid.
+  # Shared by server profile templates and by servers that set per-server policies.
+  server_policy_object_types = {
+    bios_policy                   = "bios.Policy"
+    certificate_management_policy = "certificatemanagement.Policy"
+    boot_order_policy             = "boot.PrecisionPolicy"
+    imc_access_policy             = "access.Policy"
+    ipmi_over_lan_policy          = "ipmioverlan.Policy"
+    lan_connectivity_policy       = "vnic.LanConnectivityPolicy"
+    local_user_policy             = "iam.EndPointUserPolicy"
+    network_connectivity_policy   = "networkconfig.Policy"
+    ntp_policy                    = "ntp.Policy"
+    power_policy                  = "power.Policy"
+    san_connectivity_policy       = "vnic.SanConnectivityPolicy"
+    serial_over_lan_policy        = "sol.Policy"
+    scrub_policy                  = "compute.ScrubPolicy"
+    drive_security_policy         = "storage.DriveSecurityPolicy"
+    adapter_configuration_policy  = "adapter.ConfigPolicy"
+    device_connector_policy       = "deviceconnector.Policy"
+    sd_card_policy                = "sdcard.Policy"
+    memory_policy                 = "memory.Policy"
+    persistent_memory_policy      = "memory.PersistentMemoryPolicy"
+    smtp_policy                   = "smtp.Policy"
+    snmp_policy                   = "snmp.Policy"
+    ssh_policy                    = "ssh.Policy"
+    storage_policy                = "storage.StoragePolicy"
+    syslog_policy                 = "syslog.Policy"
+    thermal_policy                = "thermal.Policy"
+    firmware_policy               = "firmware.Policy"
+    virtual_kvm_policy            = "kvm.Policy"
+    virtual_media_policy          = "vmedia.Policy"
+    ldap_policy                   = "iam.LdapPolicy"
+  }
+
+  server_policy_moids = {
+    bios_policy                   = local.bios_policy_moids
+    certificate_management_policy = local.certificate_management_policy_moids
+    boot_order_policy             = local.boot_precision_policy_moids
+    imc_access_policy             = local.imc_access_policy_moids
+    ipmi_over_lan_policy          = local.ipmi_over_lan_policy_moids
+    lan_connectivity_policy       = local.lan_connectivity_policy_moids
+    local_user_policy             = local.local_user_policy_moids
+    network_connectivity_policy   = local.network_connectivity_policy_moids
+    ntp_policy                    = local.ntp_policy_moids
+    power_policy                  = local.power_policy_moids
+    san_connectivity_policy       = local.san_connectivity_policy_moids
+    serial_over_lan_policy        = local.serial_over_lan_policy_moids
+    scrub_policy                  = local.scrub_policy_moids
+    drive_security_policy         = local.drive_security_policy_moids
+    adapter_configuration_policy  = local.adapter_configuration_policy_moids
+    device_connector_policy       = local.device_connector_policy_moids
+    sd_card_policy                = local.sd_card_policy_moids
+    memory_policy                 = local.memory_policy_moids
+    persistent_memory_policy      = local.persistent_memory_policy_moids
+    smtp_policy                   = local.smtp_policy_moids
+    snmp_policy                   = local.snmp_policy_moids
+    ssh_policy                    = local.ssh_policy_moids
+    storage_policy                = local.storage_policy_moids
+    syslog_policy                 = local.syslog_policy_moids
+    thermal_policy                = local.thermal_policy_moids
+    firmware_policy               = local.firmware_policy_moids
+    virtual_kvm_policy            = local.virtual_kvm_policy_moids
+    virtual_media_policy          = local.virtual_media_policy_moids
+    ldap_policy                   = local.ldap_policy_moids
+  }
+
+  # Policy keys ("<org>/<policy>") of each server profile template, by data model field, for the policies it
+  # sets. Built from the data model, including templates with managed: false or managed in another
+  # workspace, as a server that overrides some of a template's policies takes the others from it.
+  server_profile_template_policy_keys = merge([
+    for org in local.filtered_intersight_organizations : {
+      for tmpl in try(org.templates.server, []) : format("%s/%s", org.name, tmpl.name) => {
+        for field in keys(local.server_policy_object_types) :
+        field => format("%s/%s", org.name, tmpl[field]) if try(tmpl[field], null) != null
+      }
+    }
+  ]...)
+
+  # The other settings a server that overrides some of a template's policies takes from the template
+  server_profile_template_settings = merge([
+    for org in local.filtered_intersight_organizations : {
+      for tmpl in try(org.templates.server, []) : format("%s/%s", org.name, tmpl.name) => {
+        description     = try(tmpl.description, local.defaults.compute.intersight.organizations.templates.server.description, "")
+        target_platform = try(tmpl.target_platform, local.defaults.compute.intersight.organizations.templates.server.target_platform)
+        uuid_pool_key   = try(tmpl.uuid_pool, null) != null ? format("%s/%s", org.name, tmpl.uuid_pool) : null
+      }
+    }
+  ]...)
 }
 
 resource "intersight_server_profile_template" "server_profile_template" {
@@ -57,239 +143,21 @@ resource "intersight_server_profile_template" "server_profile_template" {
 
   uuid_address_type = each.value.uuid_pool_key != null ? "POOL" : "NONE"
 
-  dynamic "policy_bucket" {
-    for_each = each.value.bios_policy_key != null ? [1] : []
-    content {
-      object_type = "bios.Policy"
-      moid        = local.bios_policy_moids[each.value.bios_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.certificate_management_policy_key != null ? [1] : []
-    content {
-      object_type = "certificatemanagement.Policy"
-      moid        = local.certificate_management_policy_moids[each.value.certificate_management_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.boot_order_policy_key != null ? [1] : []
-    content {
-      object_type = "boot.PrecisionPolicy"
-      moid        = local.boot_precision_policy_moids[each.value.boot_order_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.imc_access_policy_key != null ? [1] : []
-    content {
-      object_type = "access.Policy"
-      moid        = local.imc_access_policy_moids[each.value.imc_access_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.ipmi_over_lan_policy_key != null ? [1] : []
-    content {
-      object_type = "ipmioverlan.Policy"
-      moid        = local.ipmi_over_lan_policy_moids[each.value.ipmi_over_lan_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.lan_connectivity_policy_key != null ? [1] : []
-    content {
-      object_type = "vnic.LanConnectivityPolicy"
-      moid        = local.lan_connectivity_policy_moids[each.value.lan_connectivity_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.local_user_policy_key != null ? [1] : []
-    content {
-      object_type = "iam.EndPointUserPolicy"
-      moid        = local.local_user_policy_moids[each.value.local_user_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.network_connectivity_policy_key != null ? [1] : []
-    content {
-      object_type = "networkconfig.Policy"
-      moid        = local.network_connectivity_policy_moids[each.value.network_connectivity_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.ntp_policy_key != null ? [1] : []
-    content {
-      object_type = "ntp.Policy"
-      moid        = local.ntp_policy_moids[each.value.ntp_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.power_policy_key != null ? [1] : []
-    content {
-      object_type = "power.Policy"
-      moid        = local.power_policy_moids[each.value.power_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.san_connectivity_policy_key != null ? [1] : []
-    content {
-      object_type = "vnic.SanConnectivityPolicy"
-      moid        = local.san_connectivity_policy_moids[each.value.san_connectivity_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.serial_over_lan_policy_key != null ? [1] : []
-    content {
-      object_type = "sol.Policy"
-      moid        = local.serial_over_lan_policy_moids[each.value.serial_over_lan_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.scrub_policy_key != null ? [1] : []
-    content {
-      object_type = "compute.ScrubPolicy"
-      moid        = local.scrub_policy_moids[each.value.scrub_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.drive_security_policy_key != null ? [1] : []
-    content {
-      object_type = "storage.DriveSecurityPolicy"
-      moid        = local.drive_security_policy_moids[each.value.drive_security_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.adapter_configuration_policy_key != null ? [1] : []
-    content {
-      object_type = "adapter.ConfigPolicy"
-      moid        = local.adapter_configuration_policy_moids[each.value.adapter_configuration_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.device_connector_policy_key != null ? [1] : []
-    content {
-      object_type = "deviceconnector.Policy"
-      moid        = local.device_connector_policy_moids[each.value.device_connector_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.sd_card_policy_key != null ? [1] : []
-    content {
-      object_type = "sdcard.Policy"
-      moid        = local.sd_card_policy_moids[each.value.sd_card_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.memory_policy_key != null ? [1] : []
-    content {
-      object_type = "memory.Policy"
-      moid        = local.memory_policy_moids[each.value.memory_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.persistent_memory_policy_key != null ? [1] : []
-    content {
-      object_type = "memory.PersistentMemoryPolicy"
-      moid        = local.persistent_memory_policy_moids[each.value.persistent_memory_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.smtp_policy_key != null ? [1] : []
-    content {
-      object_type = "smtp.Policy"
-      moid        = local.smtp_policy_moids[each.value.smtp_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.snmp_policy_key != null ? [1] : []
-    content {
-      object_type = "snmp.Policy"
-      moid        = local.snmp_policy_moids[each.value.snmp_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.ssh_policy_key != null ? [1] : []
-    content {
-      object_type = "ssh.Policy"
-      moid        = local.ssh_policy_moids[each.value.ssh_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.storage_policy_key != null ? [1] : []
-    content {
-      object_type = "storage.StoragePolicy"
-      moid        = local.storage_policy_moids[each.value.storage_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.syslog_policy_key != null ? [1] : []
-    content {
-      object_type = "syslog.Policy"
-      moid        = local.syslog_policy_moids[each.value.syslog_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.thermal_policy_key != null ? [1] : []
-    content {
-      object_type = "thermal.Policy"
-      moid        = local.thermal_policy_moids[each.value.thermal_policy_key]
-    }
-  }
-
-  # Known provider bug: applied correctly on first run but causes a perpetual diff on subsequent
-  # plans. See comment in locals block. Remove this block once the provider bug is resolved.
-  dynamic "policy_bucket" {
-    for_each = each.value.firmware_policy_key != null ? [1] : []
-    content {
-      object_type = "firmware.Policy"
-      moid        = local.firmware_policy_moids[each.value.firmware_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.virtual_kvm_policy_key != null ? [1] : []
-    content {
-      object_type = "kvm.Policy"
-      moid        = local.virtual_kvm_policy_moids[each.value.virtual_kvm_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.virtual_media_policy_key != null ? [1] : []
-    content {
-      object_type = "vmedia.Policy"
-      moid        = local.virtual_media_policy_moids[each.value.virtual_media_policy_key]
-    }
-  }
-
-  dynamic "policy_bucket" {
-    for_each = each.value.ldap_policy_key != null ? [1] : []
-    content {
-      object_type = "iam.LdapPolicy"
-      moid        = local.ldap_policy_moids[each.value.ldap_policy_key]
-    }
-  }
+  # The policies are set in additional_properties rather than with the native policy_bucket. The provider misreads
+  # firmware.Policy and boot.PrecisionPolicy entries in policy_bucket (known provider bug), which caused a perpetual
+  # diff, so policy_bucket had to be ignored, and changes to a template's policies were never applied. Intersight
+  # returns the policy bucket in the template's additional properties, which the provider compares with these,
+  # ignoring the order of the policies, so changes are applied and an unchanged template shows no diff. The
+  # native policy_bucket is optional and computed, so leaving it out of the configuration does not clear it.
+  additional_properties = jsonencode({
+    PolicyBucket = [
+      for field, key in local.server_profile_template_policy_keys[each.key] : {
+        ClassId    = "mo.MoRef"
+        Moid       = local.server_policy_moids[field][key]
+        ObjectType = local.server_policy_object_types[field]
+      }
+    ]
+  })
 
   dynamic "uuid_pool" {
     for_each = each.value.uuid_pool_key != null ? [1] : []
@@ -317,13 +185,6 @@ resource "intersight_server_profile_template" "server_profile_template" {
   organization {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
-  }
-
-  # Workaround for the known provider bug documented above: the provider fails to read back
-  # firmware.Policy and boot.PrecisionPolicy entries in policy_bucket, causing perpetual drift.
-  # Remove once the provider bug is resolved.
-  lifecycle {
-    ignore_changes = [policy_bucket]
   }
 
   # Policy child objects are not referenced by the template; order them so they are created

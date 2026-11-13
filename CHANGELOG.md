@@ -7,7 +7,7 @@
 - Add support for Intersight pools: IQN, resource
 - Add support for Intersight server, chassis and domain profiles, including assignment and pre-assignment by serial number before Intersight has inventoried the hardware. Profiles are derived from their template, inheriting its policies and target platform (unless a server overrides them, see below), and are synced and deployed according to the `action` attribute (`sync`, `deploy`, `sync_and_deploy`, `unassign`), with consistent behavior across the three profile types
   - Deploys wait for the profile workflows to finish, so `terraform apply` blocks until the deploy completes
-  - Server profile deploys schedule an Intersight Activate with proceed-on-reboot, so changes that need a host reboot are applied automatically during the deploy and the profile reaches `Associated`
+  - Server profile deploys schedule an Intersight Activate with proceed-on-reboot, so changes that need a host reboot are applied without a manual activation. `terraform apply` waits for the deploy workflow only: the activation (host reboot) runs after it, so the profile can still be activating when the apply completes and reaches `Associated` later
   - `deploy` only runs when the profile is created, its template changes, the server starts or stops overriding its template's settings, or `action` is set to `deploy`, not on later applies or when the template contents change
   - Commenting out or removing a serial number does not detach the profile from the hardware. Set `action: unassign` to send Intersight's `Unassign` command
   - Changing the template of a profile derived from a template requires two applies: one with the template key removed (detaches the profile) and one with the new template set

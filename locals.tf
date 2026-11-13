@@ -97,22 +97,42 @@ locals {
   # actually reference, so data sources only look up what is needed.
   # ---------------------------------------------------------------------------
 
+  # Policy and UUID pool keys referenced by servers, by data model field: a server's own settings, and for a
+  # standalone server with a template, the template's, which its profile is given directly (see
+  # intersight_server_settings). Includes templates with managed: false or managed in another workspace.
+  _server_ref_keys = {
+    for field in concat(keys(local.server_policy_object_types), ["uuid_pool"]) : field => compact(flatten([
+      for s in local.intersight_servers : [
+        field == "uuid_pool" ? s.override_uuid_pool_key : lookup(s.override_policy_keys, field, null),
+        local.intersight_server_standalone[s.key] && s.profile_template_key != null ? (
+          field == "uuid_pool"
+          ? try(local.server_profile_template_settings[s.profile_template_key].uuid_pool_key, null)
+          : try(local.server_profile_template_policy_keys[s.profile_template_key][field], null)
+        ) : null,
+      ]
+    ]))
+  }
+
   # Policies (manage_intersight_policies)
   _imc_access_policy_ref_keys = toset(compact(flatten([
     [for p in local.chassis_profiles : p.imc_access_policy_key],
     [for t in local.chassis_templates : t.imc_access_policy_key],
     [for t in local.server_templates : t.imc_access_policy_key],
+    lookup(local._server_ref_keys, "imc_access_policy", []),
   ])))
   _bios_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.bios_policy_key],
+    lookup(local._server_ref_keys, "bios_policy", []),
   ])))
   _certificate_management_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.certificate_management_policy_key],
+    lookup(local._server_ref_keys, "certificate_management_policy", []),
     [for t in local.chassis_templates : t.certificate_management_policy_key],
     [for p in local.chassis_profiles : p.certificate_management_policy_key],
   ])))
   _boot_precision_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.boot_order_policy_key],
+    lookup(local._server_ref_keys, "boot_order_policy", []),
   ])))
   _qualification_policy_ref_keys = toset(compact(flatten([
     [for p in local.resource_pools : p.qualification_policy_key],
@@ -139,33 +159,41 @@ locals {
   ])))
   _firmware_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.firmware_policy_key],
+    lookup(local._server_ref_keys, "firmware_policy", []),
   ])))
   _local_user_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.local_user_policy_key],
+    lookup(local._server_ref_keys, "local_user_policy", []),
   ])))
   _ipmi_over_lan_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ipmi_over_lan_policy_key],
+    lookup(local._server_ref_keys, "ipmi_over_lan_policy", []),
   ])))
   _virtual_kvm_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.virtual_kvm_policy_key],
+    lookup(local._server_ref_keys, "virtual_kvm_policy", []),
   ])))
   _network_connectivity_policy_ref_keys = toset(compact(flatten([
     [for sp in local.domain_switch_profiles : sp.network_connectivity_policy_key],
     [for st in local.domain_switch_profile_templates : st.network_connectivity_policy_key],
     [for t in local.server_templates : t.network_connectivity_policy_key],
+    lookup(local._server_ref_keys, "network_connectivity_policy", []),
   ])))
   _ntp_policy_ref_keys = toset(compact(flatten([
     [for sp in local.domain_switch_profiles : sp.ntp_policy_key],
     [for st in local.domain_switch_profile_templates : st.ntp_policy_key],
     [for t in local.server_templates : t.ntp_policy_key],
+    lookup(local._server_ref_keys, "ntp_policy", []),
   ])))
   _power_policy_ref_keys = toset(compact(flatten([
     [for p in local.chassis_profiles : p.power_policy_key],
     [for t in local.chassis_templates : t.power_policy_key],
     [for t in local.server_templates : t.power_policy_key],
+    lookup(local._server_ref_keys, "power_policy", []),
   ])))
   _smtp_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.smtp_policy_key],
+    lookup(local._server_ref_keys, "smtp_policy", []),
   ])))
   _snmp_policy_ref_keys = toset(compact(flatten([
     [for sp in local.domain_switch_profiles : sp.snmp_policy_key],
@@ -173,30 +201,39 @@ locals {
     [for p in local.chassis_profiles : p.snmp_policy_key],
     [for t in local.chassis_templates : t.snmp_policy_key],
     [for t in local.server_templates : t.snmp_policy_key],
+    lookup(local._server_ref_keys, "snmp_policy", []),
   ])))
   _serial_over_lan_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.serial_over_lan_policy_key],
+    lookup(local._server_ref_keys, "serial_over_lan_policy", []),
   ])))
   _scrub_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.scrub_policy_key],
+    lookup(local._server_ref_keys, "scrub_policy", []),
   ])))
   _drive_security_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.drive_security_policy_key],
+    lookup(local._server_ref_keys, "drive_security_policy", []),
   ])))
   _adapter_configuration_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.adapter_configuration_policy_key],
+    lookup(local._server_ref_keys, "adapter_configuration_policy", []),
   ])))
   _device_connector_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.device_connector_policy_key],
+    lookup(local._server_ref_keys, "device_connector_policy", []),
   ])))
   _sd_card_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.sd_card_policy_key],
+    lookup(local._server_ref_keys, "sd_card_policy", []),
   ])))
   _memory_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.memory_policy_key],
+    lookup(local._server_ref_keys, "memory_policy", []),
   ])))
   _persistent_memory_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.persistent_memory_policy_key],
+    lookup(local._server_ref_keys, "persistent_memory_policy", []),
   ])))
   _mac_sec_policy_ref_keys = toset(compact(flatten([
     [for r in local.port_role_ethernet_uplinks : try(r.mac_sec_policy_key, null)],
@@ -204,38 +241,47 @@ locals {
   ])))
   _ssh_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ssh_policy_key],
+    lookup(local._server_ref_keys, "ssh_policy", []),
   ])))
   _storage_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.storage_policy_key],
+    lookup(local._server_ref_keys, "storage_policy", []),
   ])))
   _syslog_policy_ref_keys = toset(compact(flatten([
     [for sp in local.domain_switch_profiles : sp.syslog_policy_key],
     [for st in local.domain_switch_profile_templates : st.syslog_policy_key],
     [for t in local.server_templates : t.syslog_policy_key],
+    lookup(local._server_ref_keys, "syslog_policy", []),
   ])))
   _thermal_policy_ref_keys = toset(compact(flatten([
     [for p in local.chassis_profiles : p.thermal_policy_key],
     [for t in local.chassis_templates : t.thermal_policy_key],
     [for t in local.server_templates : t.thermal_policy_key],
+    lookup(local._server_ref_keys, "thermal_policy", []),
   ])))
   _virtual_media_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.virtual_media_policy_key],
+    lookup(local._server_ref_keys, "virtual_media_policy", []),
   ])))
   _ldap_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.ldap_policy_key],
+    lookup(local._server_ref_keys, "ldap_policy", []),
     [for st in local.domain_switch_profile_templates : try(st.ldap_policy_key, null)],
     [for sp in local.domain_switch_profiles : try(sp.ldap_policy_key, null)],
   ])))
   _lan_connectivity_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.lan_connectivity_policy_key],
+    lookup(local._server_ref_keys, "lan_connectivity_policy", []),
   ])))
   _san_connectivity_policy_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.san_connectivity_policy_key],
+    lookup(local._server_ref_keys, "san_connectivity_policy", []),
   ])))
 
   # Pools (manage_intersight_pools)
   _uuid_pool_ref_keys = toset(compact(flatten([
     [for t in local.server_templates : t.uuid_pool_key],
+    lookup(local._server_ref_keys, "uuid_pool", []),
   ])))
   _ip_pool_ref_keys = toset(compact(flatten([
     [for p in local.iscsi_boot_policies : p.ip_pool_key],

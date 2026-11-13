@@ -26,112 +26,112 @@ locals {
 # ---------------------------------------------------------------------------
 
 data "intersight_bios_policy" "bios_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._bios_policy_ref_keys, toset(keys(intersight_bios_policy.bios_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_certificatemanagement_policy" "certificate_management_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._certificate_management_policy_ref_keys, toset(keys(intersight_certificatemanagement_policy.certificate_management_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_boot_precision_policy" "boot_precision_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._boot_precision_policy_ref_keys, toset(keys(intersight_boot_precision_policy.boot_precision_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_firmware_policy" "firmware_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._firmware_policy_ref_keys, toset(keys(intersight_firmware_policy.firmware_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_iam_end_point_user_policy" "local_user_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._local_user_policy_ref_keys, toset(keys(intersight_iam_end_point_user_policy.local_user_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_ipmioverlan_policy" "ipmi_over_lan_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._ipmi_over_lan_policy_ref_keys, toset(keys(intersight_ipmioverlan_policy.ipmi_over_lan_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_kvm_policy" "virtual_kvm_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._virtual_kvm_policy_ref_keys, toset(keys(intersight_kvm_policy.virtual_kvm_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_smtp_policy" "smtp_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._smtp_policy_ref_keys, toset(keys(intersight_smtp_policy.smtp_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_sol_policy" "serial_over_lan_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._serial_over_lan_policy_ref_keys, toset(keys(intersight_sol_policy.serial_over_lan_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_compute_scrub_policy" "scrub_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._scrub_policy_ref_keys, toset(keys(intersight_compute_scrub_policy.scrub_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_storage_drive_security_policy" "drive_security_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._drive_security_policy_ref_keys, toset(keys(intersight_storage_drive_security_policy.drive_security_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_adapter_config_policy" "adapter_configuration_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._adapter_configuration_policy_ref_keys, toset(keys(intersight_adapter_config_policy.adapter_configuration_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_deviceconnector_policy" "device_connector_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._device_connector_policy_ref_keys, toset(keys(intersight_deviceconnector_policy.device_connector_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_sdcard_policy" "sd_card_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._sd_card_policy_ref_keys, toset(keys(intersight_sdcard_policy.sd_card_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_memory_policy" "memory_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._memory_policy_ref_keys, toset(keys(intersight_memory_policy.memory_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_memory_persistent_memory_policy" "persistent_memory_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._persistent_memory_policy_ref_keys, toset(keys(intersight_memory_persistent_memory_policy.persistent_memory_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
@@ -145,42 +145,42 @@ data "intersight_fabric_mac_sec_policy" "mac_sec_policy" {
 }
 
 data "intersight_ssh_policy" "ssh_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._ssh_policy_ref_keys, toset(keys(intersight_ssh_policy.ssh_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_storage_storage_policy" "storage_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._storage_policy_ref_keys, toset(keys(intersight_storage_storage_policy.storage_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_vmedia_policy" "virtual_media_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._virtual_media_policy_ref_keys, toset(keys(intersight_vmedia_policy.virtual_media_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_iam_ldap_policy" "ldap_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._ldap_policy_ref_keys, toset(keys(intersight_iam_ldap_policy.ldap_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_vnic_lan_connectivity_policy" "lan_connectivity_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._lan_connectivity_policy_ref_keys, toset(keys(intersight_vnic_lan_connectivity_policy.lan_connectivity_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_vnic_san_connectivity_policy" "san_connectivity_policy" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._san_connectivity_policy_ref_keys, toset(keys(intersight_vnic_san_connectivity_policy.san_connectivity_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
@@ -192,7 +192,7 @@ data "intersight_vnic_san_connectivity_policy" "san_connectivity_policy" {
 # ---------------------------------------------------------------------------
 
 data "intersight_access_policy" "imc_access_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._imc_access_policy_ref_keys, toset(keys(intersight_access_policy.imc_access_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
@@ -234,42 +234,42 @@ data "intersight_fabric_system_qos_policy" "system_qos_policy" {
 }
 
 data "intersight_networkconfig_policy" "network_connectivity_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._network_connectivity_policy_ref_keys, toset(keys(intersight_networkconfig_policy.network_connectivity_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_ntp_policy" "ntp_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._ntp_policy_ref_keys, toset(keys(intersight_ntp_policy.ntp_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_power_policy" "power_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._power_policy_ref_keys, toset(keys(intersight_power_policy.power_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_snmp_policy" "snmp_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._snmp_policy_ref_keys, toset(keys(intersight_snmp_policy.snmp_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_syslog_policy" "syslog_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._syslog_policy_ref_keys, toset(keys(intersight_syslog_policy.syslog_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
 }
 
 data "intersight_thermal_policy" "thermal_policy" {
-  for_each = !local._any_prof_or_tmpl ? {} : {
+  for_each = !(local._any_prof_or_tmpl || var.manage_servers) ? {} : {
     for k in setsubtract(local._thermal_policy_ref_keys, toset(keys(intersight_thermal_policy.thermal_policy))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name
@@ -281,7 +281,7 @@ data "intersight_thermal_policy" "thermal_policy" {
 # ---------------------------------------------------------------------------
 
 data "intersight_uuidpool_pool" "uuid_pool" {
-  for_each = !var.manage_intersight_templates ? {} : {
+  for_each = !(var.manage_intersight_templates || var.manage_servers) ? {} : {
     for k in setsubtract(local._uuid_pool_ref_keys, toset(keys(intersight_uuidpool_pool.uuid_pool))) : k => { name = split("/", k)[1] }
   }
   name = each.value.name

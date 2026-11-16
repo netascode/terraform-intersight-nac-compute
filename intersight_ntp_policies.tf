@@ -56,4 +56,10 @@ resource "intersight_ntp_policy" "ntp_policy" {
       sym_key_value = try(authenticated_ntp_servers.value.symmetric_key_value, null)
     }
   }
+
+  # sym_key_value is write-only: Intersight returns only IsSymKeyValueSet, so Terraform cannot detect drift on it.
+  # authenticated_ntp_servers is ignored as a whole because ignore_changes cannot address an attribute in every server.
+  lifecycle {
+    ignore_changes = [authenticated_ntp_servers]
+  }
 }

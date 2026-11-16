@@ -106,4 +106,10 @@ resource "intersight_snmp_policy" "snmp_policy" {
     object_type = "organization.Organization"
     moid        = local.org_moids[each.value.org_name]
   }
+
+  # The community strings are write-only: Intersight accepts them but returns null, so Terraform cannot detect drift
+  # on them. snmp_traps is ignored as a whole because ignore_changes cannot address an attribute in every trap.
+  lifecycle {
+    ignore_changes = [access_community_string, trap_community, snmp_traps]
+  }
 }

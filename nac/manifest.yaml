@@ -1,0 +1,10 @@
+schema: 1
+tools:
+  nac-validate: 2.1.0
+  nac-test: 2.1.0
+config:
+  env:
+    required:
+    - INTERSIGHT_ENDPOINT_URL
+    - INTERSIGHT_API_KEY
+    - INTERSIGHT_SECRET_KEY

@@ -1,0 +1,1480 @@
+---
+compute: include('compute', required=False)
+defaults: any(required=False)
+---
+compute:
+  intersight: include('intersight', required=False)
+  servers: list(include('server'), required=False)
+
+intersight:
+  organizations: list(include('intersight_organizations'), required=False)
+
+intersight_organizations:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  policies: include('intersight_organizations_policies', required=False)
+  pools: include('intersight_organizations_pools', required=False)
+  templates: include('intersight_organizations_templates', required=False)
+  profiles: include('intersight_organizations_profiles', required=False)
+
+intersight_organizations_policies:
+  bios: list(include('intersight_organizations_policies_bios'), required=False)
+  boot_order: list(include('intersight_organizations_policies_boot_order'), required=False)
+  qualification: list(include('intersight_organizations_policies_qualification'), required=False)
+  certificate_management: list(include('intersight_organizations_policies_certificate_management'), required=False)
+  adapter_configuration: list(include('intersight_organizations_policies_adapter_configuration'), required=False)
+  device_connector: list(include('intersight_organizations_policies_device_connector'), required=False)
+  drive_security: list(include('intersight_organizations_policies_drive_security'), required=False)
+  sd_card: list(include('intersight_organizations_policies_sd_card'), required=False)
+  memory: list(include('intersight_organizations_policies_memory'), required=False)
+  persistent_memory: list(include('intersight_organizations_policies_persistent_memory'), required=False)
+  mac_sec: list(include('intersight_organizations_policies_mac_sec'), required=False)
+  ethernet_adapter: list(include('intersight_organizations_policies_ethernet_adapter'), required=False)
+  ethernet_network: list(include('intersight_organizations_policies_ethernet_network'), required=False)
+  ethernet_network_control: list(include('intersight_organizations_policies_ethernet_network_control'), required=False)
+  ethernet_network_group: list(include('intersight_organizations_policies_ethernet_network_group'), required=False)
+  ethernet_qos: list(include('intersight_organizations_policies_ethernet_qos'), required=False)
+  fibre_channel_adapter: list(include('intersight_organizations_policies_fibre_channel_adapter'), required=False)
+  fibre_channel_network: list(include('intersight_organizations_policies_fibre_channel_network'), required=False)
+  fibre_channel_qos: list(include('intersight_organizations_policies_fibre_channel_qos'), required=False)
+  firmware: list(include('intersight_organizations_policies_firmware'), required=False)
+  fc_zone: list(include('intersight_organizations_policies_fc_zone'), required=False)
+  imc_access: list(include('intersight_organizations_policies_imc_access'), required=False)
+  ipmi_over_lan: list(include('intersight_organizations_policies_ipmi_over_lan'), required=False)
+  iscsi_adapter: list(include('intersight_organizations_policies_iscsi_adapter'), required=False)
+  iscsi_boot: list(include('intersight_organizations_policies_iscsi_boot'), required=False)
+  iscsi_static_target: list(include('intersight_organizations_policies_iscsi_static_target'), required=False)
+  lan_connectivity: list(include('intersight_organizations_policies_lan_connectivity'), required=False)
+  ldap: list(include('intersight_organizations_policies_ldap'), required=False)
+  local_user: list(include('intersight_organizations_policies_local_user'), required=False)
+  network_connectivity: list(include('intersight_organizations_policies_network_connectivity'), required=False)
+  ntp: list(include('intersight_organizations_policies_ntp'), required=False)
+  port: list(include('intersight_organizations_policies_port'), required=False)
+  power: list(include('intersight_organizations_policies_power'), required=False)
+  san_connectivity: list(include('intersight_organizations_policies_san_connectivity'), required=False)
+  serial_over_lan: list(include('intersight_organizations_policies_serial_over_lan'), required=False)
+  scrub: list(include('intersight_organizations_policies_scrub'), required=False)
+  smtp: list(include('intersight_organizations_policies_smtp'), required=False)
+  snmp: list(include('intersight_organizations_policies_snmp'), required=False)
+  storage: list(include('intersight_organizations_policies_storage'), required=False)
+  ssh: list(include('intersight_organizations_policies_ssh'), required=False)
+  syslog: list(include('intersight_organizations_policies_syslog'), required=False)
+  thermal: list(include('intersight_organizations_policies_thermal'), required=False)
+  virtual_kvm: list(include('intersight_organizations_policies_virtual_kvm'), required=False)
+  virtual_media: list(include('intersight_organizations_policies_virtual_media'), required=False)
+  vlan: list(include('intersight_organizations_policies_vlan'), required=False)
+  vsan: list(include('intersight_organizations_policies_vsan'), required=False)
+  switch_control: list(include('intersight_organizations_policies_switch_control'), required=False)
+  system_qos: list(include('intersight_organizations_policies_system_qos'), required=False)
+  flow_control: list(include('intersight_organizations_policies_flow_control'), required=False)
+  link_aggregation: list(include('intersight_organizations_policies_link_aggregation'), required=False)
+  link_control: list(include('intersight_organizations_policies_link_control'), required=False)
+  multicast: list(include('intersight_organizations_policies_multicast'), required=False)
+
+intersight_organizations_policies_bios:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  bios_template: enum('AnalyticalDatabaseSystems-M5-Intel', 'AnalyticalDatabaseSystems-M5-Intel-Tpm', 'AnalyticalDatabaseSystems-M6-Intel', 'AnalyticalDatabaseSystems-M6-Intel-Tpm', 'AnalyticalDatabaseSystems-M7-Intel', 'AnalyticalDatabaseSystems-M7-Intel-Tpm', 'Analytics-M8-AMD', 'Analytics-M8-AMD-Tpm', 'AzureStack-M6-Intel', 'AzureStack-M6-Intel-Tpm', 'AzureStack-M7-Intel', 'AzureStack-M7-Intel-Tpm', 'ComputationIntensive-M6-AMD', 'ComputationIntensive-M6-AMD-Tpm', 'CPUIntensive-M6-Intel', 'CPUIntensive-M6-Intel-Tpm', 'CPUIntensive-M7-Intel', 'CPUIntensive-M7-Intel-Tpm', 'CPUIntensive-M8-AMD', 'CPUIntensive-M8-AMD-Tpm', 'DataAnalytics-M6-Intel', 'DataAnalytics-M6-Intel-Tpm', 'DataAnalytics-M7-Intel', 'DataAnalytics-M7-Intel-Tpm', 'EnergyEfficiency-M5-Intel', 'EnergyEfficiency-M5-Intel-Tpm', 'EnergyEfficiency-M6-AMD', 'EnergyEfficiency-M6-AMD-Tpm', 'EnergyEfficiency-M6-Intel', 'EnergyEfficiency-M6-Intel-Tpm', 'EnergyEfficient-M7-Intel', 'EnergyEfficient-M7-Intel-Tpm', 'EnergyEfficiency-M8-AMD', 'EnergyEfficiency-M8-AMD-Tpm', 'HighPerformanceComputing-M5-Intel', 'HighPerformanceComputing-M5-Intel-Tpm', 'HighPerformanceComputing-M6-AMD', 'HighPerformanceComputing-M6-AMD-Tpm', 'HighPerformanceComputing-M6-Intel', 'HighPerformanceComputing-M6-Intel-Tpm', 'HighPerformanceComputing-M7-Intel', 'HighPerformanceComputing-M7-Intel-Tpm', 'HPC-M8-AMD', 'HPC-M8-AMD-Tpm', 'IOIntensive-M6-AMD', 'IOIntensive-M6-AMD-Tpm', 'IOIntensive-M6-Intel', 'IOIntensive-M6-Intel-Tpm', 'IOIntensive-M8-AMD', 'IOIntensive-M8-AMD-Tpm', 'JavaApplicationServer-M5-Intel', 'JavaApplicationServer-M5-Intel-Tpm', 'LowLatency-M5-Intel', 'LowLatency-M5-Intel-Tpm', 'LowLatency-M6-AMD', 'LowLatency-M6-AMD-Tpm', 'LowLatency-M6-Intel', 'LowLatency-M6-Intel-Tpm', 'LowLatency-M7-Intel', 'LowLatency-M7-Intel-Tpm', 'LowLatency-M8-AMD', 'LowLatency-M8-AMD-Tpm', 'M5-amd-virtual', 'M5-amd-virtual-Tpm', 'M5-intel-virtual', 'M5-intel-virtual-Tpm', 'M6-amd-virtual', 'M6-amd-virtual-Tpm', 'M6-intel-analytical-db', 'M6-intel-analytical-db-Tpm', 'M6-intel-virtual', 'M6-intel-virtual-Tpm', 'MaximumPerformance-M5-Intel', 'MaximumPerformance-M5-Intel-Tpm', 'OnlineTransactionProcessing-M5-Intel', 'OnlineTransactionProcessing-M5-Intel-Tpm', 'RDBMS-M8-AMD', 'RDBMS-M8-AMD-Tpm', 'RelationalDatabaseSystems-M6-Intel', 'RelationalDatabaseSystems-M6-Intel-Tpm', 'RelationalDatabaseSystems-M7-Intel', 'RelationalDatabaseSystems-M7-Intel-Tpm', 'VDI-M6-AMD', 'VDI-M6-AMD-Tpm', 'Virtualization-M5-Intel', 'Virtualization-M5-Intel-Tpm', 'Virtualization-M6-AMD', 'Virtualization-M6-AMD-Tpm', 'Virtualization-M6-Intel', 'Virtualization-M6-Intel-Tpm', 'Virtualization-M7-Intel', 'Virtualization-M7-Intel-Tpm', 'Virtualization-M8-AMD', 'Virtualization-M8-AMD-Tpm', 'Virtualization-M8-Intel', 'Virtualization-M8-Intel-Tpm', required=False)
+
+intersight_organizations_policies_certificate_management:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  certificates: list(include('intersight_organizations_policies_certificate_management_certificate'), required=False)
+
+intersight_organizations_policies_certificate_management_certificate:
+  certificate_type: enum('Imc', 'RootCa')
+  name: str(required=False)
+  pem_certificate: str(required=False)
+  private_key: str(required=False)
+  cert_type: enum('None', 'KMIPClient', required=False)
+  enabled: bool(required=False)
+
+intersight_organizations_policies_adapter_configuration:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  settings: list(include('intersight_organizations_policies_adapter_configuration_settings'), required=False)
+
+intersight_organizations_policies_adapter_configuration_settings:
+  slot_id: str()
+  ethernet_settings: include('intersight_organizations_policies_adapter_configuration_ethernet_settings', required=False)
+  fc_settings: include('intersight_organizations_policies_adapter_configuration_fc_settings', required=False)
+  port_channel_settings: include('intersight_organizations_policies_adapter_configuration_port_channel_settings', required=False)
+  physical_nic_mode_settings: include('intersight_organizations_policies_adapter_configuration_physical_nic_mode_settings', required=False)
+
+intersight_organizations_policies_adapter_configuration_ethernet_settings:
+  lldp_enabled: bool(required=False)
+
+intersight_organizations_policies_adapter_configuration_fc_settings:
+  fip_enabled: bool(required=False)
+
+intersight_organizations_policies_adapter_configuration_port_channel_settings:
+  enabled: bool(required=False)
+
+intersight_organizations_policies_adapter_configuration_physical_nic_mode_settings:
+  physical_nic_enabled: bool(required=False)
+
+intersight_organizations_policies_device_connector:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  configuration_from_intersight_only: bool(required=False)
+
+intersight_organizations_policies_sd_card:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enable_os: bool(required=False)
+  enable_diagnostics: bool(required=False)
+  enable_drivers: bool(required=False)
+  enable_huu: bool(required=False)
+  enable_scu: bool(required=False)
+
+intersight_organizations_policies_memory:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  dimm_blocklisting: bool(required=False)
+
+intersight_organizations_policies_persistent_memory:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  management_mode: enum('configured-from-intersight', 'configured-locally', required=False)
+  retain_namespaces: bool(required=False)
+  goals: include('intersight_organizations_policies_persistent_memory_goals', required=False)
+  local_security: include('intersight_organizations_policies_persistent_memory_local_security', required=False)
+  logical_namespaces: list(include('intersight_organizations_policies_persistent_memory_namespace'), required=False)
+
+intersight_organizations_policies_persistent_memory_goals:
+  memory_mode_percentage: int(min=0, max=100, required=False)
+  persistent_memory_type: enum('app-direct', 'app-direct-non-interleaved', 'mixed-mode', required=False)
+  socket_id: str(required=False)
+
+intersight_organizations_policies_persistent_memory_local_security:
+  enabled: bool(required=False)
+  secure_passphrase: str(required=False)
+
+intersight_organizations_policies_persistent_memory_namespace:
+  name: str()
+  capacity: int(min=1, required=False)
+  mode: enum('raw', 'sector', required=False)
+  socket_id: str(required=False)
+  socket_memory_id: str(required=False)
+
+intersight_organizations_policies_mac_sec:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  cipher_suite: enum('GCM-AES-128', 'GCM-AES-256', 'GCM-AES-XPN-128', 'GCM-AES-XPN-256', required=False)
+  confidentiality_offset: enum('CONF-OFFSET-0', 'CONF-OFFSET-30', 'CONF-OFFSET-50', required=False)
+  include_icv_indicator: bool(required=False)
+  key_server_priority: int(min=0, max=255, required=False)
+  replay_window_size: int(min=0, required=False)
+  sak_expiry_time: int(min=0, required=False)
+  security_policy: enum('Should-secure', 'Must-secure', required=False)
+  mac_sec_ea_pol: include('intersight_organizations_policies_mac_sec_ea_pol', required=False)
+  primary_key_chain: include('intersight_organizations_policies_mac_sec_key_chain', required=False)
+  fallback_key_chain: include('intersight_organizations_policies_mac_sec_key_chain', required=False)
+
+intersight_organizations_policies_mac_sec_ea_pol:
+  ea_pol_ethertype: str(required=False)
+  ea_pol_mac_address: regex('^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$', required=False)
+
+intersight_organizations_policies_mac_sec_key_chain:
+  name: str()
+  keys: list(include('intersight_organizations_policies_mac_sec_key'), required=False)
+
+intersight_organizations_policies_mac_sec_key:
+  id: str(required=False)
+  cryptographic_algorithm: enum('AES_256_CMAC', 'AES_128_CMAC', required=False)
+  key_type: enum('Type-0', 'Type-6', 'Type-7', required=False)
+  octet_string: str(required=False)
+  send_lifetime_unlimited: bool(required=False)
+
+intersight_organizations_policies_drive_security:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  key_setting: include('intersight_organizations_policies_drive_security_key_setting', required=False)
+
+intersight_organizations_policies_drive_security_key_setting:
+  key_type: enum('Manual', 'Kmip', required=False)
+  manual_key: include('intersight_organizations_policies_drive_security_manual_key', required=False)
+  remote_key: include('intersight_organizations_policies_drive_security_remote_key', required=False)
+
+intersight_organizations_policies_drive_security_manual_key:
+  existing_key: str(required=False)
+  new_key: str(required=False)
+
+intersight_organizations_policies_drive_security_remote_key:
+  existing_key: str(required=False)
+  server_certificate: str(required=False)
+  auth_credentials: include('intersight_organizations_policies_drive_security_auth_credentials', required=False)
+  primary_server: include('intersight_organizations_policies_drive_security_kmip_server', required=False)
+  secondary_server: include('intersight_organizations_policies_drive_security_kmip_server', required=False)
+
+intersight_organizations_policies_drive_security_auth_credentials:
+  use_authentication: bool(required=False)
+  username: str(required=False)
+  password: str(required=False)
+
+intersight_organizations_policies_drive_security_kmip_server:
+  ip_address: str(required=False)
+  port: int(min=1, max=65535, required=False)
+  timeout: int(min=1, required=False)
+  enable_drive_security: bool(required=False)
+
+intersight_organizations_policies_boot_order:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  boot_mode: enum('Uefi', 'Legacy', required=False)
+  secure_boot: bool(required=False)
+  boot_devices: list(include('intersight_organizations_policies_boot_order_devices'), required=False)
+
+intersight_organizations_policies_boot_order_devices:
+  name: regex('^[a-zA-Z0-9_-]{1,30}$')
+  device_type: enum('flex_mmc', 'http_boot', 'iscsi_boot', 'local_cdd', 'local_disk', 'nvme', 'pch_storage', 'pxe_boot', 'san_boot', 'sd_card', 'uefi_shell', 'usb', 'virtual_media')
+  enabled: bool(required=False)
+  slot: str(required=False)
+  lun: int(min=0, max=255, required=False)
+  subtype: enum('None', 'flex-util', 'flex-flash', 'SDCARD', 'cimc-mapped-dvd', 'cimc-mapped-hdd', 'kvm-mapped-dvd', 'kvm-mapped-hdd', 'kvm-mapped-fdd', 'usb-cd', 'usb-fdd', 'usb-hdd', 'flexmmc-mapped-dvd', 'flexmmc-mapped-hdd', required=False)
+  interface_name: str(required=False)
+  interface_source: enum('name', 'mac', 'port', required=False)
+  ip_type: enum('None', 'IPv4', 'IPv6', required=False)
+  ip_config_type: enum('DHCP', 'Static', required=False)
+  mac_address: str(required=False)
+  port: int(min=-1, max=255, required=False)
+  protocol: enum('HTTP', 'HTTPS', required=False)
+  target_wwpn: str(required=False)
+  uri: str(required=False)
+  ipv4_config: include('intersight_organizations_policies_boot_order_devices_ipv4', required=False)
+  ipv6_config: include('intersight_organizations_policies_boot_order_devices_ipv6', required=False)
+  bootloader: include('intersight_organizations_policies_boot_order_devices_bootloader', required=False)
+
+intersight_organizations_policies_boot_order_devices_bootloader:
+  name: str()
+  path: str()
+  description: str(required=False)
+
+intersight_organizations_policies_boot_order_devices_ipv4:
+  ip: ip(version=4)
+  network_mask: str()
+  gateway_ip: ip(version=4)
+  dns_ip: ip(version=4, required=False)
+
+intersight_organizations_policies_boot_order_devices_ipv6:
+  ip: ip(version=6)
+  prefix_length: int(min=1, max=128)
+  gateway_ip: ip(version=6)
+  dns_ip: ip(version=6, required=False)
+
+intersight_organizations_policies_qualification:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  qualifiers: list(include('intersight_organizations_policies_qualification_qualifiers'), required=False)
+
+intersight_organizations_policies_qualification_qualifiers:
+  qualifier_type: enum('rack_server', 'blade_server', 'chassis_servers')
+  asset_tags: list(str(), required=False)
+  pids: list(str(), required=False)
+  user_labels: list(str(), required=False)
+  rack_id_range: list(include('intersight_organizations_policies_qualification_qualifiers_range'), required=False)
+  chassis_pids: list(str(), required=False)
+  chassis_and_slot_id_range: list(include('intersight_organizations_policies_qualification_qualifiers_chassis_slot'), required=False)
+  slot_ids: list(int(), required=False)
+
+intersight_organizations_policies_qualification_qualifiers_range:
+  min: int(required=False)
+  max: int(required=False)
+
+intersight_organizations_policies_qualification_qualifiers_chassis_slot:
+  chassis_id_range: include('intersight_organizations_policies_qualification_qualifiers_range', required=False)
+  slot_id_ranges: list(include('intersight_organizations_policies_qualification_qualifiers_range'), required=False)
+
+intersight_organizations_policies_ethernet_adapter:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  advanced_filter: bool(required=False)
+  ether_channel_pinning: bool(required=False)
+  geneve: bool(required=False)
+  interrupt_scaling: bool(required=False)
+  rss: bool(required=False)
+  uplink_failback_timeout: int(min=0, max=600, required=False)
+  arfs: bool(required=False)
+  completion_queue_settings: include('intersight_organizations_policies_ethernet_adapter_completion_queue_settings', required=False)
+  interrupt_settings: include('intersight_organizations_policies_ethernet_adapter_interrupt_settings', required=False)
+  nvgre: bool(required=False)
+  ptp: bool(required=False)
+  roce_settings: include('intersight_organizations_policies_ethernet_adapter_roce_settings', required=False)
+  rss_hash_settings: include('intersight_organizations_policies_ethernet_adapter_rss_hash_settings', required=False)
+  rx_queue_settings: include('intersight_organizations_policies_ethernet_adapter_rx_queue_settings', required=False)
+  tcp_offload_settings: include('intersight_organizations_policies_ethernet_adapter_tcp_offload_settings', required=False)
+  tx_queue_settings: include('intersight_organizations_policies_ethernet_adapter_tx_queue_settings', required=False)
+  vxlan: bool(required=False)
+
+intersight_organizations_policies_ethernet_adapter_completion_queue_settings:
+  completion_queue_count: int(min=1, max=2000, required=False)
+  ring_size: int(min=1, max=256, required=False)
+
+intersight_organizations_policies_ethernet_adapter_interrupt_settings:
+  coalescing_time: int(min=0, max=65535, required=False)
+  coalescing_type: enum('MIN', 'IDLE', required=False)
+  interrupt_count: int(min=1, max=1024, required=False)
+  mode: enum('MSIx', 'MSI', 'INTx', required=False)
+
+intersight_organizations_policies_ethernet_adapter_roce_settings:
+  enabled: bool(required=False)
+  cos: enum(1, 2, 4, 5, 6, required=False)
+  memory_regions: int(min=1, max=524288, required=False)
+  queue_pairs: int(min=1, max=8192, required=False)
+  resource_groups: int(min=1, max=128, required=False)
+  version: int(min=1, max=2, required=False)
+
+intersight_organizations_policies_ethernet_adapter_rss_hash_settings:
+  ipv4_hash: bool(required=False)
+  ipv6_ext_hash: bool(required=False)
+  ipv6_hash: bool(required=False)
+  tcp_ipv4_hash: bool(required=False)
+  tcp_ipv6_ext_hash: bool(required=False)
+  tcp_ipv6_hash: bool(required=False)
+  udp_ipv4_hash: bool(required=False)
+  udp_ipv6_hash: bool(required=False)
+
+intersight_organizations_policies_ethernet_adapter_rx_queue_settings:
+  rx_queue_count: int(min=1, max=1000, required=False)
+  ring_size: int(min=64, max=4096, required=False)
+
+intersight_organizations_policies_ethernet_adapter_tcp_offload_settings:
+  large_receive: bool(required=False)
+  large_send: bool(required=False)
+  rx_checksum: bool(required=False)
+  tx_checksum: bool(required=False)
+
+intersight_organizations_policies_ethernet_adapter_tx_queue_settings:
+  tx_queue_count: int(min=1, max=1000, required=False)
+  ring_size: int(min=64, max=4096, required=False)
+
+intersight_organizations_policies_ethernet_network:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  default_vlan: int(min=0, max=4094, required=False)
+  vlan_mode: enum('ACCESS', 'TRUNK', required=False)
+  allowed_vlans: str(required=False)
+  qinq: bool(required=False)
+  qinq_vlan: int(min=1, max=4093, required=False)
+
+intersight_organizations_policies_ethernet_network_control:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  cdp: bool(required=False)
+  forge_mac: enum('allow', 'deny', required=False)
+  mac_registration_mode: enum('nativeVlanOnly', 'allVlans', required=False)
+  uplink_fail_action: enum('linkDown', 'warning', required=False)
+  lldp_receive: bool(required=False)
+  lldp_transmit: bool(required=False)
+
+intersight_organizations_policies_ethernet_network_group:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  allowed_vlans: str(required=False)
+  native_vlan: int(min=0, max=4093, required=False)
+  qinq: bool(required=False)
+  qinq_vlan: int(min=1, max=4093, required=False)
+
+intersight_organizations_policies_ethernet_qos:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  burst: int(min=1, max=1000000, required=False)
+  cos: int(min=0, max=6, required=False)
+  mtu: int(min=1500, max=9000, required=False)
+  priority: enum('Best Effort', 'FC', 'Platinum', 'Gold', 'Silver', 'Bronze', required=False)
+  rate_limit: int(min=0, max=100000, required=False)
+  trust_host_cos: bool(required=False)
+
+intersight_organizations_policies_imc_access:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  configure_inband: bool(required=False)
+  configure_out_of_band: bool(required=False)
+  inband_vlan: int(min=4, max=4093, required=False)
+  ipv4: bool(required=False)
+  ipv6: bool(required=False)
+  inband_ip_pool: str(required=False)
+  out_of_band_ip_pool: str(required=False)
+
+intersight_organizations_policies_ipmi_over_lan:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  privilege: enum('admin', 'user', 'read-only', required=False)
+  encryption_key: str(required=False)
+
+intersight_organizations_policies_iscsi_adapter:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  connection_timeout: int(min=0, max=255, required=False)
+  dhcp_timeout: int(min=60, max=300, required=False)
+  lun_busy_retry_count: int(min=0, max=60, required=False)
+
+intersight_organizations_policies_iscsi_boot:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_source_type: enum('Static', 'Auto', required=False)
+  initiator_ip_source: enum('Pool', 'Static', 'DHCP', required=False)
+  initiator_static_ip_v4_address: ip(version=4, required=False)
+  auto_targetvendor_name: bool(required=False)
+  ip_pool: str(required=False)
+  iscsi_adapter_policy: str(required=False)
+  primary_target_policy: str(required=False)
+  secondary_target_policy: str(required=False)
+  chap: include('intersight_organizations_policies_iscsi_boot_chap', required=False)
+  mutual_chap: include('intersight_organizations_policies_iscsi_boot_chap', required=False)
+  initiator_static_ip_v4_config: include('intersight_organizations_policies_iscsi_boot_static_ip', required=False)
+
+intersight_organizations_policies_iscsi_boot_chap:
+  user_id: str(required=False)
+  password: str(required=False)
+
+intersight_organizations_policies_iscsi_boot_static_ip:
+  subnet_mask: ip(version=4, required=False)
+  default_gateway: ip(version=4, required=False)
+  primary_dns: ip(version=4, required=False)
+  secondary_dns: ip(version=4, required=False)
+
+intersight_organizations_policies_iscsi_static_target:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  ip_address: ip(version=4, required=False)
+  port: int(min=1, max=65535, required=False)
+  target_name: str(required=False)
+  lun: include('intersight_organizations_policies_iscsi_static_target_lun', required=False)
+
+intersight_organizations_policies_iscsi_static_target_lun:
+  lun_id: int(min=0, max=1023, required=False)
+  bootable: bool(required=False)
+
+intersight_organizations_policies_lan_connectivity:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_platform: enum('FIAttached', 'Standalone', 'UnifiedEdgeServer', required=False)
+  vnic_placement_mode: enum('auto', 'custom', required=False)
+  iqn_allocation_type: enum('None', 'Static', 'Pool', required=False)
+  iqn_pool: str(required=False)
+  vnics: list(include('intersight_organizations_policies_lan_connectivity_vnic'), required=False)
+
+intersight_organizations_policies_lan_connectivity_vnic:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  order: int(min=0, max=255, required=False)
+  fabric: enum('A', 'B', 'None', required=False)
+  slot: str(required=False)
+  pci_link: int(min=0, max=1, required=False)
+  failover: bool(required=False)
+  mac_pool: str(required=False)
+  ethernet_adapter_policy: str(required=False)
+  ethernet_network_control_policy: str(required=False)
+  ethernet_network_policy: str(required=False)
+  ethernet_network_group_policy: str(required=False)
+  ethernet_qos_policy: str(required=False)
+  iscsi_boot_policy: str(required=False)
+  vnic_template: str(required=False)
+
+intersight_organizations_policies_ldap:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  enable_dns: bool(required=False)
+  user_search_precedence: enum('LocalUserDb', 'LdapUserDb', required=False)
+  base_properties: include('intersight_organizations_policies_ldap_base_properties', required=False)
+  dns_parameters: include('intersight_organizations_policies_ldap_dns_parameters', required=False)
+  providers: list(include('intersight_organizations_policies_ldap_provider'), required=False)
+  groups: list(include('intersight_organizations_policies_ldap_group'), required=False)
+
+intersight_organizations_policies_ldap_base_properties:
+  attribute: str(required=False)
+  base_dn: str(required=False)
+  bind_dn: str(required=False)
+  bind_method: enum('LoginCredentials', 'Anonymous', 'ConfiguredCredentials', required=False)
+  domain: str(required=False)
+  encryption: bool(required=False)
+  group_authorization: bool(required=False)
+  nested_group_search: bool(required=False)
+  filter: str(required=False)
+  group_attribute: str(required=False)
+  nested_group_search_depth: int(min=1, max=128, required=False)
+  password: str(required=False)
+  timeout: int(min=0, max=180, required=False)
+
+intersight_organizations_policies_ldap_dns_parameters:
+  source: enum('Extracted', 'Configured', 'ConfiguredExtracted', required=False)
+  search_domain: str(required=False)
+  search_forest: str(required=False)
+
+intersight_organizations_policies_ldap_provider:
+  server: str()
+  port: int(min=1, max=65535, required=False)
+
+intersight_organizations_policies_ldap_group:
+  name: str()
+  domain: str(required=False)
+  role: str(required=False)
+
+intersight_organizations_policies_local_user:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  strong_password: bool(required=False)
+  password_expiry: bool(required=False)
+  password_expiry_duration: int(min=1, max=3650, required=False)
+  password_history: int(min=0, max=5, required=False)
+  notification_period: int(min=1, max=15, required=False)
+  grace_period: int(min=0, max=5, required=False)
+  always_send_user_password: bool(required=False)
+  users: list(include('intersight_organizations_policies_local_user_user'), required=False)
+
+intersight_organizations_policies_local_user_user:
+  username: regex('^[a-zA-Z0-9._-]{1,16}$')
+  role: enum('admin', 'readonly', 'user')
+  password: str(required=False)
+  enabled: bool(required=False)
+
+intersight_organizations_policies_network_connectivity:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  preferred_ipv4_dns: str(required=False)
+  alternate_ipv4_dns: str(required=False)
+  ipv4_dns_from_dhcp: bool(required=False)
+  ipv6: bool(required=False)
+  preferred_ipv6_dns: str(required=False)
+  alternate_ipv6_dns: str(required=False)
+  ipv6_dns_from_dhcp: bool(required=False)
+  dynamic_dns: bool(required=False)
+  dynamic_dns_domain: str(required=False)
+
+intersight_organizations_policies_ntp:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  timezone: str(required=False)
+  ntp_servers: list(str(), required=False)
+  authenticated_ntp_servers: list(include('intersight_organizations_policies_ntp_authenticated_ntp_server'), required=False)
+
+intersight_organizations_policies_ntp_authenticated_ntp_server:
+  server_name: str()
+  key_type: enum('SHA1', required=False)
+  symmetric_key_id: int(min=1, required=False)
+  symmetric_key_value: str(required=False)
+
+intersight_organizations_policies_syslog:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  local_min_severity: enum('warning', 'emergency', 'alert', 'critical', 'error', 'notice', 'informational', 'debug', required=False)
+  remote_clients: list(include('intersight_organizations_policies_syslog_remote_client'), required=False)
+
+intersight_organizations_policies_syslog_remote_client:
+  hostname: str()
+  enabled: bool(required=False)
+  port: int(min=1, max=65535, required=False)
+  protocol: enum('udp', 'tcp', required=False)
+  min_severity: enum('warning', 'emergency', 'alert', 'critical', 'error', 'notice', 'informational', 'debug', required=False)
+
+intersight_organizations_policies_ssh:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  port: int(min=1, max=65535, required=False)
+  timeout: int(min=60, max=10800, required=False)
+
+intersight_organizations_policies_thermal:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  fan_control_mode: enum('Balanced', 'LowPower', 'HighPower', 'MaximumPower', 'Acoustic', 'MaximumCooling', required=False)
+
+intersight_organizations_policies_virtual_kvm:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  maximum_sessions: int(min=1, max=4, required=False)
+  remote_port: int(min=1024, max=65535, required=False)
+  video_encryption: bool(required=False)
+  local_server_video: bool(required=False)
+  tunneled_kvm: bool(required=False)
+
+intersight_organizations_policies_port:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  device_model: enum('UCS-FI-6454', 'UCS-FI-64108', 'UCS-FI-6536', 'UCSX-S9108-100G', 'UCS-FI-6664', 'UCS-FI-6652', 'UCSXE-ECMC-10G', 'UCSXE-ECMC-G1', 'unknown', required=False)
+  port_modes: list(include('intersight_organizations_policies_port_mode'), required=False)
+  port_role_servers: list(include('intersight_organizations_policies_port_role_server'), required=False)
+  port_role_ethernet_uplinks: list(include('intersight_organizations_policies_port_role_ethernet_uplink'), required=False)
+  port_channel_ethernet_uplinks: list(include('intersight_organizations_policies_port_channel_ethernet_uplink'), required=False)
+  port_role_fc_uplinks: list(include('intersight_organizations_policies_port_role_fc_uplink'), required=False)
+  port_channel_fc_uplinks: list(include('intersight_organizations_policies_port_channel_fc_uplink'), required=False)
+  port_role_fcoe_uplinks: list(include('intersight_organizations_policies_port_role_fcoe_uplink'), required=False)
+  port_channel_fcoe_uplinks: list(include('intersight_organizations_policies_port_channel_fcoe_uplink'), required=False)
+  port_role_appliances: list(include('intersight_organizations_policies_port_role_appliance'), required=False)
+  port_channel_appliances: list(include('intersight_organizations_policies_port_channel_appliance'), required=False)
+  port_role_fc_storage: list(include('intersight_organizations_policies_port_role_fc_storage'), required=False)
+  lan_pin_groups: list(include('intersight_organizations_policies_lan_pin_group'), required=False)
+  san_pin_groups: list(include('intersight_organizations_policies_san_pin_group'), required=False)
+
+intersight_organizations_policies_port_mode:
+  from: int(min=1)
+  to: int(min=1)
+  slot_id: int(min=1, required=False)
+  custom_mode: enum('BreakoutEthernet10G', 'BreakoutEthernet25G', 'BreakoutFibreChannel8G', 'BreakoutFibreChannel16G', 'BreakoutFibreChannel32G', 'FibreChannel')
+
+intersight_organizations_policies_port_range:
+  from: int(min=1)
+  to: int(min=1)
+  slot_id: int(min=1, required=False)
+  from_sub_port: int(min=1, required=False)
+  to_sub_port: int(min=1, required=False)
+
+intersight_organizations_policies_port_role_server:
+  ports: list(include('intersight_organizations_policies_port_range'))
+  fec: enum('Auto', 'Cl91', 'Cl74', 'rs-cons16', 'rs-ieee', 'Off', required=False)
+  preferred_device_type: enum('Auto', 'RackServer', 'Chassis', required=False)
+  preferred_device_id: int(min=1, max=255, required=False)
+  auto_negotiation: bool(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_role_ethernet_uplink:
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('Auto', '1Gbps', '10Gbps', '25Gbps', '40Gbps', '50Gbps', '100Gbps', '400Gbps', 'NegAuto25Gbps', required=False)
+  fec: enum('Auto', 'Cl91', 'Cl74', 'rs-cons16', 'rs-ieee', 'Off', required=False)
+  ethernet_network_group_policy: str(required=False)
+  flow_control_policy: str(required=False)
+  link_control_policy: str(required=False)
+  mac_sec_policy: str(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_channel_ethernet_uplink:
+  port_channel_id: int(min=1, max=256)
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('Auto', '1Gbps', '10Gbps', '25Gbps', '40Gbps', '50Gbps', '100Gbps', '400Gbps', 'NegAuto25Gbps', required=False)
+  ethernet_network_group_policy: str(required=False)
+  flow_control_policy: str(required=False)
+  link_aggregation_policy: str(required=False)
+  link_control_policy: str(required=False)
+  mac_sec_policy: str(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_role_fc_uplink:
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('16Gbps', '8Gbps', '32Gbps', '64Gbps', 'Auto', required=False)
+  fill_pattern: enum('Idle', 'Arbff', required=False)
+  vsan_id: int(min=1, max=4094)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_channel_fc_uplink:
+  port_channel_id: int(min=1, max=256)
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('16Gbps', '8Gbps', '32Gbps', '64Gbps', 'Auto', required=False)
+  fill_pattern: enum('Idle', 'Arbff', required=False)
+  vsan_id: int(min=1, max=4094)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_role_fcoe_uplink:
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('Auto', '1Gbps', '10Gbps', '25Gbps', '40Gbps', '50Gbps', '100Gbps', '400Gbps', 'NegAuto25Gbps', required=False)
+  fec: enum('Auto', 'Cl91', 'Cl74', 'rs-cons16', 'rs-ieee', 'Off', required=False)
+  link_control_policy: str(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_channel_fcoe_uplink:
+  port_channel_id: int(min=1, max=256)
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('Auto', '1Gbps', '10Gbps', '25Gbps', '40Gbps', '50Gbps', '100Gbps', '400Gbps', 'NegAuto25Gbps', required=False)
+  fec: enum('Auto', 'Cl91', 'Cl74', 'rs-cons16', 'rs-ieee', 'Off', required=False)
+  link_aggregation_policy: str(required=False)
+  link_control_policy: str(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_role_appliance:
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('Auto', '1Gbps', '10Gbps', '25Gbps', '40Gbps', '50Gbps', '100Gbps', '400Gbps', 'NegAuto25Gbps', required=False)
+  fec: enum('Auto', 'Cl91', 'Cl74', 'rs-cons16', 'rs-ieee', 'Off', required=False)
+  mode: enum('trunk', 'access', required=False)
+  priority: enum('Best Effort', 'FC', 'Platinum', 'Gold', 'Silver', 'Bronze', required=False)
+  ethernet_network_control_policy: str(required=False)
+  ethernet_network_group_policy: str(required=False)
+  flow_control_policy: str(required=False)
+  link_control_policy: str(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_channel_appliance:
+  port_channel_id: int(min=1, max=256)
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('Auto', '1Gbps', '10Gbps', '25Gbps', '40Gbps', '50Gbps', '100Gbps', '400Gbps', 'NegAuto25Gbps', required=False)
+  fec: enum('Auto', 'Cl91', 'Cl74', 'rs-cons16', 'rs-ieee', 'Off', required=False)
+  mode: enum('trunk', 'access', required=False)
+  priority: enum('Best Effort', 'FC', 'Platinum', 'Gold', 'Silver', 'Bronze', required=False)
+  ethernet_network_control_policy: str(required=False)
+  ethernet_network_group_policy: str(required=False)
+  link_aggregation_policy: str(required=False)
+  user_label: str(required=False)
+
+intersight_organizations_policies_port_role_fc_storage:
+  ports: list(include('intersight_organizations_policies_port_range'))
+  admin_speed: enum('16Gbps', '8Gbps', '32Gbps', '64Gbps', 'Auto', required=False)
+  vsan_id: int(min=1, max=4094)
+  user_label: str(required=False)
+
+intersight_organizations_policies_lan_pin_group:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  interface_type: enum('port', 'port_channel')
+  slot_id: int(min=1, required=False)
+  port_id: int(min=1, required=False)
+  port_channel_id: int(min=1, max=256, required=False)
+
+intersight_organizations_policies_san_pin_group:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  interface_type: enum('port', 'port_channel')
+  slot_id: int(min=1, required=False)
+  port_id: int(min=1, required=False)
+  port_channel_id: int(min=1, max=256, required=False)
+
+intersight_organizations_policies_power:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  allocated_budget: int(min=0, required=False)
+  dynamic_rebalancing: bool(required=False)
+  extended_power_capacity: bool(required=False)
+  power_priority: enum('Low', 'Medium', 'High', required=False)
+  power_profiling: bool(required=False)
+  power_restore_state: enum('AlwaysOff', 'AlwaysOn', 'LastState', required=False)
+  power_save_mode: bool(required=False)
+  processor_package_power_limit: enum('Default', 'Maximum', 'Minimum', required=False)
+  redundancy_mode: enum('Grid', 'NotRedundant', 'N+1', 'N+2', required=False)
+
+intersight_organizations_policies_serial_over_lan:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  baud_rate: enum(9600, 19200, 38400, 57600, 115200, required=False)
+  com_port: enum('com0', 'com1', required=False)
+  ssh_port: int(min=1024, max=65535, required=False)
+
+intersight_organizations_policies_scrub:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  scrub_targets: list(enum('Disk', 'BIOS'), required=False)
+
+intersight_organizations_policies_smtp:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  smtp_server: str(required=False)
+  smtp_port: int(min=1, max=65535, required=False)
+  sender_email: str(required=False)
+  recipients: list(str(), required=False)
+  min_severity: enum('critical', 'major', 'minor', 'warning', 'condition', required=False)
+  tls: bool(required=False)
+
+intersight_organizations_policies_snmp:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  port: int(min=1, max=65535, required=False)
+  access_community_string: str(required=False)
+  community_access: enum('Disabled', 'Limited', 'Full', required=False)
+  trap_community: str(required=False)
+  sys_contact: str(required=False)
+  sys_location: str(required=False)
+  engine_id: str(required=False)
+  v2: bool(required=False)
+  v3: bool(required=False)
+  users: list(include('intersight_organizations_policies_snmp_user'), required=False)
+  traps: list(include('intersight_organizations_policies_snmp_trap'), required=False)
+
+intersight_organizations_policies_snmp_user:
+  name: str()
+  security_level: enum('AuthPriv', 'NoAuthNoPriv', 'AuthNoPriv')
+  auth_type: enum('NA', 'MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-384', 'SHA-512', required=False)
+  auth_password: str(required=False)
+  privacy_type: enum('NA', 'DES', 'AES', required=False)
+  privacy_password: str(required=False)
+
+intersight_organizations_policies_snmp_trap:
+  destination: str()
+  port: int(min=1, max=65535, required=False)
+  version: enum('V1', 'V2', 'V3')
+  type: enum('Trap', 'Inform', required=False)
+  enabled: bool(required=False)
+  user: str(required=False)
+  community: str(required=False)
+
+intersight_organizations_pools:
+  ip: list(include('intersight_organizations_pools_ip'), required=False)
+  iqn: list(include('intersight_organizations_pools_iqn'), required=False)
+  mac: list(include('intersight_organizations_pools_mac'), required=False)
+  uuid: list(include('intersight_organizations_pools_uuid'), required=False)
+  wwnn: list(include('intersight_organizations_pools_wwnn'), required=False)
+  wwpn: list(include('intersight_organizations_pools_wwpn'), required=False)
+  resource: list(include('intersight_organizations_pools_resource'), required=False)
+
+intersight_organizations_pools_ip:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  ipv4_config: include('intersight_organizations_pools_ip_ipv4_config', required=False)
+  ipv4_blocks: list(include('intersight_organizations_pools_ip_ipv4_block'), required=False)
+  ipv6_config: include('intersight_organizations_pools_ip_ipv6_config', required=False)
+  ipv6_blocks: list(include('intersight_organizations_pools_ip_ipv6_block'), required=False)
+
+intersight_organizations_pools_ip_ipv4_config:
+  gateway: ip(version=4)
+  netmask: str()
+  primary_dns: ip(version=4, required=False)
+  secondary_dns: ip(version=4, required=False)
+
+intersight_organizations_pools_ip_ipv4_block:
+  from: ip(version=4)
+  size: int(min=1, required=False)
+  to: ip(version=4, required=False)
+
+intersight_organizations_pools_ip_ipv6_config:
+  gateway: ip(version=6)
+  prefix: int(min=1, max=128)
+  primary_dns: ip(version=6, required=False)
+  secondary_dns: ip(version=6, required=False)
+
+intersight_organizations_pools_ip_ipv6_block:
+  from: ip(version=6)
+  size: int(min=1, required=False)
+  to: ip(version=6, required=False)
+
+intersight_organizations_pools_iqn:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  prefix: str(required=False)
+  iqn_suffix_blocks: list(include('intersight_organizations_pools_iqn_blocks'), required=False)
+
+intersight_organizations_pools_iqn_blocks:
+  suffix: str(required=False)
+  from: int(min=0, required=False)
+  size: int(min=1, required=False)
+  to: int(min=0, required=False)
+
+intersight_organizations_pools_mac:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  mac_blocks: list(include('intersight_organizations_pools_mac_blocks'))
+
+intersight_organizations_pools_mac_blocks:
+  from: mac()
+  size: int(min=1, max=1024, required=False)
+  to: mac(required=False)
+
+intersight_organizations_pools_uuid:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  prefix: regex('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}$', required=False)
+  uuid_suffix_blocks: list(include('intersight_organizations_pools_uuid_blocks'))
+
+intersight_organizations_pools_uuid_blocks:
+  from: regex('^[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+  size: int(min=1, max=1024, required=False)
+  to: regex('^[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', required=False)
+
+intersight_organizations_pools_wwpn:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  wwpn_blocks: list(include('intersight_organizations_pools_wwpn_blocks'))
+
+intersight_organizations_pools_wwpn_blocks:
+  from: regex('^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}$')
+  size: int(min=1, max=1024, required=False)
+  to: regex('^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}$', required=False)
+
+intersight_organizations_pools_resource:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  pool_type: enum('Static', 'Dynamic', 'Hybrid', required=False)
+  resource_type: enum('Server', 'Mixed', 'None', required=False)
+  target_platform: enum('Standalone', 'FIAttached', 'UnifiedEdgeServer', required=False)
+  selectors: list(regex('^(/api/v1/.+)?$'), required=False)
+  qualification_policy: str(required=False)
+
+intersight_organizations_pools_wwnn:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  wwnn_blocks: list(include('intersight_organizations_pools_wwnn_blocks'))
+
+intersight_organizations_pools_wwnn_blocks:
+  from: regex('^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}$')
+  size: int(min=1, max=1024, required=False)
+  to: regex('^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}$', required=False)
+
+intersight_organizations_policies_san_connectivity:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_platform: enum('FIAttached', 'Standalone', 'UnifiedEdgeServer', required=False)
+  vhba_placement_mode: enum('auto', 'custom', required=False)
+  wwnn_pool: str(required=False)
+  vhbas: list(include('intersight_organizations_policies_san_connectivity_vhba'), required=False)
+
+intersight_organizations_policies_san_connectivity_vhba:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  order: int(min=0, max=255, required=False)
+  fabric: enum('A', 'B', 'None', required=False)
+  slot: str(required=False)
+  pci_link: int(min=0, max=1, required=False)
+  uplink: int(min=0, required=False)
+  auto_pci_link: bool(required=False)
+  auto_slot_id: bool(required=False)
+  persistent_lun_bindings: bool(required=False)
+  vhba_type: enum('fc-initiator', 'fc-nvme-initiator', 'fc-nvme-target', 'fc-target', required=False)
+  wwpn_pool: str(required=False)
+  fibre_channel_adapter_policy: str(required=False)
+  fibre_channel_network_policy: str(required=False)
+  fibre_channel_qos_policy: str(required=False)
+  fc_zone_policies: list(str(), required=False)
+  vhba_template: str(required=False)
+
+intersight_organizations_policies_storage:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  unused_disks_state: enum('NoChange', 'UnconfiguredGood', 'Jbod', required=False)
+  use_jbod_for_vd_creation: bool(required=False)
+  global_hot_spares: str(required=False)
+  m2_virtual_drive: include('intersight_organizations_policies_storage_m2_virtual_drive', required=False)
+  drive_groups: list(include('intersight_organizations_policies_storage_drive_group'), required=False)
+
+intersight_organizations_policies_storage_m2_virtual_drive:
+  enabled: bool(required=False)
+  controller_slot: enum('MSTOR-RAID-1', 'MSTOR-RAID-2', 'MSTOR-RAID-1,MSTOR-RAID-2', required=False)
+  name: str(required=False)
+
+intersight_organizations_policies_storage_drive_group:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  raid_level: enum('Raid0', 'Raid1', 'Raid5', 'Raid6', 'Raid10', 'Raid50', 'Raid60', required=False)
+  secure: bool(required=False)
+  manual_drive_group: include('intersight_organizations_policies_storage_manual_drive_group', required=False)
+  virtual_drives: list(include('intersight_organizations_policies_storage_virtual_drive'), required=False)
+
+intersight_organizations_policies_storage_manual_drive_group:
+  dedicated_hot_spares: str(required=False)
+  drive_array_spans: list(str())
+
+intersight_organizations_policies_storage_virtual_drive:
+  name: regex('^[a-zA-Z0-9_-]{1,15}$')
+  size: int(min=1, required=False)
+  boot_drive: bool(required=False)
+  expand_to_available: bool(required=False)
+  access_policy: enum('Default', 'ReadWrite', 'ReadOnly', 'Blocked', required=False)
+  drive_cache: enum('Default', 'NoChange', 'Enable', 'Disable', required=False)
+  read_policy: enum('Default', 'ReadAhead', 'NoReadAhead', required=False)
+  write_policy: enum('Default', 'WriteThrough', 'WriteBackGoodBbu', 'AlwaysWriteBack', required=False)
+  strip_size: enum(64, 128, 256, 512, 1024, required=False)
+
+intersight_organizations_policies_fibre_channel_network:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  vsan_id: int(min=1, max=4094, required=False)
+  default_vlan_id: int(min=0, max=4094, required=False)
+
+intersight_organizations_policies_fibre_channel_qos:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  burst: int(min=1, required=False)
+  cos: int(min=0, max=6, required=False)
+  max_data_field_size: int(min=256, max=2112, required=False)
+  rate_limit: int(min=0, required=False)
+
+intersight_organizations_policies_fc_zone:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  fc_target_zoning_type: enum('SIST', 'SIMT', 'None', required=False)
+  fc_target_members: list(include('intersight_organizations_policies_fc_zone_member'), required=False)
+
+intersight_organizations_policies_fc_zone_member:
+  name: str()
+  switch_id: enum('A', 'B')
+  vsan_id: int(min=1, max=4093)
+  wwpn: regex('^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){7}$')
+
+intersight_organizations_policies_firmware:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_platform: enum('Standalone', 'FIAttached', 'UnifiedEdgeServer', required=False)
+  exclude_component_list: list(enum('none', 'local-disk', 'drives-except-boot-drives', 'storage-controller', 'storage-sasexpander', 'storage-u2'), required=False)
+  model_bundle_combo: list(include('intersight_organizations_policies_firmware_model_bundle_combo'), required=False)
+
+intersight_organizations_policies_firmware_model_bundle_combo:
+  model_family: enum('UCSC-C220-M5', 'UCSC-C220-M4', 'UCSC-C240-M4', 'UCSC-C460-M4', 'UCSC-C240-M5', 'UCSC-C480-M5', 'UCSB-B200-M5', 'UCSB-B480-M5', 'UCSC-C220-M6', 'UCSC-C240-M6', 'UCSC-C225-M6', 'UCSC-C245-M6', 'UCSB-B200-M6', 'UCSX-210C-M6', 'UCSX-210C-M7', 'UCSC-C220-M7', 'UCSC-C240-M7', 'UCSC-C125', 'UCSX-410C-M7', 'UCSC-C245-M8', 'UCSC-C225-M8', 'UCSX-215C-M8', 'UCSX-210C-M8', 'UCSX-410C-M8', 'UCSXE-130C-M8', 'UCSC-C220-M8', 'UCSC-C240-M8', 'CAI-845A-M8')
+  bundle_version: str()
+
+intersight_organizations_policies_fibre_channel_adapter:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  error_detection_timeout: int(min=1000, max=100000, required=False)
+  io_throttle_count: int(min=1, max=1024, required=False)
+  lun_count: int(min=1, max=4096, required=False)
+  lun_queue_depth: int(min=1, max=254, required=False)
+  resource_allocation_timeout: int(min=5000, max=100000, required=False)
+  interrupt_mode: enum('MSIx', 'MSI', 'INTx', required=False)
+  flogi_retries: int(min=0, required=False)
+  flogi_timeout: int(min=1000, required=False)
+  plogi_retries: int(min=0, required=False)
+  plogi_timeout: int(min=1000, required=False)
+  rx_queue_ring_size: int(min=64, max=2048, required=False)
+  scsi_queue_ring_size: int(min=64, max=512, required=False)
+  tx_queue_ring_size: int(min=64, max=128, required=False)
+  error_recovery_settings: include('intersight_organizations_policies_fibre_channel_adapter_error_recovery_settings', required=False)
+
+intersight_organizations_policies_fibre_channel_adapter_error_recovery_settings:
+  enabled: bool(required=False)
+  io_retry_count: int(min=1, max=255, required=False)
+  io_retry_timeout: int(min=1, max=59, required=False)
+  link_down_timeout: int(min=0, required=False)
+  port_down_timeout: int(min=0, required=False)
+
+intersight_organizations_policies_virtual_media:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  enabled: bool(required=False)
+  encryption: bool(required=False)
+  low_power_usb: bool(required=False)
+  mappings: list(include('intersight_organizations_policies_virtual_media_mapping'), required=False)
+
+intersight_organizations_policies_virtual_media_mapping:
+  volume_name: str()
+  device_type: enum('cdd', 'hdd', required=False)
+  mount_protocol: enum('nfs', 'cifs', 'http', 'https', required=False)
+  file_location: str(required=False)
+  mount_options: str(required=False)
+  username: str(required=False)
+  password: str(required=False)
+  authentication_protocol: enum('none', 'ntlm', 'ntlmi', 'ntlmv2', 'ntlmv2i', 'ntlmssp', 'ntlmsspi', required=False)
+
+intersight_organizations_policies_vlan:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  vlans: list(include('intersight_organizations_policies_vlan_vlans'))
+
+intersight_organizations_policies_vlan_vlans:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  vlan_list: str()
+  native_vlan: bool(required=False)
+  auto_allow_on_uplinks: bool(required=False)
+  sharing_type: enum('None', 'Primary', 'Isolated', 'Community', required=False)
+  primary_vlan_id: int(min=0, max=4093, required=False)
+  multicast_policy: str(required=False)
+
+intersight_organizations_policies_vsan:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  uplink_trunking: bool(required=False)
+  vsans: list(include('intersight_organizations_policies_vsan_vsans'))
+
+intersight_organizations_policies_vsan_vsans:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  vsan_id: int(min=1, max=4093)
+  fcoe_vlan_id: int(min=1, max=4093, required=False)
+  vsan_scope: enum('Uplink', 'Storage', 'Common', required=False)
+
+intersight_organizations_policies_multicast:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  querier_enabled: bool(required=False)
+  querier_ip_address: str(required=False)
+  querier_ip_address_peer: str(required=False)
+  snooping_enabled: bool(required=False)
+  src_ip_proxy_enabled: bool(required=False)
+
+intersight_organizations_policies_link_control:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  udld_enabled: bool(required=False)
+  mode: enum('normal', 'aggressive', required=False)
+
+intersight_organizations_policies_link_aggregation:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  lacp_rate: enum('normal', 'fast', required=False)
+  suspend_individual: bool(required=False)
+
+intersight_organizations_policies_flow_control:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  priority: enum('auto', 'on', 'off', required=False)
+  receive_enabled: bool(required=False)
+  send_enabled: bool(required=False)
+
+intersight_organizations_policies_system_qos:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  classes: list(include('intersight_organizations_policies_system_qos_class'), required=False)
+  pfc_watchdog: include('intersight_organizations_policies_system_qos_pfc_watchdog', required=False)
+
+intersight_organizations_policies_system_qos_class:
+  priority: enum('Best Effort', 'FC', 'Platinum', 'Gold', 'Silver', 'Bronze')
+  enabled: bool(required=False)
+  cos: int(min=0, max=255, required=False)
+  bandwidth_percent: int(min=0, max=100, required=False)
+  mtu: int(min=1500, max=9216, required=False)
+  multicast_optimize: bool(required=False)
+  packet_drop: bool(required=False)
+  weight: int(min=1, max=10, required=False)
+
+intersight_organizations_policies_system_qos_pfc_watchdog:
+  enabled: bool(required=False)
+  watchdog_interval: int(min=100, max=1000, required=False)
+  shutdown_multiplier: int(min=1, max=10, required=False)
+
+intersight_organizations_policies_switch_control:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  switching_mode_ethernet: enum('end-host', 'switch', required=False)
+  switching_mode_fc: enum('end-host', 'switch', required=False)
+  jumbo_frame: bool(required=False)
+  vlan_port_count_optimization: bool(required=False)
+  fabric_port_channel_vhba_reset: bool(required=False)
+  reserved_vlan_start_id: int(min=2, max=3915, required=False)
+  mac_address_table_aging: enum('Default', 'Custom', 'Never', required=False)
+  mac_aging_time: int(min=10, max=918000, required=False)
+  udld_message_interval: int(min=1, max=90, required=False)
+  udld_recovery_action: enum('none', 'reset', required=False)
+
+intersight_organizations_templates:
+  server: list(include('intersight_organizations_templates_server'), required=False)
+  domain: list(include('intersight_organizations_templates_domain'), required=False)
+  chassis: list(include('intersight_organizations_templates_chassis'), required=False)
+  vnic: list(include('intersight_organizations_templates_vnic'), required=False)
+  vhba: list(include('intersight_organizations_templates_vhba'), required=False)
+
+intersight_organizations_templates_server:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_platform: enum('FIAttached', 'Standalone', 'UnifiedEdgeServer', required=False)
+  bios_policy: str(required=False)
+  boot_order_policy: str(required=False)
+  certificate_management_policy: str(required=False)
+  imc_access_policy: str(required=False)
+  ipmi_over_lan_policy: str(required=False)
+  lan_connectivity_policy: str(required=False)
+  local_user_policy: str(required=False)
+  network_connectivity_policy: str(required=False)
+  ntp_policy: str(required=False)
+  power_policy: str(required=False)
+  san_connectivity_policy: str(required=False)
+  serial_over_lan_policy: str(required=False)
+  scrub_policy: str(required=False)
+  drive_security_policy: str(required=False)
+  adapter_configuration_policy: str(required=False)
+  device_connector_policy: str(required=False)
+  sd_card_policy: str(required=False)
+  memory_policy: str(required=False)
+  persistent_memory_policy: str(required=False)
+  smtp_policy: str(required=False)
+  snmp_policy: str(required=False)
+  ssh_policy: str(required=False)
+  storage_policy: str(required=False)
+  syslog_policy: str(required=False)
+  thermal_policy: str(required=False)
+  firmware_policy: str(required=False)
+  virtual_kvm_policy: str(required=False)
+  virtual_media_policy: str(required=False)
+  ldap_policy: str(required=False)
+  uuid_pool: str(required=False)
+
+intersight_organizations_templates_domain:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_platform: enum('UCS Domain', 'Unified Edge', required=False)
+  switch_a_port_policy: str(required=False)
+  switch_b_port_policy: str(required=False)
+  switch_control_policy: str(required=False)
+  system_qos_policy: str(required=False)
+  vlan_policy: str(required=False)
+  vsan_policy: str(required=False)
+  ntp_policy: str(required=False)
+  snmp_policy: str(required=False)
+  syslog_policy: str(required=False)
+  network_connectivity_policy: str(required=False)
+  ldap_policy: str(required=False)
+
+intersight_organizations_templates_chassis:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  certificate_management_policy: str(required=False)
+  imc_access_policy: str(required=False)
+  power_policy: str(required=False)
+  snmp_policy: str(required=False)
+  thermal_policy: str(required=False)
+
+intersight_organizations_templates_vnic:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  switch_id: enum('A', 'B', 'None', required=False)
+  failover: bool(required=False)
+  allow_override: bool(required=False)
+  pin_group_name: str(required=False)
+  peer_vnic_name: str(required=False)
+  mac_pool: str(required=False)
+  ethernet_adapter_policy: str(required=False)
+  ethernet_network_control_policy: str(required=False)
+  ethernet_network_group_policy: str(required=False)
+  ethernet_network_policy: str(required=False)
+  ethernet_qos_policy: str(required=False)
+  iscsi_boot_policy: str(required=False)
+  cdn_source: enum('vnic', 'user', required=False)
+  cdn_value: str(required=False)
+  sriov: include('intersight_organizations_templates_vnic_sriov', required=False)
+  usnic: include('intersight_organizations_templates_vnic_usnic', required=False)
+  vmq: include('intersight_organizations_templates_vnic_vmq', required=False)
+
+intersight_organizations_templates_vnic_sriov:
+  enabled: bool(required=False)
+  number_of_vfs: int(min=1, max=64, required=False)
+  receive_queue_count_per_vf: int(min=1, max=64, required=False)
+  transmit_queue_count_per_vf: int(min=1, max=64, required=False)
+  completion_queue_count_per_vf: int(min=1, max=64, required=False)
+  interrupt_count_per_vf: int(min=1, max=64, required=False)
+
+intersight_organizations_templates_vnic_usnic:
+  number_of_usnics: int(min=0, required=False)
+  usnic_adapter_policy: str(required=False)
+
+intersight_organizations_templates_vnic_vmq:
+  enabled: bool(required=False)
+  virtual_machine_multi_queue: bool(required=False)
+  number_of_interrupts: int(min=1, max=514, required=False)
+  number_of_virtual_machine_queues: int(min=1, max=128, required=False)
+  number_of_sub_vnics: int(min=0, max=64, required=False)
+  vmmq_adapter_policy: str(required=False)
+
+intersight_organizations_templates_vhba:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  fabric: enum('A', 'B', required=False)
+  vhba_type: enum('fc-initiator', 'fc-nvme-initiator', 'fc-nvme-target', 'fc-target', required=False)
+  persistent_lun_bindings: bool(required=False)
+  enable_override: bool(required=False)
+  pin_group_name: str(required=False)
+  peer_vhba_name: str(required=False)
+  wwpn_pool: str(required=False)
+  fibre_channel_adapter_policy: str(required=False)
+  fibre_channel_network_policy: str(required=False)
+  fibre_channel_qos_policy: str(required=False)
+
+intersight_organizations_profiles:
+  domain: list(include('intersight_organizations_profiles_domain'), required=False)
+  chassis: list(include('intersight_organizations_profiles_chassis'), required=False)
+
+intersight_organizations_profiles_domain:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  target_platform: enum('UCS Domain', 'Unified Edge', required=False)
+  action: enum('none', 'sync', 'deploy', 'sync_and_deploy', 'unassign', required=False)
+  serial_numbers: list(str(), required=False)
+  ucs_domain_template: str(required=False)
+  switch_a_port_policy: str(required=False)
+  switch_b_port_policy: str(required=False)
+  switch_control_policy: str(required=False)
+  system_qos_policy: str(required=False)
+  vlan_policy: str(required=False)
+  vsan_policy: str(required=False)
+  ntp_policy: str(required=False)
+  snmp_policy: str(required=False)
+  syslog_policy: str(required=False)
+  network_connectivity_policy: str(required=False)
+  ldap_policy: str(required=False)
+
+intersight_organizations_profiles_chassis:
+  name: regex('^[a-zA-Z0-9_.:-]{1,64}$')
+  description: str(required=False)
+  managed: bool(required=False)
+  action: enum('none', 'deploy', 'unassign', required=False)
+  wait_for_completion: bool(required=False)
+  tags: list(include('intersight_tag'), required=False)
+  serial_number: str(required=False)
+  chassis_template: str(required=False)
+  certificate_management_policy: str(required=False)
+  imc_access_policy: str(required=False)
+  power_policy: str(required=False)
+  snmp_policy: str(required=False)
+  thermal_policy: str(required=False)
+
+server:
+  name: str()
+  tags: list(include('intersight_tag'), required=False)
+  provisioning: include('servers_provisioning', required=False)
+
+servers_provisioning:
+  managed_by: enum('intersight', 'redfish')
+  profile_template: str(required=False)
+  managed: bool(required=False)
+  action: enum('none', 'sync', 'deploy', 'sync_and_deploy', 'unassign', required=False)
+  power_state: enum('on', 'shutdown', 'off', required=False)
+  wait_for_completion: bool(required=False)
+  intersight: include('servers_provisioning_intersight', required=False)
+
+servers_provisioning_intersight:
+  organization: str()
+  serial_number: str(required=False)
+  resource_pool: str(required=False)
+  target_platform: enum('FIAttached', 'Standalone', 'UnifiedEdgeServer', required=False)
+  uuid_pool: str(required=False)
+  policies: include('servers_provisioning_intersight_policies', required=False)
+
+servers_provisioning_intersight_policies:
+  bios_policy: str(required=False)
+  boot_order_policy: str(required=False)
+  certificate_management_policy: str(required=False)
+  imc_access_policy: str(required=False)
+  ipmi_over_lan_policy: str(required=False)
+  lan_connectivity_policy: str(required=False)
+  local_user_policy: str(required=False)
+  network_connectivity_policy: str(required=False)
+  ntp_policy: str(required=False)
+  power_policy: str(required=False)
+  san_connectivity_policy: str(required=False)
+  serial_over_lan_policy: str(required=False)
+  scrub_policy: str(required=False)
+  drive_security_policy: str(required=False)
+  adapter_configuration_policy: str(required=False)
+  device_connector_policy: str(required=False)
+  sd_card_policy: str(required=False)
+  memory_policy: str(required=False)
+  persistent_memory_policy: str(required=False)
+  smtp_policy: str(required=False)
+  snmp_policy: str(required=False)
+  ssh_policy: str(required=False)
+  storage_policy: str(required=False)
+  syslog_policy: str(required=False)
+  thermal_policy: str(required=False)
+  firmware_policy: str(required=False)
+  virtual_kvm_policy: str(required=False)
+  virtual_media_policy: str(required=False)
+  ldap_policy: str(required=False)
+
+intersight_tag:
+  key: str()
+  value: str(required=False)
+  type: enum('KeyValue', 'PathTag', required=False)

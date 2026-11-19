@@ -84,8 +84,10 @@ Configuring an NTP Policy using native HCL:
 
 ```hcl
 module "ntp_policy" {
-  source  = "netascode/nac-compute/compute"
+  source  = "netascode/nac-compute/intersight"
   version = ">= 0.2.0"
+
+  manage_intersight_policies = true
 
   model = {
     compute = {
@@ -119,6 +121,7 @@ compute:
   intersight:
     organizations:
       - name: default
+        managed: false
         pools:
           ip:
             - name: IP_POOL_1
@@ -135,8 +138,10 @@ compute:
 
 ```hcl
 module "ip_pool" {
-  source  = "netascode/nac-compute/compute"
+  source  = "netascode/nac-compute/intersight"
   version = ">= 0.2.0"
+
+  manage_intersight_pools = true
 
   yaml_files = ["ip_pool.yaml"]
 }

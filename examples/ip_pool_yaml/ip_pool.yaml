@@ -2,6 +2,7 @@ compute:
   intersight:
     organizations:
       - name: default
+        managed: false
         pools:
           ip:
             - name: IP_POOL_1

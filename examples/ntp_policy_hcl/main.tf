@@ -1,6 +1,8 @@
 module "ntp_policy" {
-  source  = "netascode/nac-compute/compute"
+  source  = "netascode/nac-compute/intersight"
   version = ">= 0.2.0"
+
+  manage_intersight_policies = true
 
   model = {
     compute = {

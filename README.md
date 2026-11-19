@@ -85,7 +85,7 @@ Configuring an NTP Policy using native HCL:
 ```hcl
 module "ntp_policy" {
   source  = "netascode/nac-compute/compute"
-  version = ">= 0.1.0"
+  version = ">= 0.2.0"
 
   model = {
     compute = {
@@ -136,7 +136,7 @@ compute:
 ```hcl
 module "ip_pool" {
   source  = "netascode/nac-compute/compute"
-  version = ">= 0.1.0"
+  version = ">= 0.2.0"
 
   yaml_files = ["ip_pool.yaml"]
 }
@@ -147,7 +147,7 @@ module "ip_pool" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.8.0 |
-| <a name="requirement_intersight"></a> [intersight](#requirement\_intersight) | >= 1.0.0 |
+| <a name="requirement_intersight"></a> [intersight](#requirement\_intersight) | >= 1.0.80 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | =2.0.0 |
@@ -186,7 +186,7 @@ module "ip_pool" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | >= 1.0.0 |
+| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | >= 1.0.80 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.3.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9.0 |

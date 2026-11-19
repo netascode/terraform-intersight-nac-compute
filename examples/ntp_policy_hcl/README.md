@@ -15,7 +15,7 @@ This example assumes an Intersight organization named `default` already exists.
 ```hcl
 module "ntp_policy" {
   source  = "netascode/nac-compute/compute"
-  version = ">= 0.1.0"
+  version = ">= 0.2.0"
 
   model = {
     compute = {

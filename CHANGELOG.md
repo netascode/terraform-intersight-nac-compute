@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 0.2.0
+
 - Add support for Intersight policies: adapter configuration, certificate management, device connector, drive security, FC zone, flow control, iSCSI adapter, iSCSI boot, iSCSI static target, LDAP, link aggregation, link control, MACsec, memory, multicast, persistent memory, qualification, SD card, scrub, switch control, system QoS, VLAN, VSAN
 - Add `servers[].provisioning.power_state` (`on`, `shutdown`, `off`) to manage the server power state declaratively: the power operation is only sent when the actual power state differs from the desired one, and is sent again on every apply until the server has the desired state. Servers without the attribute are never touched. Requires `provisioning.intersight.serial_number`. The provider has no resource for `compute.ServerSetting`, so the module calls `scripts/set_server_power.py`, which needs `python3` with the `requests` and `cryptography` packages and the `INTERSIGHT_*` environment variables
 - Fix a perpetual diff on SNMP and NTP policies: Intersight no longer returns SNMP community strings (`access_community_string`, `trap_community`, trap `community`) or NTP symmetric keys, so every plan set them again. Changes to these values, and to any other attribute of SNMP traps or authenticated NTP servers, are no longer applied to an existing policy; to change them, recreate the policy or change them in Intersight
@@ -19,6 +21,7 @@
   - A server that starts or stops overriding its template's settings is detached from, or attached to, its template in a single apply
   - Intersight cannot change the target platform of an existing server profile. To change it, remove the server's entry and apply, so the profile is deleted, then add it back
 - Add `profile_sync_wait` input (default `30s`) to set how long to wait between syncing a server or domain profile with its template and deploying it. The module now requires the `hashicorp/time` provider
+- The module now requires the Intersight provider 1.0.80 or later
 - Add support for Intersight LAN/SAN pin-groups
 - Add support for managing Intersight organizations (create/update), with the built-in `default` organization always resolved by lookup
 - Add path tag support across policies and templates

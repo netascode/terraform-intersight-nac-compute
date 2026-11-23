@@ -38,23 +38,25 @@ The full data model documentation is available here: https://netascode.cisco.com
 
 As the number of UCS domains, chassis, and servers grows, a single Terraform workspace managing all resources can become slow and creates a wide blast radius. Two orthogonal mechanisms let you split the data model across multiple workspaces:
 
-**Category flags** (`manage_*`) enable or disable entire resource categories. All default to `false` — add the flags you need in your workspace `terraform.tfvars`.
+**Category flags** (`manage_*`) enable or disable entire resource categories. All default to `true`, so by default a single workspace manages the entire compute configuration. To split the configuration across workspaces, set the flags for the categories a workspace does not manage to `false` in its `terraform.tfvars`.
 
 **Inclusion lists** (`managed_*`) restrict which named objects or tagged objects within an enabled category are managed. Both a name list and a tag list (supplied as `"key=value"` strings) can be combined — an object is included when its name is in the name list **or** it carries **all** required tags. Empty lists on both variables means include everything.
 
 ### Example: policies workspace for DC-A by org name
 
 ```hcl
-manage_intersight_policies       = true
-manage_intersight_pools          = true
+manage_intersight_templates      = false
+manage_intersight_profiles       = false
+manage_servers                   = false
 managed_intersight_organizations = ["dc-a-prod", "dc-a-dev"]
 ```
 
 ### Example: profiles workspace filtering by tag
 
 ```hcl
-manage_intersight_profiles           = true
-manage_intersight_templates          = true
+manage_intersight_policies           = false
+manage_intersight_pools              = false
+manage_servers                       = false
 managed_intersight_organization_tags = ["datacenter=dc-a"]
 managed_intersight_domains           = ["dc-a-ucs-01", "dc-a-ucs-02"]
 ```
@@ -62,19 +64,16 @@ managed_intersight_domains           = ["dc-a-ucs-01", "dc-a-ucs-02"]
 ### Example: server workspace by tag
 
 ```hcl
-manage_servers      = true
-managed_server_tags = ["cluster=vsphere-prod-01"]
+manage_intersight_policies  = false
+manage_intersight_pools     = false
+manage_intersight_templates = false
+manage_intersight_profiles  = false
+managed_server_tags         = ["cluster=vsphere-prod-01"]
 ```
 
-### Example: full single-workspace (all categories enabled)
+### Example: full single workspace
 
-```hcl
-manage_intersight_policies  = true
-manage_intersight_pools     = true
-manage_intersight_templates = true
-manage_intersight_profiles  = true
-manage_servers              = true
-```
+No category flags are needed: all categories are managed by default.
 
 ## Examples
 
@@ -162,11 +161,11 @@ module "ip_pool" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_manage_intersight_organizations"></a> [manage\_intersight\_organizations](#input\_manage\_intersight\_organizations) | When true, manage organization resources under intersight.organizations[] (per-org managed flag still applies). | `bool` | `true` | no |
-| <a name="input_manage_intersight_policies"></a> [manage\_intersight\_policies](#input\_manage\_intersight\_policies) | When true, manage all policy resources under intersight.organizations[].policies. | `bool` | `false` | no |
-| <a name="input_manage_intersight_pools"></a> [manage\_intersight\_pools](#input\_manage\_intersight\_pools) | When true, manage all pool resources under intersight.organizations[].pools. | `bool` | `false` | no |
-| <a name="input_manage_intersight_profiles"></a> [manage\_intersight\_profiles](#input\_manage\_intersight\_profiles) | When true, manage all profile resources (domain and chassis profiles). | `bool` | `false` | no |
-| <a name="input_manage_intersight_templates"></a> [manage\_intersight\_templates](#input\_manage\_intersight\_templates) | When true, manage all template resources (server, domain, chassis). | `bool` | `false` | no |
-| <a name="input_manage_servers"></a> [manage\_servers](#input\_manage\_servers) | When true, manage server provisioning resources under servers[]. | `bool` | `false` | no |
+| <a name="input_manage_intersight_policies"></a> [manage\_intersight\_policies](#input\_manage\_intersight\_policies) | When true, manage all policy resources under intersight.organizations[].policies. | `bool` | `true` | no |
+| <a name="input_manage_intersight_pools"></a> [manage\_intersight\_pools](#input\_manage\_intersight\_pools) | When true, manage all pool resources under intersight.organizations[].pools. | `bool` | `true` | no |
+| <a name="input_manage_intersight_profiles"></a> [manage\_intersight\_profiles](#input\_manage\_intersight\_profiles) | When true, manage all profile resources (domain and chassis profiles). | `bool` | `true` | no |
+| <a name="input_manage_intersight_templates"></a> [manage\_intersight\_templates](#input\_manage\_intersight\_templates) | When true, manage all template resources (server, domain, chassis). | `bool` | `true` | no |
+| <a name="input_manage_servers"></a> [manage\_servers](#input\_manage\_servers) | When true, manage server provisioning resources under servers[]. | `bool` | `true` | no |
 | <a name="input_managed_intersight_chassis"></a> [managed\_intersight\_chassis](#input\_managed\_intersight\_chassis) | List of chassis profile names to include within filtered orgs. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_chassis_tags"></a> [managed\_intersight\_chassis\_tags](#input\_managed\_intersight\_chassis\_tags) | Tag filters for chassis profile scoping. Use "key=value" for KeyValue tags or a bare path (e.g. "datacenter/madrid") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all. | `list(string)` | `[]` | no |
 | <a name="input_managed_intersight_domain_tags"></a> [managed\_intersight\_domain\_tags](#input\_managed\_intersight\_domain\_tags) | Tag filters for domain profile scoping. Use "key=value" for KeyValue tags or a bare path (e.g. "datacenter/madrid") for PathTag filters. PathTag filters match the exact path and any descendant (prefix match). All listed filters must match — AND semantics. Empty = include all. | `list(string)` | `[]` | no |

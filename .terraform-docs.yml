@@ -42,23 +42,25 @@ content: |-
 
   As the number of UCS domains, chassis, and servers grows, a single Terraform workspace managing all resources can become slow and creates a wide blast radius. Two orthogonal mechanisms let you split the data model across multiple workspaces:
 
-  **Category flags** (`manage_*`) enable or disable entire resource categories. All default to `false` — add the flags you need in your workspace `terraform.tfvars`.
+  **Category flags** (`manage_*`) enable or disable entire resource categories. All default to `true`, so by default a single workspace manages the entire compute configuration. To split the configuration across workspaces, set the flags for the categories a workspace does not manage to `false` in its `terraform.tfvars`.
 
   **Inclusion lists** (`managed_*`) restrict which named objects or tagged objects within an enabled category are managed. Both a name list and a tag list (supplied as `"key=value"` strings) can be combined — an object is included when its name is in the name list **or** it carries **all** required tags. Empty lists on both variables means include everything.
 
   ### Example: policies workspace for DC-A by org name
 
   ```hcl
-  manage_intersight_policies       = true
-  manage_intersight_pools          = true
+  manage_intersight_templates      = false
+  manage_intersight_profiles       = false
+  manage_servers                   = false
   managed_intersight_organizations = ["dc-a-prod", "dc-a-dev"]
   ```
 
   ### Example: profiles workspace filtering by tag
 
   ```hcl
-  manage_intersight_profiles           = true
-  manage_intersight_templates          = true
+  manage_intersight_policies           = false
+  manage_intersight_pools              = false
+  manage_servers                       = false
   managed_intersight_organization_tags = ["datacenter=dc-a"]
   managed_intersight_domains           = ["dc-a-ucs-01", "dc-a-ucs-02"]
   ```
@@ -66,19 +68,16 @@ content: |-
   ### Example: server workspace by tag
 
   ```hcl
-  manage_servers      = true
-  managed_server_tags = ["cluster=vsphere-prod-01"]
+  manage_intersight_policies  = false
+  manage_intersight_pools     = false
+  manage_intersight_templates = false
+  manage_intersight_profiles  = false
+  managed_server_tags         = ["cluster=vsphere-prod-01"]
   ```
 
-  ### Example: full single-workspace (all categories enabled)
+  ### Example: full single workspace
 
-  ```hcl
-  manage_intersight_policies  = true
-  manage_intersight_pools     = true
-  manage_intersight_templates = true
-  manage_intersight_profiles  = true
-  manage_servers              = true
-  ```
+  No category flags are needed: all categories are managed by default.
 
   ## Examples
 

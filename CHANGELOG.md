@@ -1,5 +1,7 @@
 ## Unreleased
 
+- **Breaking:** the `manage_intersight_policies`, `manage_intersight_pools`, `manage_intersight_templates`, `manage_intersight_profiles` and `manage_servers` variables now default to `true`, so the module manages the entire compute configuration by default. Workspaces that manage only some categories must set the flags for the other categories to `false`
+
 ## 0.2.0
 
 - Add support for Intersight policies: adapter configuration, certificate management, device connector, drive security, FC zone, flow control, iSCSI adapter, iSCSI boot, iSCSI static target, LDAP, link aggregation, link control, MACsec, memory, multicast, persistent memory, qualification, SD card, scrub, switch control, system QoS, VLAN, VSAN
